@@ -6,7 +6,7 @@ import os
 import yaml
 import json
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command
@@ -44,7 +44,7 @@ def write_json_file(file_path: str, data):
     except:
         return False
 
-async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
+def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
     global repo_data
 
     print(f"TASK ({name}) : running git check task")
@@ -98,7 +98,7 @@ async def startup_event():
         repo_data = {}
         write_json_file(REPO_DATA_FILE_PATH, repo_data)
 
-    scheduler = AsyncIOScheduler()
+    scheduler = BackgroundScheduler()
 
     for repo in config_data['repos']:
         scheduler.add_job(
@@ -111,8 +111,9 @@ async def startup_event():
                 repo['deploy_command'],
             ],
             trigger=IntervalTrigger(seconds=repo['interval']),
-            id="git_check_periodic_task_" + repo['name'],
-            replace_existing=True
+            id=f"git_check_periodic_task_{repo['name']}",
+            replace_existing=True,
+            max_instances=1
         )
 
         print(f"STARTUP: scheduler task configured for {repo['name']}, interval {repo['interval']} seconds")
