@@ -22,9 +22,12 @@ repo_data = {}
 
 
 def read_yaml_file(file_path: str) -> Dict[str, Any]:
-    with open(file_path, 'r') as file:
-        data = yaml.safe_load(file)
-    return data
+    try:
+        with open(file_path, 'r') as file:
+            data = yaml.safe_load(file)
+        return data
+    except:
+        return None
 
 def read_json_file(file_path: str) -> Dict[str, Any]:
     try:
@@ -73,13 +76,17 @@ async def startup_event():
     global repo_data
 
     config_data = read_yaml_file(CONFIG_FILE_PATH)
+
+    if not config_data:                     # stop startup if no config
+        return None
+
     repo_data = read_json_file(REPO_DATA_FILE_PATH)
 
     if not repo_data:
         repo_data = {}
         write_json_file(REPO_DATA_FILE_PATH, repo_data)
 
-    if len(config_data['repos']) == 0:      # stop startup if no repos in yaml
+    if len(config_data['repos']) == 0:      # stop startup if no repos in json
         return None
 
     scheduler = AsyncIOScheduler()
