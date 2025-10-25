@@ -5,7 +5,8 @@ def get_remote_hash(repo_url, branch='main'):
     print(f"    SUBPROCESS: Getting {repo_url} {branch} hash")
     result = subprocess.check_output(
         ["git", "ls-remote", repo_url, f"refs/heads/{branch}"],
-        text=True
+        text=True,
+        timeout=30
     )
     return result.split()[0] if result else None
 
@@ -26,13 +27,14 @@ def pull_repo(repo_dir):
     subprocess.run(
         ["git", "pull", "--rebase"],
         check=True,
-        cwd=repo_dir
+        cwd=repo_dir,
+        timeout=60
     )
     print("    SUBPROCESS: Repo successfully pulled.")
 
 def run_command(cmd, cwd):
     print(f"    SUBPROCESS: Running: {cmd}")
-    result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, check=True, text=True, timeout=600)
+    result = subprocess.run(cmd, shell=True, cwd=cwd, check=True, text=True, timeout=600)
     if result.returncode != 0:
         print(f"    SUBPROCESS: Error: {result.stderr}")
         raise Exception(f"    SUBPROCESS: Command failed: {cmd}")
