@@ -51,34 +51,53 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     print(f"TASK ({name}) : running git check task")
 
     if name not in repo_data:
-        repo_data[name] = {'latest_hash': None}
+        repo_data[name] = {
+            'stages': {
+                    'update': None,
+                    'build': None
+                }
+            }
     
-    latest_hash = repo_data[name]['latest_hash']
     new_hash = get_remote_hash(url, branch)
     
-    print(f"TASK ({name}) : \n  old:'{latest_hash}'\n  new:'{new_hash}'")
-
-    if latest_hash == new_hash:                                                                             # stop process if hashes are identical
-        print(f"TASK ({name}) : hashes identical, aborting task.")
-        return None
+    print(f"TASK ({name}) : \n  old:'{repo_data[name]['stages']['update']}'\n  new:'{new_hash}'")
     
     repo_dir = os.path.join(REPO_DATA_PATH, name)
+
+    ## update stage (clone or pull)
+
+    if repo_data[name]['stages']['update'] == new_hash:
+        print(f"TASK ({name}) : skipping updating.")
     
-    if latest_hash == None:                                                                                 # never cloned, clone entire repo
-        print(f"TASK ({name}) : first instance, cloning repository.")
-        clone_repo(url, repo_dir, branch)
     else:
-        print(f"TASK ({name}) : pulling repository.")
-        pull_repo(repo_dir)                                                                                 # otherwise pull changes
+        if repo_data[name]['stages']['update'] == None:
+            # never cloned, clone entire repo
+            print(f"TASK ({name}) : first instance, cloning repository.")
+            clone_repo(url, repo_dir, branch)
+        else:
+            # otherwise pull changes
+            print(f"TASK ({name}) : pulling repository.")
+            pull_repo(repo_dir)
+        
+        repo_data[name]['stages']['update'] = new_hash
+        write_json_file(REPO_DATA_FILE_PATH, repo_data)
     
-    print(f"TASK ({name}) : executing build command.")
-    run_command(build_command, repo_dir)
+    ## build stage
+
+    if repo_data[name]['stages']['build'] == new_hash:
+        print(f"TASK ({name}) : skipping building.")
+    
+    else:
+        print(f"TASK ({name}) : executing build command.")
+        run_command(build_command, repo_dir)
+
+        repo_data[name]['stages']['build'] = new_hash
+        write_json_file(REPO_DATA_FILE_PATH, repo_data)
+
+    ## deploy stage
     
     print(f"TASK ({name}) : executing deploy command.")
     run_command(deploy_command, repo_dir)
-
-    repo_data[name] = {'latest_hash': new_hash}                                                             # update to new hash after a successful build and deploy process
-    write_json_file(REPO_DATA_FILE_PATH, repo_data)
     
     print(f"TASK ({name}) : finished.")
 
@@ -88,12 +107,14 @@ async def startup_event():
     global repo_data
 
     config_data = read_yaml_file(CONFIG_FILE_PATH)
-    if not config_data:                                                                                     # stop startup if no config
+    if not config_data:
+        # stop startup if no config
         print(f"STARTUP: {CONFIG_FILE_PATH} doesn't exist, aborting startup")
         return None
 
-    if len(config_data['repos']) == 0:  
-        print(f"STARTUP: no repositories found in {CONFIG_FILE_PATH}, aborting startup")                    # stop startup if no repos in json
+    if len(config_data['repos']) == 0:
+        # stop startup if no repos in json
+        print(f"STARTUP: no repositories found in {CONFIG_FILE_PATH}, aborting startup")
         return None
 
     repo_data = read_json_file(REPO_DATA_FILE_PATH)
