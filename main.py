@@ -1,106 +1,17 @@
 from fastapi import FastAPI
 
-from typing import Dict, Any
+from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH
+from globals import repo_data
+from globals import read_yaml_file, read_json_file, write_json_file
 
-import os
-import yaml
-import json
+from git_functions import git_check
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
-from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command
-
 
 app = FastAPI()
-
-CONFIG_FILE_PATH = "/config/config.yaml"
-REPO_DATA_PATH = "/repo_data"
-REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
-
-repo_data = {}
-
-
-def read_yaml_file(file_path: str) -> Dict[str, Any]:
-    try:
-        with open(file_path, 'r') as file:
-            data = yaml.safe_load(file)
-        return data
-    except:
-        return None
-
-def read_json_file(file_path: str) -> Dict[str, Any]:
-    try:
-        with open(file_path, 'r') as file:
-            return json.load(file)
-    except:
-        return None
-
-def write_json_file(file_path: str, data):
-    try:
-        with open(file_path, 'w') as file:
-            json.dump(data, file, indent=2)
-        return True
-    except:
-        return False
-
-def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
-    global repo_data
-
-    print(f"TASK ({name}) : running git check task")
-
-    if name not in repo_data:
-        repo_data[name] = {
-            'stages': {
-                    'update': None,
-                    'build': None
-                }
-            }
-    
-    new_hash = get_remote_hash(url, branch)
-    
-    print(f"TASK ({name}) : \n  old:'{repo_data[name]['stages']['update']}'\n  new:'{new_hash}'")
-    
-    repo_dir = os.path.join(REPO_DATA_PATH, name)
-
-    ## update stage (clone or pull)
-
-    if repo_data[name]['stages']['update'] == new_hash:
-        print(f"TASK ({name}) : skipping updating.")
-    
-    else:
-        if repo_data[name]['stages']['update'] == None:
-            # never cloned, clone entire repo
-            print(f"TASK ({name}) : first instance, cloning repository.")
-            clone_repo(url, repo_dir, branch)
-        else:
-            # otherwise pull changes
-            print(f"TASK ({name}) : pulling repository.")
-            pull_repo(repo_dir)
-        
-        repo_data[name]['stages']['update'] = new_hash
-        write_json_file(REPO_DATA_FILE_PATH, repo_data)
-    
-    ## build stage
-
-    if repo_data[name]['stages']['build'] == new_hash:
-        print(f"TASK ({name}) : skipping building.")
-    
-    else:
-        print(f"TASK ({name}) : executing build command.")
-        run_command(build_command, repo_dir)
-
-        repo_data[name]['stages']['build'] = new_hash
-        write_json_file(REPO_DATA_FILE_PATH, repo_data)
-
-    ## deploy stage
-    
-    print(f"TASK ({name}) : executing deploy command.")
-    run_command(deploy_command, repo_dir)
-    
-    print(f"TASK ({name}) : finished.")
-
 
 @app.on_event("startup")
 async def startup_event():
