@@ -16,8 +16,8 @@ from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_com
 app = FastAPI()
 
 CONFIG_FILE_PATH = "/config/config.yaml"
-REPO_DATA_FILE_PATH = "/config/repo_data.json"
 REPO_DATA_PATH = "/repo_data"
+REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
 
 repo_data = {}
 
