@@ -79,6 +79,8 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
 
     repo_data[name] = {'latest_hash': new_hash}                                                             # update to new hash after a successful build and deploy process
     write_json_file(REPO_DATA_FILE_PATH, repo_data)
+    
+    print(f"TASK ({name}) : finished.")
 
 
 @app.on_event("startup")
