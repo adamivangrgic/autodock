@@ -5,7 +5,6 @@ def get_remote_hash(repo_url, branch='main'):
     print(f"    SUBPROCESS: Getting {repo_url} {branch} hash")
     result = subprocess.check_output(
         ["git", "ls-remote", repo_url, f"refs/heads/{branch}"],
-        check=True,
         text=True
     )
     return result.split()[0] if result else None
