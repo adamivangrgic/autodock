@@ -3,6 +3,7 @@ REPO_DATA_PATH = "/repo_data"
 REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
 
 repo_data = {}
+config_data = {}
 
 from typing import Dict, Any
 import yaml

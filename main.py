@@ -1,10 +1,14 @@
+import os
+
 from fastapi import FastAPI
 
 from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH
-from globals import repo_data
+from globals import repo_data, config_data
 from globals import read_yaml_file, read_json_file, write_json_file
 
-from git_functions import git_check
+from git_functions import git_check, git_clone, git_pull
+
+from subprocess_functions import run_command
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -16,6 +20,7 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     global repo_data
+    global config_data
 
     config_data = read_yaml_file(CONFIG_FILE_PATH)
     if not config_data:
@@ -58,6 +63,64 @@ async def startup_event():
     
     scheduler.start()
     print("STARTUP: scheduler started")
+
+## api endpoints
+
+@app.post("/api/clone-repo/")
+def api_clone_repo(payload: dict):
+    global config_data
+
+    name = payload['name']
+    repo = config_data['repos'][name]
+    url = repo['url']
+    branch = repo['branch']
+    
+    git_clone(name, url, branch)
+
+@app.post("/api/pull-repo/")
+def api_pull_repo(payload: dict):
+    name = payload['name']
+    
+    git_pull(name)
+
+@app.post("/api/check-repo/")
+def api_check_repo(payload: dict):
+    global config_data
+
+    name = payload['name']
+    repo = config_data['repos'][name]
+    url = repo['url']
+    branch = repo['branch']
+    build_command = repo['build_command']
+    deploy_command = repo['deploy_command']
+    
+    git_check(name, url, branch, build_command, deploy_command)
+
+@app.post("/api/build-repo/")
+def api_build_repo(payload: dict):
+    global config_data
+
+    name = payload['name']
+    repo = config_data['repos'][name]
+    build_command = repo['build_command']
+    
+    repo_dir = os.path.join(REPO_DATA_PATH, name)
+    
+    run_command(build_command, repo_dir)
+
+@app.post("/api/deploy-repo/")
+def api_deploy_repo(payload: dict):
+    global config_data
+
+    name = payload['name']
+    repo = config_data['repos'][name]
+    deploy_command = repo['deploy_command']
+    
+    repo_dir = os.path.join(REPO_DATA_PATH, name)
+    
+    run_command(deploy_command, repo_dir)
+
+##
 
 # # Define a root endpoint
 # @app.get("/")
