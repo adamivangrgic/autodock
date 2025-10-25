@@ -23,8 +23,9 @@ def clone_repo(repo_url, repo_dir, branch="main"):
 def pull_repo(repo_dir):
     print(f"SUBPROCESS:  Pulling repo {repo_dir}")
     subprocess.run(
-        ["git", "-C", repo_dir, "pull", "--rebase"],
-        check=True
+        ["git", "pull", "--rebase"],
+        check=True,
+        cwd=repo_dir
     )
     print("SUBPROCESS:  Repo successfully pulled.")
 
