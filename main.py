@@ -54,6 +54,8 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     
     latest_hash = repo_data[name]['latest_hash']
     new_hash = get_remote_hash(url, branch)
+    
+    print(f"TASK ({name}) : \n  old:'{latest_hash}'\n  new:'{new_hash}'")
 
     if latest_hash == new_hash:                                                                             # stop process if hashes are identical
         print(f"TASK ({name}) : hashes identical, aborting task.")
