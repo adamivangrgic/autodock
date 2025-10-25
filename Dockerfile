@@ -28,4 +28,4 @@ COPY . .
 EXPOSE 8080
 
 # Run your agent
-CMD ["python", "main.py"]
+CMD ["python", "-u", "main.py"]
