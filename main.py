@@ -8,6 +8,7 @@ import json
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from datetime import datetime
 
 from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command
 
@@ -115,7 +116,8 @@ async def startup_event():
             trigger=IntervalTrigger(seconds=repo['interval']),
             id=f"git_check_periodic_task_{repo['name']}",
             replace_existing=True,
-            max_instances=1
+            max_instances=1,
+            next_run_time=datetime.now()
         )
 
         print(f"STARTUP: scheduler task configured for {repo['name']}, interval {repo['interval']} seconds")
