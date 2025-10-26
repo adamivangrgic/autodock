@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <!-- <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"> -->
+</head>
+
+<body>
+    <div class="container">
+    {% for name, repo in content.items() %}
+        <div class="repo">
+            <h2>{{ name }}</h2>
+            <form action="/api/repo/check" method="post">
+                <input type="hidden" id="name" name="name" value="{{ name }}">
+                <button type="submit">Clone</button>
+            </form>
+            <form action="/api/repo/clone" method="post">
+                <input type="hidden" id="name" name="name" value="{{ name }}">
+                <button type="submit">Clone</button>
+            </form>
+            <form action="/api/repo/pull" method="post">
+                <input type="hidden" id="name" name="name" value="{{ name }}">
+                <button type="submit">Pull</button>
+            </form>
+            <form action="/api/repo/build" method="post">
+                <input type="hidden" id="name" name="name" value="{{ name }}">
+                <button type="submit">Build</button>
+            </form>
+            <form action="/api/repo/deploy" method="post">
+                <input type="hidden" id="name" name="name" value="{{ name }}">
+                <button type="submit">Deploy</button>
+            </form>
+        </div>
+    {% endfor %}
+    </div>
+</body>
+
+</html>

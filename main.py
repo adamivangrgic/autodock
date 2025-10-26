@@ -1,6 +1,9 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH
 from globals import repo_data, config_data
@@ -16,6 +19,8 @@ from datetime import datetime
 
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 async def startup_event():
@@ -66,8 +71,8 @@ async def startup_event():
 
 ## api endpoints
 
-@app.post("/api/clone-repo/")
-def api_clone_repo(payload: dict):
+@app.post("/api/repo/clone/")
+async def api_repo_clone(payload: dict):
     global config_data
 
     name = payload['name']
@@ -77,14 +82,14 @@ def api_clone_repo(payload: dict):
     
     git_clone(name, url, branch)
 
-@app.post("/api/pull-repo/")
-def api_pull_repo(payload: dict):
+@app.post("/api/repo/pull/")
+async def api_repo_pull(payload: dict):
     name = payload['name']
     
     git_pull(name)
 
-@app.post("/api/check-repo/")
-def api_check_repo(payload: dict):
+@app.post("/api/repo/check/")
+async def api_repo_check(payload: dict):
     global config_data
 
     name = payload['name']
@@ -96,8 +101,8 @@ def api_check_repo(payload: dict):
     
     git_check(name, url, branch, build_command, deploy_command)
 
-@app.post("/api/build-repo/")
-def api_build_repo(payload: dict):
+@app.post("/api/repo/build/")
+async def api_repo_build(payload: dict):
     global config_data
 
     name = payload['name']
@@ -108,8 +113,8 @@ def api_build_repo(payload: dict):
     
     run_command(build_command, repo_dir)
 
-@app.post("/api/deploy-repo/")
-def api_deploy_repo(payload: dict):
+@app.post("/api/repo/deploy/")
+async def api_repo_deploy(payload: dict):
     global config_data
 
     name = payload['name']
@@ -120,12 +125,19 @@ def api_deploy_repo(payload: dict):
     
     run_command(deploy_command, repo_dir)
 
-##
+## dashboard
 
-# # Define a root endpoint
-# @app.get("/")
-# def read_root():
-#     return {"message": "Hello, World!"}
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def dash_index(request: Request):
+    global config_data
+
+    content = config_data['repos']
+
+    return templates.TemplateResponse(
+        request=request, name="index.html", context={"content": content}
+    )
 
 # # Define an endpoint with path parameter
 # @app.get("/items/{item_id}")
