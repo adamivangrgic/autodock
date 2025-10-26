@@ -2,7 +2,7 @@ body {
     display: grid;
     grid-template-areas: 
         'header header'
-        'sidebar main';
+        'menu content';
     grid-template-columns: 30rem auto;
     
     font-family: Arial, Helvetica, sans-serif;
@@ -12,12 +12,20 @@ body {
     body {
         grid-template-areas: 
             'header header'
-            'sidebar sidebar'
-            'main main';
+            'menu menu'
+            'content content';
         grid-template-columns: auto auto;
     }
 }
 
 .button_row {
     display: inline-block;
+}
+
+.container {
+    grid-area: content;
+}
+
+.menu-bar {
+    grid-area: menu;
 }
