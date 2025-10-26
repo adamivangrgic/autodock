@@ -48,23 +48,24 @@ async def startup_event():
     scheduler = BackgroundScheduler()
 
     for name, repo in config_data['repos'].items():
-        scheduler.add_job(
-            git_check,
-            args=[
-                name,
-                repo['repo_url'],
-                repo['branch'],
-                repo['build_command'],
-                repo['deploy_command'],
-            ],
-            trigger=IntervalTrigger(seconds=repo['interval']),
-            id=f"git_check_periodic_task_{name}",
-            replace_existing=True,
-            max_instances=1,
-            next_run_time=datetime.now()
-        )
+        if repo['interval'] > 0:
+            scheduler.add_job(
+                git_check,
+                args=[
+                    name,
+                    repo['repo_url'],
+                    repo['branch'],
+                    repo['build_command'],
+                    repo['deploy_command'],
+                ],
+                trigger=IntervalTrigger(seconds=repo['interval']),
+                id=f"git_check_periodic_task_{name}",
+                replace_existing=True,
+                max_instances=1,
+                next_run_time=datetime.now()
+            )
 
-        print(f"STARTUP: scheduler task configured for {name}, interval {repo['interval']} seconds")
+            print(f"STARTUP: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
     scheduler.start()
     print("STARTUP: scheduler started")
