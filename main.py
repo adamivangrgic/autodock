@@ -26,7 +26,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def load_config_file(file_path: str) -> Dict[str, Any]:
     file = globals.read_yaml_file(file_path)
 
-    for repo in file['repos']:
+    for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
             print("CONFIG LOAD: misconfigured")
             return {}
