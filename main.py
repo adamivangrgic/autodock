@@ -26,8 +26,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 async def startup_event():
-    global repo_data
-    global config_data
+    # global repo_data
+    # global config_data
 
     config_data = read_yaml_file(CONFIG_FILE_PATH)
     if not config_data:
