@@ -27,12 +27,14 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     print(f"TASK ({name}) : running git check task")
 
     if name not in repo_data:
-        repo_data[name] = {
-            'stages': {
-                'update': None,
-                'build': None
+        if not('update' in repo_data[name] and 'build' in repo_data[name] and 'deploy' in repo_data[name]):
+            repo_data[name] = {
+                'stages': {
+                    'update': None,
+                    'build': None,
+                    'deploy': None
+                }
             }
-        }
     
     new_hash = get_remote_hash(url, branch)
     
@@ -69,8 +71,14 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
         write_json_file(REPO_DATA_FILE_PATH, repo_data)
 
     ## deploy stage
+
+    if repo_data[name]['stages']['deploy'] == new_hash:
+        print(f"TASK ({name}) : skipping deploying.")
     
-    print(f"TASK ({name}) : executing deploy command.")
-    run_command(deploy_command, repo_dir)
-    
+    else:
+        print(f"TASK ({name}) : executing deploy command.")
+        run_command(deploy_command, repo_dir)
+
+    ##
+        
     print(f"TASK ({name}) : finished.")
