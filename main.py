@@ -1,6 +1,6 @@
 import os
-
 import json
+from typing import Dict, Any
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -22,10 +22,38 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+def load_config_file(file_path: str) -> Dict[str, Any]:
+    file = globals.read_yaml_file(file_path)
+
+    for repo in file['repos']:
+        if 'repo_url' not in repo:
+            print("CONFIG LOAD: misconfigured")
+            return {}
+
+        if 'branch' not in repo:
+            file['repos']['branch'] = 'main'
+
+        if 'interval' not in repo:
+            file['repos']['interval'] = 0
+
+        if 'build_command' not in repo:
+            print("CONFIG LOAD: misconfigured")
+            return {}
+
+        if 'deploy_command' not in repo:
+            print("CONFIG LOAD: misconfigured")
+            return {}
+
+    if 'host_address' not in file:
+        file['host_address'] = 'localhost'
+
+    return file
+
 @app.on_event("startup")
 async def startup_event():
 
-    globals.config_data = globals.read_yaml_file(globals.CONFIG_FILE_PATH)
+    globals.config_data = globals.load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
         print(f"STARTUP: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
@@ -135,7 +163,7 @@ async def dash_index(request: Request):
         request=request, name="index.html", 
         context={
             "content": content, 
-            "HOST_ADDRESS": globals.HOST_ADDRESS
+            "HOST_ADDRESS": globals.repo_data['host_address']
             }
     )
 
