@@ -3,7 +3,7 @@ body {
     grid-template-areas: 
         'header header'
         'menu content';
-    grid-template-columns: 30rem auto;
+    grid-template-columns: 15rem auto;
     
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -18,7 +18,12 @@ body {
     }
 }
 
-.element-row {
+.list-row {
+    display: grid;
+    grid-template-columns: 2fr repeat(1fr, 4);
+}
+
+.button-row {
     display: inline-block;
 }
 
