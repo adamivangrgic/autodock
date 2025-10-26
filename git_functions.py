@@ -78,6 +78,9 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
         print(f"TASK ({name}) : executing deploy command.")
         run_command(deploy_command, repo_dir)
 
+        repo_data[name]['stages']['deploy'] = new_hash
+        write_json_file(REPO_DATA_FILE_PATH, repo_data)
+
     ##
         
     print(f"TASK ({name}) : finished.")
