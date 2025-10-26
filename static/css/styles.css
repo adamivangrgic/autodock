@@ -20,7 +20,9 @@ body {
 
 .list-row {
     display: grid;
-    grid-template-columns: 2fr repeat(1fr, 4);
+    grid-template-columns: 2fr 1fr 1fr;
+
+    margin-bottom: 10px;
 }
 
 .button-row {
@@ -29,6 +31,7 @@ body {
 
 .container {
     grid-area: content;
+    gap: 15px;
 }
 
 .menu-bar {

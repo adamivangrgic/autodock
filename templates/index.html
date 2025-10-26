@@ -11,8 +11,8 @@
     {% for name, repo in content.items() %}
         <div class="repo">
             <div class="list-row">
-                <span>{{ name }}</span>
-                <span>{{ repo['inspect'][0]['State']['Status'] }}</span>
+                <a>{{ name }}</a>
+                <a>{{ repo['inspect'][0]['State']['Status'] }}</a>
             </div>
             <div class="button-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check repo</button>
