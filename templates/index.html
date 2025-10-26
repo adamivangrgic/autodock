@@ -13,6 +13,7 @@
             <div class="list-row">
                 <a>{{ name }}</a>
                 <a>{{ repo['inspect'][0]['State']['Status'] }}</a>
+                <a>{{ repo['inspect'][0]['Created'] | to_date }}</a>
             </div>
             <div class="button-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check repo</button>
