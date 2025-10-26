@@ -6,8 +6,6 @@ import os
 CONFIG_FILE_PATH = "/config/config.yaml"
 REPO_DATA_PATH = "/repo_data"
 REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
-
-HOST_ADDRESS = os.environ.get('HOST_ADDRESS', 'localhost').split(':')[0]
     
 repo_data = {}
 config_data = {}

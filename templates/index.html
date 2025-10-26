@@ -16,7 +16,7 @@
                 <div>{{ repo['inspect'][0]['Created'] }}</div>
                 <div>
                 {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
-                    <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                    <a href="{{ HOST_ADDRESS.split(':')[0] }}:{{ outer[0]['HostPort'] }}">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                 {% endfor %}
                 </div>
             </div>

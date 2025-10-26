@@ -132,7 +132,7 @@ async def dash_index(request: Request):
         content[name]['inspect'] = inspect_output
 
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"content": content, "globals.HOST_ADDRESS": globals.HOST_ADDRESS}
+        request=request, name="index.html", context={"content": content}
     )
 
 if __name__ == "__main__":
