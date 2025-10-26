@@ -1,5 +1,7 @@
 import os
 
+import json
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,7 +13,7 @@ from globals import read_yaml_file, read_json_file, write_json_file
 
 from git_functions import git_check, git_clone, git_pull
 
-from subprocess_functions import run_command
+from subprocess_functions import run_command, check_output
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -135,6 +137,13 @@ async def dash_index(request: Request):
     global config_data
 
     content = config_data['repos']
+    
+    for name, repo in config_data['repos']:
+        cmd = f"docker inspect {name}"
+        raw_output = check_output(cmd)
+        inspect_output = json.loads(raw_output)
+
+        content[name]['inspect'] = inspect_output
 
     return templates.TemplateResponse(
         request=request, name="index.html", context={"content": content}

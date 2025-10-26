@@ -10,8 +10,11 @@
     <div class="container">
     {% for name, repo in content.items() %}
         <div class="repo">
-            <h2>{{ name }}</h2>
-            <div class="button_row">
+            <div class="element-row">
+                <h2>{{ name }}</h2>
+                <span>{{ repo['inspect'][0]['state']['status'] }}</span>
+            </div>
+            <div class="element-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check repo</button>
                 <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
                 <button onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
