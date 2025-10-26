@@ -10,6 +10,8 @@ REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
 repo_data = {}
 config_data = {}
 
+HOST_ADDRESS = os.environ.get('HOST_ADDRESS', 'localhost')
+
 
 def read_yaml_file(file_path: str) -> Dict[str, Any]:
     try:
