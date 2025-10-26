@@ -20,7 +20,7 @@ body {
 
 .list-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
 
     margin-bottom: 10px;
 }
@@ -31,9 +31,12 @@ body {
 
 .container {
     grid-area: content;
-    gap: 15px;
 }
 
 .menu-bar {
     grid-area: menu;
+}
+
+.repo {
+    margin-bottom: 15px;
 }
