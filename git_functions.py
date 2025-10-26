@@ -27,14 +27,13 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     print(f"TASK ({name}) : running git check task")
 
     if name not in repo_data:
-        if not('update' in repo_data[name] and 'build' in repo_data[name] and 'deploy' in repo_data[name]):
-            repo_data[name] = {
-                'stages': {
-                    'update': None,
-                    'build': None,
-                    'deploy': None
-                }
+        repo_data[name] = {
+            'stages': {
+                'update': None,
+                'build': None,
+                'deploy': None
             }
+        }
     
     new_hash = get_remote_hash(url, branch)
     
