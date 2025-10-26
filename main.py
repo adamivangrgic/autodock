@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH, HOST_ADDRESS
 from globals import repo_data, config_data
-from globals import read_yaml_file, read_json_file, write_json_file
+from globals import init, read_yaml_file, read_json_file, write_json_file
 
 from git_functions import git_check, git_clone, git_pull
 
@@ -76,8 +76,6 @@ async def startup_event():
 
 @app.post("/api/repo/clone/")
 async def api_repo_clone(payload: dict):
-    global config_data
-
     name = payload['name']
     repo = config_data['repos'][name]
     url = repo['repo_url']
@@ -93,8 +91,6 @@ async def api_repo_pull(payload: dict):
 
 @app.post("/api/repo/check/")
 async def api_repo_check(payload: dict):
-    global config_data
-
     name = payload['name']
     repo = config_data['repos'][name]
     url = repo['repo_url']
@@ -106,8 +102,6 @@ async def api_repo_check(payload: dict):
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):
-    global config_data
-
     name = payload['name']
     repo = config_data['repos'][name]
     build_command = repo['build_command']
@@ -118,8 +112,6 @@ async def api_repo_build(payload: dict):
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
-    global config_data
-
     name = payload['name']
     repo = config_data['repos'][name]
     deploy_command = repo['deploy_command']
@@ -134,8 +126,6 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def dash_index(request: Request):
-    global config_data
-
     content = config_data['repos']
     
     for name, repo in config_data['repos'].items():
@@ -149,16 +139,7 @@ async def dash_index(request: Request):
         request=request, name="index.html", context={"content": content, "HOST_ADDRESS": HOST_ADDRESS}
     )
 
-# # Define an endpoint with path parameter
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: str = None):
-#     return {"item_id": item_id, "q": q}
-
-# # Define a POST endpoint
-# @app.post("/items/")
-# def create_item(item: dict):
-#     return {"received_item": item}
-
 if __name__ == "__main__":
+    init()
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8080)

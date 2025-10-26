@@ -22,8 +22,6 @@ def git_pull(name: str):
 
 
 def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
-    global repo_data
-
     print(f"TASK ({name}) : running git check task")
 
     if name not in repo_data:
