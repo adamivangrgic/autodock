@@ -77,7 +77,7 @@ async def api_repo_clone(payload: dict):
 
     name = payload['name']
     repo = config_data['repos'][name]
-    url = repo['url']
+    url = repo['repo_url']
     branch = repo['branch']
     
     git_clone(name, url, branch)
@@ -94,7 +94,7 @@ async def api_repo_check(payload: dict):
 
     name = payload['name']
     repo = config_data['repos'][name]
-    url = repo['url']
+    url = repo['repo_url']
     branch = repo['branch']
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
