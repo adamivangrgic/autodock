@@ -53,7 +53,7 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 @app.on_event("startup")
 async def startup_event():
 
-    globals.config_data = globals.load_config_file(globals.CONFIG_FILE_PATH)
+    globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
         print(f"STARTUP: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
