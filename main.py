@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH
+from globals import REPO_DATA_PATH, REPO_DATA_FILE_PATH, CONFIG_FILE_PATH, HOST_ADDRESS
 from globals import repo_data, config_data
 from globals import read_yaml_file, read_json_file, write_json_file
 
@@ -146,7 +146,7 @@ async def dash_index(request: Request):
         content[name]['inspect'] = inspect_output
 
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"content": content}
+        request=request, name="index.html", context={"content": content, "HOST_ADDRESS": HOST_ADDRESS}
     )
 
 # # Define an endpoint with path parameter

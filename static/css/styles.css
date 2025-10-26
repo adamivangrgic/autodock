@@ -22,7 +22,7 @@ body {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
 
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .button-row {
@@ -38,5 +38,5 @@ body {
 }
 
 .repo {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }

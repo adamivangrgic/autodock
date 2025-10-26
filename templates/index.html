@@ -14,6 +14,11 @@
                 <a>{{ name }}</a>
                 <a>{{ repo['inspect'][0]['State']['Status'] }}</a>
                 <a>{{ repo['inspect'][0]['Created'] }}</a>
+                <div>
+                {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
+                    <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}">{{ outer[0]['HostPort'] }} : {{ inner }}</a>
+                {% endfor %}
+                </div>
             </div>
             <div class="button-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check repo</button>
