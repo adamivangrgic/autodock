@@ -154,8 +154,12 @@ async def dash_index(request: Request):
     
     for name, repo in globals.config_data['repos'].items():
         cmd = f"docker inspect {name}"
-        raw_output = check_output(cmd)
-        inspect_output = json.loads(raw_output)
+
+        try:
+            raw_output = check_output(cmd)
+            inspect_output = json.loads(raw_output)
+        except:
+            inspect_output = None
 
         content[name]['inspect'] = inspect_output
 
