@@ -6,7 +6,6 @@ function apiCall(url, context){
             "Content-type": "application/json; charset=UTF-8"
         }
     });
-
 }
 
 function humanizeDate(dateString) {
@@ -28,8 +27,9 @@ function humanizeDate(dateString) {
     }
 }
 
-// Apply to all elements with data-date attribute
-document.querySelectorAll('[data-date]').forEach(element => {
-    const humanized = humanizeDate(element.getAttribute('data-date'));
-    element.textContent = humanized;
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-date]').forEach(element => {
+        const humanized = humanizeDate(element.getAttribute('data-date'));
+        element.textContent = humanized;
+    })
 });
