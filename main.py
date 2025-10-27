@@ -25,6 +25,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 def load_config_file(file_path: str) -> Dict[str, Any]:
     file = globals.read_yaml_file(file_path)
+    print(file)
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
@@ -45,15 +46,17 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
             print("CONFIG LOAD: misconfigured")
             return {}
 
-    # if 'host_address' not in file:
-    #     file['host_address'] = 'localhost'
+    if 'host_address' not in file:
+        file['host_address'] = 'localhost'
+
+    print(file)
 
     return file
 
 @app.on_event("startup")
 async def startup_event():
 
-    globals.config_data = globals.read_yaml_file(globals.CONFIG_FILE_PATH) ##
+    globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
         print(f"STARTUP: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
@@ -163,7 +166,7 @@ async def dash_index(request: Request):
         request=request, name="index.html", 
         context={
             "content": content, 
-            "HOST_ADDRESS": 'localhost' #globals.repo_data['host_address']
+            "HOST_ADDRESS": globals.repo_data['host_address']
             }
     )
 
