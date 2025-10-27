@@ -25,7 +25,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 def load_config_file(file_path: str) -> Dict[str, Any]:
     file = globals.read_yaml_file(file_path)
-    print(file)
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
@@ -48,8 +47,6 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 
     if 'host_address' not in file:
         file['host_address'] = 'localhost'
-
-    print(file)
 
     return file
 
@@ -166,7 +163,7 @@ async def dash_index(request: Request):
         request=request, name="index.html", 
         context={
             "content": content, 
-            "HOST_ADDRESS": globals.repo_data['host_address']
+            "HOST_ADDRESS": globals.config_data['host_address']
             }
     )
 
