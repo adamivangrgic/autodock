@@ -37,17 +37,12 @@ body {
     border-color: rgba(0, 0, 0, 0.1);
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 600px) {
     body {
         grid-template-areas: 
             'header header'
             'menu menu'
             'content content';
         grid-template-columns: auto auto;
-    }
-    
-    .list-row {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
     }
 }
