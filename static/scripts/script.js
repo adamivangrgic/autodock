@@ -8,3 +8,28 @@ function apiCall(url, context){
     });
 
 }
+
+function humanizeDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = date - now;
+    const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+    const diffInHours = Math.round(diffInMs / (1000 * 60 * 60));
+    const diffInMinutes = Math.round(diffInMs / (1000 * 60));
+
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+    if (Math.abs(diffInMinutes) < 60) {
+        return rtf.format(diffInMinutes, 'minute');
+    } else if (Math.abs(diffInHours) < 24) {
+        return rtf.format(diffInHours, 'hour');
+    } else {
+        return rtf.format(diffInDays, 'day');
+    }
+}
+
+// Apply to all elements with data-date attribute
+document.querySelectorAll('[data-date]').forEach(element => {
+    const humanized = humanizeDate(element.getAttribute('data-date'));
+    element.textContent = humanized;
+});
