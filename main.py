@@ -45,8 +45,8 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
             print("CONFIG LOAD: misconfigured")
             return {}
 
-    if 'host_address' not in file:
-        file['host_address'] = 'localhost'
+    # if 'host_address' not in file:
+    #     file['host_address'] = 'localhost'
 
     return file
 
@@ -163,7 +163,7 @@ async def dash_index(request: Request):
         request=request, name="index.html", 
         context={
             "content": content, 
-            "HOST_ADDRESS": globals.repo_data['host_address']
+            "HOST_ADDRESS": 'localhost' #globals.repo_data['host_address']
             }
     )
 
