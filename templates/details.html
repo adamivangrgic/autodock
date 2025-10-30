@@ -12,7 +12,7 @@
             <h1>{{ name }}</h1>
         </div>
         
-        <div class="main-content padded">
+        <div class="card">
             <div class="button-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
                 <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
@@ -50,7 +50,7 @@
         </div>
 
         {% if repo['inspect'] %}
-        <div class="main-content padded">
+        <div class="card">
             <div class="button-row">
                 <button onclick="">Start</button>
                 <button onclick="">Stop</button>
