@@ -27,8 +27,8 @@
                     <div class="repo-name" data-label="Name">{{ name }}</div>
                     {% if repo['inspect'] %}
                         {% set status = repo['inspect'][0]['State']['Status'] %}
-                        <div class="status" data-label="Status">
-                            <div class="status-{{ status }}">{{ status }}</div>
+                        <div class="status-container" data-label="Status">
+                            <div class="status status-{{ status }}">{{ status }}</div>
                         </div>
                         <div data-date="{{ repo['inspect'][0]['Created'] }}" data-label="Created"></div>
                         <div class="ports" data-label="Ports">

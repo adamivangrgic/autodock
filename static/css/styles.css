@@ -5,13 +5,14 @@
     --success: #10b981;
     --warning: #f59e0b;
     --error: #ef4444;
-    --background: #f8fafc;
+    --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     --surface: #ffffff;
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --border: #e2e8f0;
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --header-text: var(--text-primary);
 }
 
 * {
@@ -22,7 +23,7 @@
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: var(--background);
     min-height: 100vh;
     color: var(--text-primary);
     line-height: 1.6;
@@ -41,15 +42,14 @@ body {
 }
 
 .header h1 {
-    color: white;
-    font-size: 2rem;
+    color: var(--header-text);
+    font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    text-shadow: none;
 }
 
 .header p {
-    color: rgba(255,255,255,0.8);
+    color: var(--text-secondary);
     font-size: 1rem;
     font-weight: 400;
 }
@@ -60,10 +60,9 @@ body {
     border-radius: 1rem;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
-    backdrop-filter: blur(10px);
 }
 
-/* List Header */
+/* Rest of your existing CSS remains the same */
 .list-header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
