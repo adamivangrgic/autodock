@@ -22,7 +22,7 @@
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     color: var(--text-primary);
     line-height: 1.6;
@@ -42,7 +42,7 @@ body {
 
 .header h1 {
     color: white;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
     text-shadow: none;
@@ -116,6 +116,8 @@ body {
     font-weight: 600;
     text-align: center;
     text-transform: capitalize;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .status-running {
@@ -131,6 +133,28 @@ body {
 .status-not-available {
     background: #f3f4f6;
     color: #6b7280;
+}
+
+/* Status Indicator */
+.status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-running::before {
+    background: var(--success);
+}
+
+.status-exited::before {
+    background: var(--error);
+}
+
+.status-not-available::before {
+    background: var(--secondary);
 }
 
 .ports {
@@ -255,6 +279,18 @@ body {
     
     .header h1 {
         font-size: 2rem;
+    }
+
+    .status-container {
+        justify-content: space-between;
+    }
+    
+    .status-container::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 0.8rem;
     }
 }
 
