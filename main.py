@@ -188,6 +188,7 @@ async def dash_details(name, request: Request):
     return templates.TemplateResponse(
         request=request, name="details.html", 
         context={
+            "name": name,
             "repo": content, 
             "HOST_ADDRESS": globals.config_data['host_address']
             }

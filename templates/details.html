@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>{{ repo['name'] }} - autodock</title>
+    <title>{{ name }} - autodock</title>
     <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 </head>
@@ -9,10 +9,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>{{ repo['name'] }}</h1>
+            <h1>{{ name }}</h1>
         </div>
         
-        <div class="main-repo">
+        <div class="main-content">
             <div class="button-row">
                 <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
                 <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
@@ -62,15 +62,15 @@
             <div class="table">
                 <div class="table-row">
                     <div class="table-label">Id</div>
-                    <div class="table-value">repo['inspect'][0]['Id']</div>
+                    <div class="table-value">{{ repo['inspect'][0]['Id'] }}</div>
                 </div>
                 <div class="table-row">
                     <div class="table-label">Created</div>
-                    <div class="table-value">repo['inspect'][0]['Created']</div>
+                    <div class="table-value">{{ repo['inspect'][0]['Created'] }}</div>
                 </div>
                 <div class="table-row">
                     <div class="table-label">Started At</div>
-                    <div class="table-value">repo['inspect'][0]['State']['StartedAt']</div>
+                    <div class="table-value">{{ repo['inspect'][0]['State']['StartedAt'] }}</div>
                 </div>
                 {% set status = repo['inspect'][0]['State']['Status'] %}
                 <div class="table-row">
