@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Dashboard - autodock</title>
+    <title>Dashboard</title>
     <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 </head>
@@ -9,11 +9,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>autodock</h1>
-            <!-- <p>Automatic conainer build and deployment</p> -->
+            <h1>Container Dashboard</h1>
+            <p>Automated container build and deploy agent</p>
         </div>
         
-        <div class="main-content">
+        <div class="content-section padded">
             <div class="list-header">
                 <div>Name</div>
                 <div>Status</div>
@@ -22,30 +22,51 @@
             </div>
             
             {% for name, repo in content.items() %}
-            <div class="repo">
-                <div class="list-row">
-                    <a href="/details/{{ name }}" class="repo-name" data-label="Name">{{ name }}</a>
-                    {% if repo['inspect'] %}
-                        {% set status = repo['inspect'][0]['State']['Status'] %}
-                        <div class="status-container" data-label="Status">
-                            <div class="status status-{{ status }}">{{ status }}</div>
-                        </div>
-                        <div data-date="{{ repo['inspect'][0]['Created'] }}" data-label="Created"></div>
-                        <div class="ports" data-label="Ports">
-                        {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
-                            <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
-                        {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="status status-not-available" data-label="Status">not available</div>
-                    {% endif %}
+            <div class="data-table card">
+                <div class="data-row">
+                    <div class="data-label">Name</div>
+                    <div class="data-value repo-name">{{ name }}</div>
                 </div>
-                <div class="button-row">
-                    <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                    <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                    <button onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                    <button onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                    <button onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+                <div class="data-row">
+                    <div class="data-label">Status</div>
+                    <div class="data-value">
+                        {% if repo['inspect'] %}
+                            {% set status = repo['inspect'][0]['State']['Status'] %}
+                            <div class="status status-{{ status }}">{{ status }}</div>
+                        {% else %}
+                            <div class="status status-not-available">not available</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">Created</div>
+                    <div class="data-value">
+                        {% if repo['inspect'] %}
+                            <span data-date="{{ repo['inspect'][0]['Created'] }}"></span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">Ports</div>
+                    <div class="data-value">
+                        {% if repo['inspect'] %}
+                            {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
+                                <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                            {% endfor %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="button-group compact">
+                    <button class="btn btn-secondary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                    <button class="btn btn-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                    <button class="btn btn-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                    <button class="btn btn-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                    <button class="btn btn-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
                 </div>
             </div>
             {% endfor %}
@@ -53,6 +74,14 @@
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[data-date]').forEach(element => {
+                const humanized = humanizeDate(element.getAttribute('data-date'));
+                element.textContent = humanized;
+            })
+        });
+    </script>
 </body>
 
 </html>
