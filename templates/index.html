@@ -24,7 +24,7 @@
             {% for name, repo in content.items() %}
             <div class="repo">
                 <div class="list-row">
-                    <div class="repo-name" data-label="Name">{{ name }}</div>
+                    <a href="/details/{{ name }}" class="repo-name" data-label="Name">{{ name }}</a>
                     {% if repo['inspect'] %}
                         {% set status = repo['inspect'][0]['State']['Status'] %}
                         <div class="status-container" data-label="Status">
@@ -53,14 +53,6 @@
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('[data-date]').forEach(element => {
-                const humanized = humanizeDate(element.getAttribute('data-date'));
-                element.textContent = humanized;
-            })
-        });
-    </script>
 </body>
 
 </html>

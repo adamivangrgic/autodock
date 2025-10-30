@@ -26,3 +26,12 @@ function humanizeDate(dateString) {
         return rtf.format(diffInDays, 'day');
     }
 }
+
+// 
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-date]').forEach(element => {
+        const humanized = humanizeDate(element.getAttribute('data-date'));
+        element.textContent = humanized;
+    })
+});

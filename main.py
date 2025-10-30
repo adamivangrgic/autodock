@@ -171,6 +171,28 @@ async def dash_index(request: Request):
             }
     )
 
+@app.get("/details/{name}", response_class=HTMLResponse)
+async def dash_details(name, request: Request):
+    content = globals.config_data['repos'][name]
+    
+    cmd = f"docker inspect {name}"
+
+    try:
+        raw_output = check_output(cmd)
+        inspect_output = json.loads(raw_output)
+    except:
+        inspect_output = None
+
+    content[name]['inspect'] = inspect_output
+
+    return templates.TemplateResponse(
+        request=request, name="details.html", 
+        context={
+            "repo": content, 
+            "HOST_ADDRESS": globals.config_data['host_address']
+            }
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8080)

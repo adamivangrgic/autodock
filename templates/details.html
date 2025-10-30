@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <title>{{ repo['name'] }} - autodock</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ repo['name'] }}</h1>
+        </div>
+        
+        <div class="main-repo">
+            <div class="button-row">
+                <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                <button onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                <button onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                <button onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+            </div>
+
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Repository URL</div>
+                    <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Branch</div>
+                    <input type="text" id="branch" name="branch" value="{{ repo['branch'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Check interval (sec, 0 - never)</div>
+                    <input type="text" id="interval" name="interval" value="{{ repo['interval'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Build command</div>
+                    <input type="text" id="buildcmd" name="buildcmd" value="{{ repo['build_command'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Deploy command</div>
+                    <input type="text" id="deploycmd" name="deploycmd" value="{{ repo['deploy_command'] }}"> 
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button onclick="">Save</button>
+            </div>
+        </div>
+
+        {% if repo['inspect'] %}
+        <div class="main-repo">
+            <div class="button-row">
+                <button onclick="">Start</button>
+                <button onclick="">Stop</button>
+                <button onclick="">Kill</button>
+                <button onclick="">Restart</button>
+                <button onclick="">Pause</button>
+            </div>
+            
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Id</div>
+                    <div class="table-value">repo['inspect'][0]['Id']</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Created</div>
+                    <div class="table-value">repo['inspect'][0]['Created']</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Started At</div>
+                    <div class="table-value">repo['inspect'][0]['State']['StartedAt']</div>
+                </div>
+                {% set status = repo['inspect'][0]['State']['Status'] %}
+                <div class="table-row">
+                    <div class="table-label">Status</div>
+                    <div class="table-value">
+                        <div class="status status-{{ status }}">{{ status }}</div>
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Ports</div>
+                    <div class="table-value">
+                    {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
+                        <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>
