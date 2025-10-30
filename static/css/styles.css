@@ -1,48 +1,311 @@
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.1rem;
+}
+
+/* Main Content Card */
+.main-content {
+    background: var(--surface);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* List Header */
+.list-header {
     display: grid;
-    grid-template-areas: 
-        'header header'
-        'menu content';
-    grid-template-columns: 15rem auto;
-    
-    font-family: Arial, Helvetica, sans-serif;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Repo Item Styles */
+.repo {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.repo:last-child {
+    border-bottom: none;
+}
+
+.repo:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
 .list-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-
-    margin-bottom: 15px;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    align-items: center;
 }
 
+.repo-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.status-running {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-exited {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-not-available {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.ports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.port-link {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.port-link:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Button Row */
 .button-row {
-    display: inline-block;
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 2rem 1.5rem 2rem;
+    flex-wrap: wrap;
 }
 
-.container {
-    grid-area: content;
+.button-row button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.menu-bar {
-    grid-area: menu;
+/* Button Colors */
+.button-row button:nth-child(1) { /* Check */
+    background: #dbeafe;
+    color: var(--primary);
+}
+
+.button-row button:nth-child(2) { /* Clone */
+    background: #f0f9ff;
+    color: #0369a1;
+}
+
+.button-row button:nth-child(3) { /* Pull */
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.button-row button:nth-child(4) { /* Build */
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.button-row button:nth-child(5) { /* Deploy */
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.button-row button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.button-row button:active {
+    transform: translateY(0);
+}
+
+/* Date Styling */
+[data-date] {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media only screen and (max-width: 900px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .list-header,
+    .list-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .list-header {
+        display: none;
+    }
+    
+    .list-row > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+    }
+    
+    .list-row > div::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    
+    .button-row {
+        justify-content: center;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .button-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .button-row button {
+        width: 100%;
+    }
+    
+    .ports {
+        justify-content: center;
+    }
+}
+
+/* Loading Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .repo {
-    margin-bottom: 15px;
-    padding: 15px;
-
-    border-radius: 0;
-    border-style: none none solid none;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease forwards;
 }
 
-@media only screen and (max-width: 900px) {
-    body {
-        grid-template-areas: 
-            'header header'
-            'menu menu'
-            'content content';
-        grid-template-columns: auto auto;
-    }
+/* Status Indicator */
+.status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-running::before {
+    background: var(--success);
+}
+
+.status-exited::before {
+    background: var(--error);
+}
+
+.status-not-available::before {
+    background: var(--secondary);
 }
