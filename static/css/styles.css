@@ -60,9 +60,12 @@ body {
     border-radius: 1rem;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
-    padding: 2rem;
     transition: all 0.3s ease;
     margin-bottom: 2rem;
+}
+
+.padded {
+    padding: 2rem;
 }
 
 /* Rest of your existing CSS remains the same */
