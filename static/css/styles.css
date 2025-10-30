@@ -30,8 +30,6 @@ body {
 }
 
 .container {
-    display: flex;
-    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
@@ -58,14 +56,13 @@ body {
 
 /* Main Content Card */
 .main-content {
-    display: flex;
-    gap: 1.5rem;
     background: var(--surface);
     border-radius: 1rem;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
     padding: 2rem;
     transition: all 0.3s ease;
+    margin-bottom: 2rem;
 }
 
 /* Rest of your existing CSS remains the same */
