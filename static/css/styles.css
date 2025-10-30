@@ -60,12 +60,6 @@ body {
     border-radius: 1rem;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
-    transition: all 0.3s ease;
-    margin-bottom: 2rem;
-}
-
-.padded {
-    padding: 2rem;
 }
 
 /* Rest of your existing CSS remains the same */
@@ -73,6 +67,7 @@ body {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 1rem;
+    padding: 1.5rem 2rem;
     background: var(--primary);
     color: white;
     font-weight: 600;
@@ -85,6 +80,7 @@ body {
 .repo {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
     position: relative;
 }
 
@@ -186,6 +182,7 @@ body {
 .button-row {
     display: flex;
     gap: 0.75rem;
+    padding: 0 2rem 1.5rem 2rem;
     flex-wrap: wrap;
 }
 
