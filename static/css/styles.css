@@ -139,11 +139,26 @@ body {
 }
 
 /* Button variants */
-.btn-primary { background: var(--primary); color: white; }
-.btn-secondary { background: var(--secondary); color: white; }
-.btn-success { background: var(--success); color: white; }
-.btn-warning { background: var(--warning); color: white; }
-.btn-error { background: var(--error); color: white; }
+.btn-primary { 
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+    color: var(--primary);
+}
+.btn-secondary { 
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
+    color: var(--primary);
+ }
+.btn-success { 
+    background: color-mix(in srgb, var(--success) 10%, transparent);
+    color: var(--primary);
+ }
+.btn-warning { 
+    background: color-mix(in srgb, var(--warning) 10%, transparent);
+    color: var(--primary);
+ }
+.btn-error { 
+    background: color-mix(in srgb, var(--error) 10%, transparent);
+    color: var(--primary);
+ }
 
 .btn-outline { 
     background: transparent; 
@@ -300,7 +315,7 @@ textarea.form-control {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border-radius: var(--border-radius);
 }
 
 .data-table.card {
@@ -370,7 +385,6 @@ textarea.form-control {
         grid-column: 1 / -1;
         margin-top: var(--space-md);
         padding-top: var(--space-md);
-        border-top: 1px solid var(--border);
     }
 }
 
