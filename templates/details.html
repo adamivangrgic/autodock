@@ -12,78 +12,76 @@
             <h1>{{ name }}</h1>
         </div>
         
-        <!-- Configuration Section -->
-        <div class="content-section padded">
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                <button class="btn btn-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                <button class="btn btn-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                <button class="btn btn-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                <button class="btn btn-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+        <div class="main-content padded">
+            <div class="button-row">
+                <button onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                <button onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                <button onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                <button onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                <button onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
             </div>
 
-            <div class="form-table">
-                <div class="form-row">
-                    <label class="form-label">Repository URL</label>
-                    <input type="text" class="form-control" id="repourl" name="repourl" value="{{ repo['repo_url'] }}">
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Repository URL</div>
+                    <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
                 </div>
-                <div class="form-row">
-                    <label class="form-label">Branch</label>
-                    <input type="text" class="form-control" id="branch" name="branch" value="{{ repo['branch'] }}">
+                <div class="table-row">
+                    <div class="table-label">Branch</div>
+                    <input type="text" id="branch" name="branch" value="{{ repo['branch'] }}"> 
                 </div>
-                <div class="form-row">
-                    <label class="form-label">Check interval (sec, 0 - never)</label>
-                    <input type="text" class="form-control" id="interval" name="interval" value="{{ repo['interval'] }}">
+                <div class="table-row">
+                    <div class="table-label">Check interval (sec, 0 - never)</div>
+                    <input type="text" id="interval" name="interval" value="{{ repo['interval'] }}"> 
                 </div>
-                <div class="form-row">
-                    <label class="form-label">Build command</label>
-                    <textarea class="form-control" id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
+                <div class="table-row">
+                    <div class="table-label">Build command</div>
+                    <textarea id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
                 </div>
-                <div class="form-row">
-                    <label class="form-label">Deploy command</label>
-                    <textarea class="form-control" id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
+                <div class="table-row">
+                    <div class="table-label">Deploy command</div>
+                    <textarea id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
                 </div>
             </div>
 
-            <div class="button-group justify-end compact">
-                <button class="btn btn-primary">Save</button>
+            <div class="button-row">
+                <button onclick="">Save</button>
             </div>
         </div>
 
         {% if repo['inspect'] %}
-        <!-- Container Info Section -->
-        <div class="content-section padded">
-            <div class="button-group">
-                <button class="btn btn-success">Start</button>
-                <button class="btn btn-secondary">Stop</button>
-                <button class="btn btn-error">Kill</button>
-                <button class="btn btn-warning">Restart</button>
-                <button class="btn btn-outline">Pause</button>
+        <div class="main-content padded">
+            <div class="button-row">
+                <button onclick="">Start</button>
+                <button onclick="">Stop</button>
+                <button onclick="">Kill</button>
+                <button onclick="">Restart</button>
+                <button onclick="">Pause</button>
             </div>
             
-            <div class="data-table">
-                <div class="data-row">
-                    <div class="data-label">Id</div>
-                    <div class="data-value">{{ repo['inspect'][0]['Id'] }}</div>
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Id</div>
+                    <div class="table-value">{{ repo['inspect'][0]['Id'] }}</div>
                 </div>
-                <div class="data-row">
-                    <div class="data-label">Created</div>
-                    <div class="data-value">{{ repo['inspect'][0]['Created'] }}</div>
+                <div class="table-row">
+                    <div class="table-label">Created</div>
+                    <div class="table-value">{{ repo['inspect'][0]['Created'] }}</div>
                 </div>
-                <div class="data-row">
-                    <div class="data-label">Started At</div>
-                    <div class="data-value">{{ repo['inspect'][0]['State']['StartedAt'] }}</div>
+                <div class="table-row">
+                    <div class="table-label">Started At</div>
+                    <div class="table-value">{{ repo['inspect'][0]['State']['StartedAt'] }}</div>
                 </div>
                 {% set status = repo['inspect'][0]['State']['Status'] %}
-                <div class="data-row">
-                    <div class="data-label">Status</div>
-                    <div class="data-value">
+                <div class="table-row">
+                    <div class="table-label">Status</div>
+                    <div class="table-value">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
                 </div>
-                <div class="data-row">
-                    <div class="data-label">Ports</div>
-                    <div class="data-value">
+                <div class="table-row">
+                    <div class="table-label">Ports</div>
+                    <div class="table-value">
                     {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
                         <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endfor %}
@@ -92,6 +90,7 @@
             </div>
         </div>
         {% endif %}
+        
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
