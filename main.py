@@ -183,7 +183,7 @@ async def dash_details(name, request: Request):
     except:
         inspect_output = None
 
-    content[name]['inspect'] = inspect_output
+    content['inspect'] = inspect_output
 
     return templates.TemplateResponse(
         request=request, name="details.html", 
