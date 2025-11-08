@@ -41,9 +41,16 @@ body {
     margin-bottom: 2rem;
 }
 
-.header h1 {
+h1 {
     color: var(--header-text);
     font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+h1 {
+    color: var(--header-text);
+    font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
