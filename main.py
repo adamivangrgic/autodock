@@ -260,6 +260,7 @@ async def dash_details(name, request: Request):
         raw_output = check_output(cmd)
         inspect_output = json.loads(raw_output)
     except:
+        raw_output = None
         inspect_output = None
 
     content['inspect'] = inspect_output
@@ -270,7 +271,7 @@ async def dash_details(name, request: Request):
             "name": name,
             "repo": content, 
             "HOST_ADDRESS": globals.config_data['host_address'],
-            "inspect_formatted": json.dumps(inspect_output, indent=2)
+            "raw_inspect": raw_output
             }
     )
 
