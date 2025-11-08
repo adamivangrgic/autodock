@@ -230,7 +230,7 @@ async def dash_index(request: Request):
     content = globals.config_data['repos']
     
     for name, repo in globals.config_data['repos'].items():
-        cmd = f"docker inspect {name}"
+        cmd = f"docker inspect --type=container {name}"
 
         try:
             raw_output = check_output(cmd)
@@ -252,7 +252,7 @@ async def dash_index(request: Request):
 async def dash_details(name, request: Request):
     content = globals.config_data['repos'][name]
     
-    cmd = f"docker inspect {name}"
+    cmd = f"docker inspect --type=container {name}"
 
     try:
         raw_output = check_output(cmd)
