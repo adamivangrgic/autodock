@@ -217,6 +217,16 @@ button, .button {
     text-decoration: none;
 }
 
+.right-align {
+     margin-left: auto
+}
+
+@media (max-width: 767px) {
+    .right-align {
+        margin-left: 0
+    }
+}
+
 /* Button Colors */
 
 .button-primary {
