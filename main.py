@@ -17,6 +17,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
+import asyncio
+
 
 app = FastAPI()
 
@@ -107,13 +109,29 @@ async def api_repo_clone(payload: dict):
     url = repo['repo_url']
     branch = repo['branch']
     
-    git_clone(name, url, branch)
+    #git_clone(name, url, branch)
+
+    output = await asyncio.to_thread(
+        git_clone,
+        name,
+        url,
+        branch
+    )
+
+    return output
 
 @app.post("/api/repo/pull/")
 async def api_repo_pull(payload: dict):
     name = payload['name']
     
-    git_pull(name)
+    #git_pull(name)
+
+    output = await asyncio.to_thread(
+        git_pull,
+        name
+    )
+
+    return output
 
 @app.post("/api/repo/check/")
 async def api_repo_check(payload: dict):
@@ -124,7 +142,18 @@ async def api_repo_check(payload: dict):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
     
-    git_check(name, url, branch, build_command, deploy_command)
+    #git_check(name, url, branch, build_command, deploy_command)
+
+    output = await asyncio.to_thread(
+        git_check,
+        name,
+        url,
+        branch,
+        build_command,
+        deploy_command
+    )
+
+    return output
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):
@@ -134,7 +163,15 @@ async def api_repo_build(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    run_command(build_command, repo_dir)
+    #run_command(build_command, repo_dir)
+
+    output = await asyncio.to_thread(
+        run_command,
+        build_command,
+        repo_dir
+    )
+
+    return output
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
@@ -144,12 +181,20 @@ async def api_repo_deploy(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    run_command(deploy_command, repo_dir)
+    #run_command(deploy_command, repo_dir)
+
+    output = await asyncio.to_thread(
+        run_command,
+        deploy_command,
+        repo_dir
+    )
+
+    return output
 
 # container
 
 @app.post("/api/container/{action}/")
-async def api_container_start(action, payload: dict):
+async def api_container_action(action, payload: dict):
     name = payload['name']
 
     allowed_actions = [
@@ -164,7 +209,15 @@ async def api_container_start(action, payload: dict):
         return None
 
     cmd = f"docker {action} {name}"
-    run_command(cmd)
+    
+    #run_command(cmd)
+
+    output = await asyncio.to_thread(
+        run_command,
+        cmd
+    )
+
+    return output
 
 ## dashboard
 
