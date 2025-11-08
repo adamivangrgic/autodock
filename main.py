@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import globals
+from globals import log, filter_log
 
 from git_functions import git_check, git_clone, git_pull
 
@@ -30,7 +31,7 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
-            print(f"CONFIG LOAD: repo_url not found in {name}")
+            log(f"CONFIG LOAD: repo_url not found in {name}")
             return {}
 
         if 'branch' not in repo:
@@ -40,11 +41,11 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
             file['repos']['interval'] = 0
 
         if 'build_command' not in repo:
-            print(f"CONFIG LOAD: build_command not found in {name}")
+            log(f"CONFIG LOAD: build_command not found in {name}")
             return {}
 
         if 'deploy_command' not in repo:
-            print(f"CONFIG LOAD: deploy_command not found in {name}")
+            log(f"CONFIG LOAD: deploy_command not found in {name}")
             return {}
 
     if 'host_address' not in file:
@@ -56,18 +57,18 @@ def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
-        print(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
+        log(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
         return None
 
     if len(globals.config_data['repos']) == 0:
         # stop startup if no repos in json
-        print(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
+        log(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
         return None
 
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
 
     if not globals.repo_data:
-        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
+        log(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
         globals.repo_data = {}
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
@@ -91,10 +92,10 @@ def configuration():
                 next_run_time=datetime.now()
             )
 
-            print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
+            log(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
     scheduler.start()
-    print("CONFIGURATION: scheduler started")
+    log("CONFIGURATION: scheduler started")
 
 @app.on_event("startup")
 async def startup_event():
@@ -111,8 +112,6 @@ async def api_repo_clone(payload: dict):
     url = repo['repo_url']
     branch = repo['branch']
     
-    #git_clone(name, url, branch)
-
     output = await asyncio.to_thread(
         git_clone,
         name,
@@ -126,8 +125,6 @@ async def api_repo_clone(payload: dict):
 async def api_repo_pull(payload: dict):
     name = payload['name']
     
-    #git_pull(name)
-
     output = await asyncio.to_thread(
         git_pull,
         name
@@ -144,8 +141,6 @@ async def api_repo_check(payload: dict):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
     
-    #git_check(name, url, branch, build_command, deploy_command)
-
     output = await asyncio.to_thread(
         git_check,
         name,
@@ -165,8 +160,6 @@ async def api_repo_build(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    #run_command(build_command, repo_dir)
-
     output = await asyncio.to_thread(
         run_command,
         build_command,
@@ -183,13 +176,18 @@ async def api_repo_deploy(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    #run_command(deploy_command, repo_dir)
-
     output = await asyncio.to_thread(
         run_command,
         deploy_command,
         repo_dir
     )
+
+    return output
+
+@app.post("/api/repo/get_logs/")
+async def api_repo_get_logs(payload: dict):
+    name = payload['name']
+    output = filter_log(name)
 
     return output
 
@@ -214,14 +212,10 @@ async def api_container_action(action, payload: dict):
 
     cmd = f"docker {action} {container_id}"
     
-    #run_command(cmd)
-
     output = await asyncio.to_thread(
         run_command,
         cmd
     )
-
-    return output
 
 ## dashboard
 

@@ -8,7 +8,22 @@ REPO_DATA_FILE_PATH = "/repo_data/repo_data.json"
     
 repo_data = {}
 config_data = {}
-    
+
+##
+
+log_output = []
+
+def log(log):
+    print(log)
+
+    log_output.append(log)
+
+def filter_log(keyword):
+    log_output.append(log)
+
+    return "\n".join([k for k in log_output if keyword in k])
+
+##
 
 def read_yaml_file(file_path: str) -> Dict[str, Any]:
     try:

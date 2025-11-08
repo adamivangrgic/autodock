@@ -400,3 +400,18 @@ input, textarea {
     border-width: 1px;
     padding: 8px;
 }
+
+/* terminal */
+
+.black-box {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    padding: 15px;
+    border-radius: 5px;
+    height: 400px;
+    overflow-y: auto;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}

@@ -49,6 +49,12 @@
             </div>
         </div>
 
+        
+        <div class="card">
+            <h2>Log output</h2>
+            <div class="black-box" id="log-output"></div>
+        </div>
+
         {% if repo['inspect'] %}
         <div class="card">
             {% set id = repo['inspect'][0]['Id'] %}
@@ -105,6 +111,11 @@
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+    <script>
+        const interval = setInterval(function() {
+            fill_log_output('/api/repo/get_logs', {'name': '{{ name }}'})
+        }, 2000);
+    </script>
 </body>
 
 </html>
