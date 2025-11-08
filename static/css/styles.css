@@ -244,7 +244,7 @@ button, .button {
     color: #dc2626;
 }
 
-.button:hover {
+.button:hover, button:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
