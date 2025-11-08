@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <title>Edit {{ name }} configuration - autodock</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Edit {{ name }} configuration</h1>
+        </div>
+        
+        <div class="card">
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Repository URL</div>
+                    <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Branch</div>
+                    <input type="text" id="branch" name="branch" value="{{ repo['branch'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Check interval (sec, 0 - never)</div>
+                    <input type="text" id="interval" name="interval" value="{{ repo['interval'] }}"> 
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Build command</div>
+                    <textarea id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Deploy command</div>
+                    <textarea id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button onclick="">Save configuration</button>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>

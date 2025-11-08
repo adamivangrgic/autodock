@@ -30,7 +30,7 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
-            print("CONFIG LOAD: misconfigured")
+            print(f"CONFIG LOAD: repo_url not found in {name}")
             return {}
 
         if 'branch' not in repo:
@@ -40,11 +40,11 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
             file['repos']['interval'] = 0
 
         if 'build_command' not in repo:
-            print("CONFIG LOAD: misconfigured")
+            print(f"CONFIG LOAD: build_command not found in {name}")
             return {}
 
         if 'deploy_command' not in repo:
-            print("CONFIG LOAD: misconfigured")
+            print(f"CONFIG LOAD: deploy_command not found in {name}")
             return {}
 
     if 'host_address' not in file:
@@ -52,24 +52,22 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 
     return file
 
-@app.on_event("startup")
-async def startup_event():
-
+def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
-        print(f"STARTUP: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
+        print(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
         return None
 
     if len(globals.config_data['repos']) == 0:
         # stop startup if no repos in json
-        print(f"STARTUP: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
+        print(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
         return None
 
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
 
     if not globals.repo_data:
-        print(f"STARTUP: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
+        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
         globals.repo_data = {}
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
@@ -93,10 +91,14 @@ async def startup_event():
                 next_run_time=datetime.now()
             )
 
-            print(f"STARTUP: scheduler task configured for {name}, interval {repo['interval']} seconds")
+            print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
     scheduler.start()
-    print("STARTUP: scheduler started")
+    print("CONFIGURATION: scheduler started")
+
+@app.on_event("startup")
+async def startup_event():
+    configuration()
 
 ## api endpoints
 
@@ -268,6 +270,18 @@ async def dash_details(name, request: Request):
             "name": name,
             "repo": content, 
             "HOST_ADDRESS": globals.config_data['host_address']
+            }
+    )
+
+@app.get("/edit_config/{name}/", response_class=HTMLResponse)
+async def dash_edit_config(name, request: Request):
+    content = globals.config_data['repos'][name]
+
+    return templates.TemplateResponse(
+        request=request, name="edit_config.html", 
+        context={
+            "name": name,
+            "repo": content
             }
     )
 
