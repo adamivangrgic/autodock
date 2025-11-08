@@ -51,28 +51,31 @@
 
         {% if repo['inspect'] %}
         <div class="card">
+            {{ set id = repo['inspect'][0]['Id'] }}
+            {{ set created = repo['inspect'][0]['Created'] }}
+            {{ set started = repo['inspect'][0]['State']['StartedAt'] }}
+            {% set status = repo['inspect'][0]['State']['Status'] %}
             <div class="button-row">
-                <button onclick="apiCall('/api/container/start', {'name': '{{ name }}'})">Start</button>
-                <button onclick="apiCall('/api/container/stop', {'name': '{{ name }}'})">Stop</button>
-                <button onclick="apiCall('/api/container/kill', {'name': '{{ name }}'})">Kill</button>
-                <button onclick="apiCall('/api/container/restart', {'name': '{{ name }}'})">Restart</button>
-                <button onclick="apiCall('/api/container/pause', {'name': '{{ name }}'})">Pause</button>
+                <button onclick="apiCall('/api/container/start', {'name': '{{ id }}'})">Start</button>
+                <button onclick="apiCall('/api/container/stop', {'name': '{{ id }}'})">Stop</button>
+                <button onclick="apiCall('/api/container/kill', {'name': '{{ id }}'})">Kill</button>
+                <button onclick="apiCall('/api/container/restart', {'name': '{{ id }}'})">Restart</button>
+                <button onclick="apiCall('/api/container/pause', {'name': '{{ id }}'})">Pause</button>
             </div>
             
             <div class="table">
                 <div class="table-row">
                     <div class="table-label">Id</div>
-                    <div class="table-value">{{ repo['inspect'][0]['Id'] }}</div>
+                    <div class="table-value">{{ id }}</div>
                 </div>
                 <div class="table-row">
                     <div class="table-label">Created</div>
-                    <div class="table-value">{{ repo['inspect'][0]['Created'] }}</div>
+                    <div class="table-value">{{ created }}</div>
                 </div>
                 <div class="table-row">
                     <div class="table-label">Started At</div>
-                    <div class="table-value">{{ repo['inspect'][0]['State']['StartedAt'] }}</div>
+                    <div class="table-value">{{ started }}</div>
                 </div>
-                {% set status = repo['inspect'][0]['State']['Status'] %}
                 <div class="table-row">
                     <div class="table-label">Status</div>
                     <div class="table-value">
@@ -86,6 +89,10 @@
                         <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endfor %}
                     </div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Raw</div>
+                    <div class="table-value">{{ repo['inspect'] }}</div>
                 </div>
             </div>
         </div>
