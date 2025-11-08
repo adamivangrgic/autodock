@@ -19,8 +19,6 @@ def log(log):
     log_output.append(log)
 
 def filter_log(keyword):
-    log_output.append(log)
-
     return "\n".join([k for k in log_output if keyword in k])
 
 ##
