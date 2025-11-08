@@ -98,6 +98,8 @@ async def startup_event():
 
 ## api endpoints
 
+# repo
+
 @app.post("/api/repo/clone/")
 async def api_repo_clone(payload: dict):
     name = payload['name']
@@ -144,6 +146,26 @@ async def api_repo_deploy(payload: dict):
     
     run_command(deploy_command, repo_dir)
 
+# container
+
+@app.post("/api/container/{action}/")
+async def api_container_start(action, payload: dict):
+    name = payload['name']
+
+    allowed_actions = [
+        'start',
+        'stop',
+        'kill',
+        'restart',
+        'pause'
+    ]
+
+    if action not in allowed_actions:
+        return None
+
+    cmd = f"docker {action} {name}"
+    run_command(cmd)
+
 ## dashboard
 
 templates = Jinja2Templates(directory="templates")
@@ -171,7 +193,7 @@ async def dash_index(request: Request):
             }
     )
 
-@app.get("/details/{name}", response_class=HTMLResponse)
+@app.get("/details/{name}/", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
     content = globals.config_data['repos'][name]
     

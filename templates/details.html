@@ -52,11 +52,11 @@
         {% if repo['inspect'] %}
         <div class="card">
             <div class="button-row">
-                <button onclick="">Start</button>
-                <button onclick="">Stop</button>
-                <button onclick="">Kill</button>
-                <button onclick="">Restart</button>
-                <button onclick="">Pause</button>
+                <button onclick="apiCall('/api/container/start', {'name': '{{ name }}'})">Start</button>
+                <button onclick="apiCall('/api/container/stop', {'name': '{{ name }}'})">Stop</button>
+                <button onclick="apiCall('/api/container/kill', {'name': '{{ name }}'})">Kill</button>
+                <button onclick="apiCall('/api/container/restart', {'name': '{{ name }}'})">Restart</button>
+                <button onclick="apiCall('/api/container/pause', {'name': '{{ name }}'})">Pause</button>
             </div>
             
             <div class="table">
