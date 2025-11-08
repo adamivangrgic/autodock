@@ -212,6 +212,11 @@ button, .button {
 /* Button Colors */
 
 .button-primary {
+    background: #dbeafe;
+    color: var(--primary);
+}
+
+.button-secondary {
     background: #f0f9ff;
     color: #0369a1;
 }
