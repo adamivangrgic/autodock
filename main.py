@@ -195,20 +195,22 @@ async def api_repo_deploy(payload: dict):
 
 @app.post("/api/container/{action}/")
 async def api_container_action(action, payload: dict):
-    name = payload['name']
+    container_id = payload['id']
 
     allowed_actions = [
         'start',
         'stop',
         'kill',
         'restart',
-        'pause'
+        'pause',
+        'unpause',
+        'rm'
     ]
 
     if action not in allowed_actions:
         return None
 
-    cmd = f"docker {action} {name}"
+    cmd = f"docker {action} {container_id}"
     
     #run_command(cmd)
 
