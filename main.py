@@ -269,7 +269,8 @@ async def dash_details(name, request: Request):
         context={
             "name": name,
             "repo": content, 
-            "HOST_ADDRESS": globals.config_data['host_address']
+            "HOST_ADDRESS": globals.config_data['host_address'],
+            "inspect_formatted": json.dumps(inspect_output, indent=2)
             }
     )
 
