@@ -20,10 +20,13 @@ def log(message, keyword='null', print_message=True):
     if keyword not in log_output:
         log_output[keyword] = []
 
-    log_output[keyword].append(log)
+    log_output[keyword].append(message)
 
 def filter_log(keyword):
-    return "\n".join(log_output[keyword])
+    if keyword in log_output:
+        return "\n".join(log_output[keyword])
+    else:
+        return ''
 
 ##
 
