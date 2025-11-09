@@ -53,54 +53,31 @@ def check_output(cmd, cwd='/'):
     return result if result else None
     #print(f"SUBPROCESS: {result.stdout}")
 
-# async def poll_output(cmd, cwd='/', callback=None):
-#     print(f"SUBPROCESS: Polling output from: {cmd}")
-#     def execute_with_callback():
-#         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1)
-        
-#         try:
-#             while True:
-#                 if process.poll() is not None:
-#                     break
-                    
-#                 output = process.stdout.readline()
-#                 if output and callback:
-#                     callback(output.strip())
-#                 elif output:
-#                     print(output.strip())
-#                 else:
-#                     time.sleep(1)
-                    
-#         except KeyboardInterrupt:
-#             process.terminate()
-        
-#         remaining_output, _ = process.communicate()
-#         if remaining_output and callback:
-#             callback(remaining_output.strip())
-#         elif remaining_output:
-#             print(remaining_output.strip())
-
-#     await asyncio.to_thread(execute_with_callback)
-
-def poll_output(cmd, cwd='/'):
+async def poll_output(cmd, cwd='/', callback=None):
     print(f"SUBPROCESS: Polling output from: {cmd}")
+    def execute_with_callback():
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1)
+        
+        try:
+            while True:
+                if process.poll() is not None:
+                    break
+                    
+                output = process.stdout.readline()
+                if output and callback:
+                    callback(output.strip())
+                elif output:
+                    print(output.strip())
+                else:
+                    time.sleep(1)
+                    
+        except KeyboardInterrupt:
+            process.terminate()
+        
+        remaining_output, _ = process.communicate()
+        if remaining_output and callback:
+            callback(remaining_output.strip())
+        elif remaining_output:
+            print(remaining_output.strip())
 
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1)
-    
-    try:
-        while True:
-            if process.poll() is not None:
-                break
-                
-            output = process.stdout.readline()
-            if output:
-                yield output.strip()
-            else:
-                time.sleep(1)
-                
-    except KeyboardInterrupt:
-        process.terminate()
-    
-    remaining_output, _ = process.communicate()
-    if remaining_output:
-        yield remaining_output.strip()
+    await asyncio.to_thread(execute_with_callback)
