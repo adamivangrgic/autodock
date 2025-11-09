@@ -34,7 +34,7 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     
     new_hash = get_remote_hash(url, branch)
     
-    log(f"Hash: \n  old:'{globals.repo_data[name]['stages']['update']}'\n  new:'{new_hash}'", keyword=name)
+    log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
 
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
