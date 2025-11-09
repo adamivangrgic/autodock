@@ -133,24 +133,13 @@ async def api_repo_pull(payload: dict):
     return output
 
 @app.post("/api/repo/check/{force}/")
-async def api_repo_check(payload: dict, force=0):
+async def api_repo_check(force, payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
-    
-    # output = await asyncio.to_thread(
-    #     git_check,
-    #     name,
-    #     url,
-    #     branch,
-    #     build_command,
-    #     deploy_command
-    # )
-
-    # return output
 
     await git_check(name, url, branch, build_command, deploy_command, ignore_checks=force is 1)
 

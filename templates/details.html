@@ -16,7 +16,7 @@
             <h2>Repository configuration</h2>
 
             <div class="element-row">
-                <button class="button-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                <button class="button-primary" onclick="apiCall('/api/repo/check/0', {'name': '{{ name }}'})">Check</button>
                 <button class="button-primary" onclick="apiCall('/api/repo/check/1', {'name': '{{ name }}'})">Check (force)</button>
                 <button class="button-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
                 <button class="button-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
