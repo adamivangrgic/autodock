@@ -281,7 +281,7 @@ async def dash_config_save(name, request: Request):
             }
     )
 
-@app.get("/config/save/", response_class=RedirectResponse)
+@app.post("/config/save/", response_class=RedirectResponse)
 async def dash_config_save(
         name: Annotated[str, Form()],
         repourl: Annotated[str, Form()],
