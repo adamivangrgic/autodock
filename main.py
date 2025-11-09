@@ -53,7 +53,7 @@ def load_config_file(file_path):
 
     return file
 
-def write_and_reload_config_file(file_path=globals.CONFIG_FILE_PATH, data=globals.config_data['repos']):
+def write_and_reload_config_file(file_path=globals.CONFIG_FILE_PATH, data=globals.config_data):
     globals.write_yaml_file(file_path, data)
     configuration()
 
@@ -308,7 +308,7 @@ async def dash_config_save(
 async def dash_config_delete(name):
     globals.config_data['repos'].pop(name, None)
     write_and_reload_config_file()
-    
+
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
 ##
