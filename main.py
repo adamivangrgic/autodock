@@ -162,7 +162,6 @@ async def api_repo_build(payload: dict):
     
     def log_callback(line):
         log(line, keyword=name, print_message=False)
-        print(1)
 
     await poll_output(build_command, repo_dir, callback=log_callback)
 
