@@ -20,7 +20,7 @@ def git_pull(name: str):
     pull_repo(repo_dir)
 
 
-def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
+async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:

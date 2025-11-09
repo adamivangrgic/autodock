@@ -160,19 +160,10 @@ async def api_repo_build(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    # def log_callback(line):
-    #     log(line, keyword=name, print_message=False)
-
-    # await poll_output(build_command, repo_dir, callback=log_callback)
-
-    output = await asyncio.to_thread(
-        poll_output,
-        build_command,
-        repo_dir
-    )
-    
-    for line in output:
+    def log_callback(line):
         log(line, keyword=name, print_message=False)
+
+    await poll_output(build_command, repo_dir, callback=log_callback)
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
@@ -182,19 +173,10 @@ async def api_repo_deploy(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    # def log_callback(line):
-    #     log(line, keyword=name, print_message=False)
-
-    # await poll_output(deploy_command, repo_dir, callback=log_callback)
-    
-    output = await asyncio.to_thread(
-        poll_output,
-        deploy_command,
-        repo_dir
-    )
-    
-    for line in output:
+    def log_callback(line):
         log(line, keyword=name, print_message=False)
+
+    await poll_output(deploy_command, repo_dir, callback=log_callback)
 
 @app.post("/api/repo/get_logs/")
 async def api_repo_get_logs(payload: dict):
