@@ -1,13 +1,17 @@
-async function apiCall(url, context){
-    const response = await fetch(url, {
+function apiCall(url, context){
+    fetch(url, {
         method: "POST",
         body: JSON.stringify(context),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
-    });
-
-    return response;
+    }).then((response) => { 
+            return response.json().then((data) => {
+                return data;
+            }).catch((err) => {
+                console.log(err);
+            }) 
+        });
 }
 
 //
