@@ -85,7 +85,7 @@ def check_output(cmd, cwd='/'):
 def poll_output(cmd, cwd='/'):
     print(f"SUBPROCESS: Polling output from: {cmd}")
 
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1, timeout=600)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1)
     
     try:
         while True:
@@ -101,7 +101,6 @@ def poll_output(cmd, cwd='/'):
     except KeyboardInterrupt:
         process.terminate()
     
-    # Final cleanup
     remaining_output, _ = process.communicate()
     if remaining_output:
         yield remaining_output.strip()
