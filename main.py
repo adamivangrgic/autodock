@@ -259,7 +259,8 @@ async def dash_details(name, request: Request):
             "name": name,
             "repo": content, 
             "HOST_ADDRESS": globals.config_data['host_address'],
-            "raw_inspect": raw_output
+            "raw_inspect": raw_output,
+            "log_output": filter_log(name)
             }
     )
 
