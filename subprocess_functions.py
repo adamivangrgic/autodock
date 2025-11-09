@@ -56,7 +56,7 @@ def check_output(cmd, cwd='/'):
 async def poll_output(cmd, cwd='/', callback=None):
     print(f"SUBPROCESS: Polling output from: {cmd}")
     def execute_with_callback():
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1, timeout=600)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1)
         
         try:
             while True:
