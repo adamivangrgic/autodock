@@ -50,6 +50,8 @@ async function fill_log_output(url, context){
     } catch (error) {
         element.textContent = 'Error: ' + error.message;
     }
+    
+    element.scrollTop = element.scrollHeight;
 }
 
 // 
@@ -58,9 +60,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[data-date]').forEach(element => {
         const humanized = humanizeDate(element.getAttribute('data-date'));
         element.textContent = humanized;
-    });
-
-    document.querySelectorAll('#log-output').forEach(element => {
-        element.scrollTop = element.scrollHeight;
     });
 });
