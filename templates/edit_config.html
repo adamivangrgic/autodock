@@ -9,36 +9,46 @@
 <body>
     <div class="container">
         <div class="header">
+        {% if name == 'new_repo_config' %}
             <h1>Edit {{ name }} configuration</h1>
+        {% else %}
+            <h1>New repository</h1>
+        {% endif %}
         </div>
         
         <div class="card">
-            <div class="element-row">
-                <button class="button-primary right-align" onclick="">Save configuration</button>
-            </div>
-            
-            <div class="table">
-                <div class="table-row">
-                    <div class="table-label">Repository URL</div>
-                    <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
+            <form method="post" action="/config/save/">
+                <div class="element-row">
+                    <button class="button-primary right-align" type="submit">Save configuration</button>
                 </div>
-                <div class="table-row">
-                    <div class="table-label">Branch</div>
-                    <input type="text" id="branch" name="branch" value="{{ repo['branch'] }}"> 
+                
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-label">Name</div>
+                        <input type="text" id="name" name="name" value="{{ name }}"> 
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">Repository URL</div>
+                        <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">Branch</div>
+                        <input type="text" id="branch" name="branch" value="{{ repo['branch'] }}"> 
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">Check interval (sec, 0 - never)</div>
+                        <input type="text" id="interval" name="interval" value="{{ repo['interval'] }}"> 
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">Build command</div>
+                        <textarea id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-label">Deploy command</div>
+                        <textarea id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
+                    </div>
                 </div>
-                <div class="table-row">
-                    <div class="table-label">Check interval (sec, 0 - never)</div>
-                    <input type="text" id="interval" name="interval" value="{{ repo['interval'] }}"> 
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Build command</div>
-                    <textarea id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Deploy command</div>
-                    <textarea id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
-                </div>
-            </div>
+            </form>
         </div>
         
     </div>

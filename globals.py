@@ -39,6 +39,17 @@ def read_yaml_file(file_path: str) -> Dict[str, Any]:
         print("YAML read: failed")
         return None
 
+def write_yaml_file(file_path: str, data: Dict[str, Any]) -> bool:
+    try:
+        with open(file_path, 'w') as file:
+            yaml.dump(data, file, default_flow_style=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"YAML write: failed - {e}")
+        return False
+
+##
+
 def read_json_file(file_path: str) -> Dict[str, Any]:
     try:
         with open(file_path, 'r') as file:

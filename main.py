@@ -1,9 +1,9 @@
 import os
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Annotated
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Form, status
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -26,7 +26,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-def load_config_file(file_path: str) -> Dict[str, Any]:
+def load_config_file(file_path):
     file = globals.read_yaml_file(file_path)
 
     for name, repo in file['repos'].items():
@@ -52,6 +52,11 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
         file['host_address'] = 'localhost'
 
     return file
+
+def write_and_reload_config_file(file_path=globals.CONFIG_FILE_PATH, data=globals.config_data['repos']):
+    globals.write_yaml_file(file_path, data)
+    configuration()
+
 
 def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
@@ -255,8 +260,8 @@ async def dash_details(name, request: Request):
             }
     )
 
-@app.get("/edit_config/{name}/", response_class=HTMLResponse)
-async def dash_edit_config(name, request: Request):
+@app.get("/config/edit/{name}/", response_class=HTMLResponse)
+async def dash_config_save(name, request: Request):
     if name != 'new_repo_config':
         content = globals.config_data['repos'][name]
     else:
@@ -275,6 +280,38 @@ async def dash_edit_config(name, request: Request):
             "repo": content
             }
     )
+
+@app.get("/config/save/", response_class=RedirectResponse)
+async def dash_config_save(
+        name: Annotated[str, Form()],
+        repourl: Annotated[str, Form()],
+        branch: Annotated[str, Form()],
+        interval: Annotated[str, Form()],
+        buildcmd: Annotated[str, Form()],
+        deploycmd: Annotated[str, Form()],
+    ):
+
+    content = {
+        'repo_url': repourl,
+        'branch': branch,
+        'interval': interval,
+        'build_command': buildcmd,
+        'deploy_command': deploycmd
+    }
+
+    globals.config_data['repos'][name] = content
+    write_and_reload_config_file()
+
+    return RedirectResponse(url=f"/config/edit/{name}/", status_code=status.HTTP_302_FOUND)
+
+@app.get("/config/delete/{name}/", response_class=RedirectResponse)
+async def dash_config_delete(name):
+    globals.config_data['repos'].pop(name, None)
+    write_and_reload_config_file()
+    
+    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
+##
 
 if __name__ == "__main__":
     import uvicorn
