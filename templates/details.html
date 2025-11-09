@@ -52,7 +52,7 @@
         
         <div class="card">
             <h2>Log output</h2>
-            <div class="black-box" id="log-output"></div>
+            <div class="black-box" id="log-output">{{ log_output }}</div>
         </div>
 
         {% if repo['inspect'] %}
@@ -103,9 +103,7 @@
                 </div>
             </div>
             
-            <div class="black-box">
-                {{ raw_inspect }}
-            </div>
+            <div class="black-box">{{ raw_inspect }}</div>
         </div>
         {% endif %}
         
