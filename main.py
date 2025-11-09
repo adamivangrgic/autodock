@@ -141,16 +141,18 @@ async def api_repo_check(payload: dict):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
     
-    output = await asyncio.to_thread(
-        git_check,
-        name,
-        url,
-        branch,
-        build_command,
-        deploy_command
-    )
+    # output = await asyncio.to_thread(
+    #     git_check,
+    #     name,
+    #     url,
+    #     branch,
+    #     build_command,
+    #     deploy_command
+    # )
 
-    return output
+    # return output
+
+    await git_check(name, url, branch, build_command, deploy_command)
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):

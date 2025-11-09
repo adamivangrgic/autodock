@@ -13,7 +13,7 @@ config_data = {}
 
 log_output = {}
 
-def log(message, keyword='null', print_message=True):
+def log(message, keyword='default', print_message=True):
     if print_message:
         print(message)
 
