@@ -167,7 +167,7 @@ async def api_repo_build(payload: dict):
     )
     
     for line in output:
-        log(line, keyword=name)
+        log(line, keyword=name, print_message=False)
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
@@ -184,7 +184,7 @@ async def api_repo_deploy(payload: dict):
     )
     
     for line in output:
-        log(line, keyword=name)
+        log(line, keyword=name, print_message=False)
 
 @app.post("/api/repo/get_logs/")
 async def api_repo_get_logs(payload: dict):

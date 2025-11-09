@@ -13,9 +13,9 @@ config_data = {}
 
 log_output = {}
 
-def log(log, keyword='null', print=True):
-    if print:
-        print(log)
+def log(message, keyword='null', print_message=True):
+    if print_message:
+        print(message)
 
     if keyword not in log_output:
         log_output[keyword] = []
