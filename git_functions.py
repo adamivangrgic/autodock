@@ -80,4 +80,4 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
 
     ##
         
-    log(f"Task inished.", keyword=name)
+    log(f"Task finished.", keyword=name)
