@@ -65,7 +65,6 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing build command.", keyword=name)
-        # run_command(build_command, repo_dir)
         await poll_output(build_command, repo_dir, callback=log_callback)
 
         globals.repo_data[name]['stages']['build'] = new_hash
@@ -78,7 +77,6 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing deploy command.", keyword=name)
-        # run_command(deploy_command, repo_dir)
         await poll_output(deploy_command, repo_dir, callback=log_callback)
 
         globals.repo_data[name]['stages']['deploy'] = new_hash

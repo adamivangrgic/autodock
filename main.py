@@ -257,7 +257,16 @@ async def dash_details(name, request: Request):
 
 @app.get("/edit_config/{name}/", response_class=HTMLResponse)
 async def dash_edit_config(name, request: Request):
-    content = globals.config_data['repos'][name]
+    if name != 'new_repo_config':
+        content = globals.config_data['repos'][name]
+    else:
+        content = {
+            'repo_url': '',
+            'branch': '',
+            'interval': '',
+            'build_command': '',
+            'deploy_command': ''
+        }
 
     return templates.TemplateResponse(
         request=request, name="edit_config.html", 
