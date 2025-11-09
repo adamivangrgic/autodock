@@ -3,7 +3,7 @@ import os
 import globals
 from globals import log
 
-from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command, poll_output
+from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command
 
 
 def git_clone(name: str, url: str, branch: str):
@@ -20,7 +20,7 @@ def git_pull(name: str):
     pull_repo(repo_dir)
 
 
-async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
+def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
@@ -55,16 +55,13 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
     ## build stage
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
-
 
     if globals.repo_data[name]['stages']['build'] == new_hash:
         log(f"Skipping building.", keyword=name)
     
     else:
         log(f"Executing build command.", keyword=name)
-        await poll_output(build_command, repo_dir, callback=log_callback)
+        run_command(build_command, repo_dir)
 
         globals.repo_data[name]['stages']['build'] = new_hash
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
@@ -76,7 +73,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing deploy command.", keyword=name)
-        await poll_output(deploy_command, repo_dir, callback=log_callback)
+        run_command(deploy_command, repo_dir)
 
         globals.repo_data[name]['stages']['deploy'] = new_hash
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)

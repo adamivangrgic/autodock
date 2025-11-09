@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 import globals
 from globals import log, filter_log
 
-from git_functions import git_check, git_clone, git_pull
+from functions import git_check, git_clone, git_pull
 
 from subprocess_functions import run_command, check_output, poll_output
 
@@ -160,10 +160,19 @@ async def api_repo_build(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
+    # def log_callback(line):
+    #     log(line, keyword=name, print_message=False)
 
-    await poll_output(build_command, repo_dir, callback=log_callback)
+    # await poll_output(build_command, repo_dir, callback=log_callback)
+
+    output = await asyncio.to_thread(
+        poll_output,
+        build_command,
+        repo_dir
+    )
+    
+    for line in output:
+        log(line, keyword=name, print_message=False)
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
@@ -173,10 +182,19 @@ async def api_repo_deploy(payload: dict):
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
+    # def log_callback(line):
+    #     log(line, keyword=name, print_message=False)
 
-    await poll_output(deploy_command, repo_dir, callback=log_callback)
+    # await poll_output(deploy_command, repo_dir, callback=log_callback)
+    
+    output = await asyncio.to_thread(
+        poll_output,
+        deploy_command,
+        repo_dir
+    )
+    
+    for line in output:
+        log(line, keyword=name, print_message=False)
 
 @app.post("/api/repo/get_logs/")
 async def api_repo_get_logs(payload: dict):
