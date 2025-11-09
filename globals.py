@@ -11,15 +11,19 @@ config_data = {}
 
 ##
 
-log_output = []
+log_output = {}
 
-def log(log):
-    print(log)
+def log(log, keyword='null', print=True):
+    if print:
+        print(log)
 
-    log_output.append(log)
+    if keyword not in log_output:
+        log_output[keyword] = []
+
+    log_output[keyword].append(log)
 
 def filter_log(keyword):
-    return "\n".join([k for k in log_output if keyword in k])
+    return "\n".join(log_output[keyword])
 
 ##
 

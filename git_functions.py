@@ -9,19 +9,19 @@ from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_com
 def git_clone(name: str, url: str, branch: str):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
-    log(f"TASK ({name}) : cloning repository.")
+    log(f"Cloning repository.", keyword=name)
     clone_repo(url, repo_dir, branch)
 
 
 def git_pull(name: str):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
-    log(f"TASK ({name}) : pulling repository.")
+    log(f"Pulling repository.", keyword=name)
     pull_repo(repo_dir)
 
 
 def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
-    log(f"TASK ({name}) : running git check task.")
+    log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
         globals.repo_data[name] = {
@@ -34,14 +34,14 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     
     new_hash = get_remote_hash(url, branch)
     
-    log(f"TASK ({name}) : \n  old:'{globals.repo_data[name]['stages']['update']}'\n  new:'{new_hash}'")
+    log(f"Hash: \n  old:'{globals.repo_data[name]['stages']['update']}'\n  new:'{new_hash}'", keyword=name)
 
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
     ## update stage (clone or pull)
 
     if globals.repo_data[name]['stages']['update'] == new_hash:
-        log(f"TASK ({name}) : skipping updating.")
+        log(f"Skipping updating.", keyword=name)
     
     else:
         if globals.repo_data[name]['stages']['update'] == None:
@@ -57,10 +57,10 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     ## build stage
 
     if globals.repo_data[name]['stages']['build'] == new_hash:
-        log(f"TASK ({name}) : skipping building.")
+        log(f"Skipping building.", keyword=name)
     
     else:
-        log(f"TASK ({name}) : executing build command.")
+        log(f"Executing build command.", keyword=name)
         run_command(build_command, repo_dir)
 
         globals.repo_data[name]['stages']['build'] = new_hash
@@ -69,10 +69,10 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
     ## deploy stage
 
     if globals.repo_data[name]['stages']['deploy'] == new_hash:
-        log(f"TASK ({name}) : skipping deploying.")
+        log(f"Skipping deploying.", keyword=name)
     
     else:
-        log(f"TASK ({name}) : executing deploy command.")
+        log(f"Executing deploy command.", keyword=name)
         run_command(deploy_command, repo_dir)
 
         globals.repo_data[name]['stages']['deploy'] = new_hash
@@ -80,4 +80,4 @@ def git_check(name: str, url: str, branch: str, build_command: str, deploy_comma
 
     ##
         
-    log(f"TASK ({name}) : finished.")
+    log(f"Task inished.", keyword=name)

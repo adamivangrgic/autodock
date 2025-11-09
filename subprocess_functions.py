@@ -1,5 +1,4 @@
-import os, subprocess
-
+import os, subprocess, time
 
 ## git
 
@@ -38,7 +37,7 @@ def pull_repo(repo_dir):
 
 def run_command(cmd, cwd='/'):
     print(f"SUBPROCESS: Running: {cmd}")
-    result = subprocess.run(cmd, shell=True, cwd=cwd, check=True, text=True, timeout=600)
+    result = subprocess.run(cmd, shell=True, cwd=cwd, check=True, text=True)
     if result.returncode != 0:
         print(f"SUBPROCESS: Error: {result.stderr}")
         raise Exception(f"SUBPROCESS: Command failed: {cmd}")
@@ -53,3 +52,27 @@ def check_output(cmd, cwd='/'):
     
     return result if result else None
     #print(f"SUBPROCESS: {result.stdout}")
+
+def poll_output(cmd, cwd='/'):
+    print(f"SUBPROCESS: Polling output from: {cmd}")
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=cwd, text=True, bufsize=1, timeout=600)
+    
+    try:
+        while True:
+            if process.poll() is not None:
+                break
+                
+            output = process.stdout.readline()
+            if output:
+                yield output.strip()
+            else:
+                time.sleep(1)
+                
+    except KeyboardInterrupt:
+        process.terminate()
+    
+    # Final cleanup
+    remaining_output, _ = process.communicate()
+    if remaining_output:
+        yield remaining_output.strip()

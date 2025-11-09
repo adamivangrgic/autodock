@@ -12,7 +12,7 @@ from globals import log, filter_log
 
 from git_functions import git_check, git_clone, git_pull
 
-from subprocess_functions import run_command, check_output
+from subprocess_functions import run_command, check_output, poll_output
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -31,7 +31,7 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
-            log(f"CONFIG LOAD: repo_url not found in {name}")
+            print(f"CONFIG LOAD: repo_url not found in {name}")
             return {}
 
         if 'branch' not in repo:
@@ -41,11 +41,11 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
             file['repos']['interval'] = 0
 
         if 'build_command' not in repo:
-            log(f"CONFIG LOAD: build_command not found in {name}")
+            print(f"CONFIG LOAD: build_command not found in {name}")
             return {}
 
         if 'deploy_command' not in repo:
-            log(f"CONFIG LOAD: deploy_command not found in {name}")
+            print(f"CONFIG LOAD: deploy_command not found in {name}")
             return {}
 
     if 'host_address' not in file:
@@ -57,18 +57,18 @@ def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
-        log(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
+        print(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
         return None
 
     if len(globals.config_data['repos']) == 0:
         # stop startup if no repos in json
-        log(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
+        print(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
         return None
 
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
 
     if not globals.repo_data:
-        log(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
+        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
         globals.repo_data = {}
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
@@ -92,10 +92,10 @@ def configuration():
                 next_run_time=datetime.now()
             )
 
-            log(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
+            print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
     scheduler.start()
-    log("CONFIGURATION: scheduler started")
+    print("CONFIGURATION: scheduler started")
 
 @app.on_event("startup")
 async def startup_event():
@@ -161,12 +161,13 @@ async def api_repo_build(payload: dict):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
     output = await asyncio.to_thread(
-        run_command,
+        poll_output,
         build_command,
         repo_dir
     )
-
-    return output
+    
+    for line in output:
+        log(line, keyword=name)
 
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
@@ -177,12 +178,13 @@ async def api_repo_deploy(payload: dict):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
     
     output = await asyncio.to_thread(
-        run_command,
+        poll_output,
         deploy_command,
         repo_dir
     )
-
-    return output
+    
+    for line in output:
+        log(line, keyword=name)
 
 @app.post("/api/repo/get_logs/")
 async def api_repo_get_logs(payload: dict):
