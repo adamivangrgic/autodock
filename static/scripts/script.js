@@ -1,4 +1,4 @@
-function apiCall(url, context){
+async function apiCall(url, context){
     fetch(url, {
         method: "POST",
         body: JSON.stringify(context),
@@ -35,9 +35,10 @@ function humanizeDate(dateString) {
     }
 }
 
-function fill_log_output(url, context){
+async function fill_log_output(url, context){
     const element = document.querySelector('#log-output');
-    element.textContent = apiCall(url, context);
+    element.textContent = await apiCall(url, context);
+    
 }
 
 // 
