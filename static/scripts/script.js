@@ -1,17 +1,24 @@
-async function apiCall(url, context){
-    fetch(url, {
-        method: "POST",
-        body: JSON.stringify(context),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
-    }).then((response) => { 
-            return response.json().then((data) => {
-                return data;
-            }).catch((err) => {
-                console.log(err);
-            }) 
+async function apiCall(url, context) {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            body: JSON.stringify(context),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+
+    } catch (err) {
+        console.error('API call failed:', err);
+        throw err;
+    }
 }
 
 //
@@ -37,8 +44,12 @@ function humanizeDate(dateString) {
 
 async function fill_log_output(url, context){
     const element = document.querySelector('#log-output');
-    element.textContent = await apiCall(url, context);
-    
+    try {
+        const result = await apiCall(url, context);
+        element.textContent = result;
+    } catch (error) {
+        element.textContent = 'Error: ' + error.message;
+    }
 }
 
 // 
