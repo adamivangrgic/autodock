@@ -20,7 +20,7 @@ def git_pull(name: str):
     pull_repo(repo_dir)
 
 
-async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str):
+async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str, ignore_checks=False):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
@@ -40,7 +40,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
 
     ## update stage (clone or pull)
 
-    if globals.repo_data[name]['stages']['update'] == new_hash:
+    if globals.repo_data[name]['stages']['update'] == new_hash or ignore_checks:
         log(f"Skipping updating.", keyword=name)
     
     else:
@@ -55,12 +55,12 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
     ## build stage
-    
+
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
 
-    if globals.repo_data[name]['stages']['build'] == new_hash:
+    if globals.repo_data[name]['stages']['build'] == new_hash or ignore_checks:
         log(f"Skipping building.", keyword=name)
     
     else:
@@ -73,8 +73,8 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
 
     ## deploy stage
 
-    if globals.repo_data[name]['stages']['deploy'] == new_hash:
-        log(f"Skipping deploying.", keyword=name)
+    if globals.repo_data[name]['stages']['deploy'] == new_hash or ignore_checks:
+        log(f"Skipping deployment.", keyword=name)
     
     else:
         log(f"Executing deploy command.", keyword=name)

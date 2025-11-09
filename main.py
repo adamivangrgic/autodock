@@ -132,8 +132,8 @@ async def api_repo_pull(payload: dict):
 
     return output
 
-@app.post("/api/repo/check/")
-async def api_repo_check(payload: dict):
+@app.post("/api/repo/check/{force}/")
+async def api_repo_check(payload: dict, force=0):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
@@ -152,7 +152,7 @@ async def api_repo_check(payload: dict):
 
     # return output
 
-    await git_check(name, url, branch, build_command, deploy_command)
+    await git_check(name, url, branch, build_command, deploy_command, ignore_checks=force is 1)
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):
