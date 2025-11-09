@@ -54,9 +54,10 @@ def load_config_file(file_path):
     return file
 
 def write_and_reload_config_file(file_path=globals.CONFIG_FILE_PATH, data=globals.config_data):
-    globals.write_yaml_file(file_path, data)
-    configuration()
+    pass
 
+    # globals.write_yaml_file(file_path, data)
+    # configuration()
 
 def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
@@ -270,7 +271,7 @@ async def dash_config_save(name, request: Request):
             'branch': '',
             'interval': '',
             'build_command': '',
-            'deploy_command': ''
+            'deploy_command': '',
         }
 
     return templates.TemplateResponse(
@@ -296,7 +297,7 @@ async def dash_config_save(
         'branch': branch,
         'interval': interval,
         'build_command': buildcmd,
-        'deploy_command': deploycmd
+        'deploy_command': deploycmd,
     }
 
     globals.config_data['repos'][name] = content
