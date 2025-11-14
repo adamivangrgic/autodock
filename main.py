@@ -200,7 +200,7 @@ async def api_container_action(action, payload: dict):
     if action not in allowed_actions:
         return None
 
-    await docker_container_action(action, container_id)
+    await docker_container_action(action, name, container_id)
 
 ## dashboard
 

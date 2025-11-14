@@ -120,7 +120,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
 
 ## docker
 
-async def docker_container_action(action, container_id):
+async def docker_container_action(action, name, container_id):
     cmd = f"docker {action} {container_id}"
 
     def log_callback(line):

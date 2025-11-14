@@ -10,9 +10,6 @@ def run_command(cmd, cwd='/'):
 def check_output(cmd, cwd='/'):
     print(f"SUBPROCESS: Checking output from: {cmd}")
     result = subprocess.check_output(cmd, shell=True, cwd=cwd, text=True, timeout=60)
-    # if result.returncode != 0:
-    #     print(f"SUBPROCESS: Error: {result.stderr}")
-    #     raise Exception(f"SUBPROCESS: Command failed: {cmd}")
     
     return result if result else None
 
