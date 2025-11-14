@@ -103,7 +103,7 @@
                     <div class="table-label">Ports</div>
                     <div class="table-value">
                     {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
-                        <a href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endfor %}
                     </div>
                 </div>
