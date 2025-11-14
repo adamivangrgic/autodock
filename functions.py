@@ -42,7 +42,7 @@ async def git_pull(name: str):
     log("Repo successfully pulled.")
 
 
-async def get_remote_hash(repo_url, branch='main'):
+def get_remote_hash(repo_url, branch='main'):
     log(f"Getting {repo_url} {branch} hash")
     result = subprocess.check_output(
         ["git", "ls-remote", repo_url, f"refs/heads/{branch}"],
