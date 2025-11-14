@@ -10,15 +10,15 @@ from fastapi.templating import Jinja2Templates
 import globals
 from globals import log, filter_log
 
-from functions import git_check, git_clone, git_pull
+from functions import git_check, git_clone, git_pull, docker_cotainer_action, docker_container_inspect
 
-from subprocess_functions import run_command, check_output, poll_output
+from subprocess_functions import poll_output
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
-import asyncio
+# import asyncio
 
 
 app = FastAPI()
@@ -117,25 +117,25 @@ async def api_repo_clone(payload: dict):
     url = repo['repo_url']
     branch = repo['branch']
     
-    output = await asyncio.to_thread(
-        git_clone,
-        name,
-        url,
-        branch
-    )
+    # await asyncio.to_thread(
+    #     git_clone,
+    #     name,
+    #     url,
+    #     branch
+    # )
 
-    return output
+    await git_clone(name, url, branch)
 
 @app.post("/api/repo/pull/")
 async def api_repo_pull(payload: dict):
     name = payload['name']
     
-    output = await asyncio.to_thread(
-        git_pull,
-        name
-    )
+    # await asyncio.to_thread(
+    #     git_pull,
+    #     name
+    # )
 
-    return output
+    await git_pull(name)
 
 @app.post("/api/repo/check/")
 async def api_repo_check(payload: dict, force: bool = False):
@@ -155,7 +155,7 @@ async def api_repo_build(payload: dict):
     build_command = repo['build_command']
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-    
+
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
@@ -168,7 +168,7 @@ async def api_repo_deploy(payload: dict):
     deploy_command = repo['deploy_command']
     
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-    
+
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
@@ -200,12 +200,7 @@ async def api_container_action(action, payload: dict):
     if action not in allowed_actions:
         return None
 
-    cmd = f"docker {action} {container_id}"
-    
-    output = await asyncio.to_thread(
-        run_command,
-        cmd
-    )
+    await docker_container_action(action, container_id)
 
 ## dashboard
 
@@ -216,15 +211,7 @@ async def dash_index(request: Request):
     content = globals.config_data['repos']
     
     for name, repo in globals.config_data['repos'].items():
-        cmd = f"docker inspect --type=container {name}"
-
-        try:
-            raw_output = check_output(cmd)
-            inspect_output = json.loads(raw_output)
-        except:
-            inspect_output = None
-
-        content[name]['inspect'] = inspect_output
+        raw_output, content[name]['inspect'] = docker_container_inspect(name)
 
     return templates.TemplateResponse(
         request=request, name="index.html", 
@@ -237,17 +224,8 @@ async def dash_index(request: Request):
 @app.get("/details/{name}/", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
     content = globals.config_data['repos'][name]
-    
-    cmd = f"docker inspect --type=container {name}"
 
-    try:
-        raw_output = check_output(cmd)
-        inspect_output = json.loads(raw_output)
-    except:
-        raw_output = None
-        inspect_output = None
-
-    content['inspect'] = inspect_output
+    raw_output, content['inspect'] = docker_container_inspect(name)
 
     return templates.TemplateResponse(
         request=request, name="details.html", 

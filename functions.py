@@ -1,23 +1,55 @@
 import os
+import json
 
 import globals
 from globals import log
 
-from subprocess_functions import get_remote_hash, clone_repo, pull_repo, run_command, poll_output
+from subprocess_functions import run_command, check_output, poll_output
 
 
-def git_clone(name: str, url: str, branch: str):
+## git
+
+async def git_clone(name: str, url: str, branch: str):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
-    log(f"Cloning repository.", keyword=name)
-    clone_repo(url, repo_dir, branch)
+    log(f"Cloning into repo {url} {branch}", keyword=name)
+
+    if not os.path.exists(os.path.join(repo_dir, ".git")):
+        cmd = f"git clone --branch {branch} --single-branch {repo_url} {repo_dir}"
+
+        def log_callback(line):
+            log(line, keyword=name, print_message=False)
+
+        await poll_output(cmd, callback=log_callback)
+
+        log("Repo successfully cloned.", keyword=name)
+    else:
+        log("Repository already exists.", keyword=name)
 
 
-def git_pull(name: str):
+async def git_pull(name: str):
     repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
-    log(f"Pulling repository.", keyword=name)
-    pull_repo(repo_dir)
+    log(f"Pulling repo {repo_dir}", keyword=name)
+
+    cmd = "git pull --rebase"
+
+    def log_callback(line):
+        log(line, keyword=name, print_message=False)
+        
+    await poll_output(cmd, repo_dir, callback=log_callback)
+
+    log("Repo successfully pulled.")
+
+
+async def get_remote_hash(repo_url, branch='main'):
+    log(f"Getting {repo_url} {branch} hash")
+    result = subprocess.check_output(
+        ["git", "ls-remote", repo_url, f"refs/heads/{branch}"],
+        text=True,
+        timeout=30
+    )
+    return result.split()[0] if result else None
 
 
 async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str, ignore_hash_checks=False):
@@ -85,3 +117,25 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     ##
         
     log(f"Task finished.", keyword=name)
+
+## docker
+
+async def docker_container_action(action, container_id):
+    cmd = f"docker {action} {container_id}"
+
+    def log_callback(line):
+        log(line, keyword=name, print_message=False)
+
+    await poll_output(cmd, callback=log_callback)
+
+
+def docker_container_inspect(name):
+    cmd = f"docker inspect --type=container {name}"
+
+    try:
+        raw_output = check_output(cmd)
+        inspect_output = json.loads(raw_output)
+    except:
+        inspect_output = None
+
+    return raw_output, inspect_output
