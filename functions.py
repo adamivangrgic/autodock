@@ -136,6 +136,7 @@ def docker_container_inspect(name):
         raw_output = check_output(cmd)
         inspect_output = json.loads(raw_output)
     except:
+        raw_output = None
         inspect_output = None
 
     return raw_output, inspect_output
