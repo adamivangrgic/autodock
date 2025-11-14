@@ -185,6 +185,7 @@ async def api_repo_get_logs(payload: dict):
 
 @app.post("/api/container/{action}/")
 async def api_container_action(action, payload: dict):
+    name = payload['name']
     container_id = payload['id']
 
     allowed_actions = [
