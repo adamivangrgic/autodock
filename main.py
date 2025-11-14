@@ -18,8 +18,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
-# import asyncio
-
 
 app = FastAPI()
 
@@ -116,26 +114,17 @@ async def api_repo_clone(payload: dict):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
-    
-    # await asyncio.to_thread(
-    #     git_clone,
-    #     name,
-    #     url,
-    #     branch
-    # )
 
     await git_clone(name, url, branch)
+
+    return {'message': 'OK'}
 
 @app.post("/api/repo/pull/")
 async def api_repo_pull(payload: dict):
     name = payload['name']
-    
-    # await asyncio.to_thread(
-    #     git_pull,
-    #     name
-    # )
-
     await git_pull(name)
+
+    return {'message': 'OK'}
 
 @app.post("/api/repo/check/")
 async def api_repo_check(payload: dict, force: bool = False):
@@ -147,6 +136,8 @@ async def api_repo_check(payload: dict, force: bool = False):
     deploy_command = repo['deploy_command']
 
     await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=force)
+
+    return {'message': 'OK'}
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):
@@ -161,6 +152,8 @@ async def api_repo_build(payload: dict):
 
     await poll_output(build_command, repo_dir, callback=log_callback)
 
+    return {'message': 'OK'}
+
 @app.post("/api/repo/deploy/")
 async def api_repo_deploy(payload: dict):
     name = payload['name']
@@ -174,6 +167,8 @@ async def api_repo_deploy(payload: dict):
 
     await poll_output(deploy_command, repo_dir, callback=log_callback)
 
+    return {'message': 'OK'}
+
 @app.post("/api/repo/get_logs/")
 async def api_repo_get_logs(payload: dict):
     name = payload['name']
@@ -185,7 +180,7 @@ async def api_repo_get_logs(payload: dict):
 
 @app.post("/api/container/{action}/")
 async def api_container_action(action, payload: dict):
-    name = payload['name']
+    # name = payload['name']
     container_id = payload['id']
 
     allowed_actions = [
@@ -201,7 +196,9 @@ async def api_container_action(action, payload: dict):
     if action not in allowed_actions:
         return None
 
-    await docker_container_action(action, name, container_id)
+    docker_container_action(action, container_id)
+
+    return {'message': 'OK'}
 
 ## dashboard
 

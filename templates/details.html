@@ -71,13 +71,13 @@
             <h2>Container</h2>
 
             <div class="element-row">
-                <button class="button-primary" onclick="apiCall('/api/container/start', {'id': '{{ id }}', 'name': '{{ name }}'})">Start</button>
-                <button class="button-warning" onclick="apiCall('/api/container/stop', {'id': '{{ id }}', 'name': '{{ name }}'})">Stop</button>
-                <button class="button-error" onclick="apiCall('/api/container/kill', {'id': '{{ id }}', 'name': '{{ name }}'})">Kill</button>
-                <button class="button-secondary" onclick="apiCall('/api/container/restart', {'id': '{{ id }}', 'name': '{{ name }}'})">Restart</button>
-                <button class="button-warning" onclick="apiCall('/api/container/pause', {'id': '{{ id }}', 'name': '{{ name }}'})">Pause</button>
-                <button class="button-success" onclick="apiCall('/api/container/unpause', {'id': '{{ id }}', 'name': '{{ name }}'})">Unpause</button>
-                <button class="button-error" onclick="apiCall('/api/container/rm', {'id': '{{ id }}', 'name': '{{ name }}'})">Remove</button>
+                <button class="button-primary" onclick="apiCall('/api/container/start', {'id': '{{ id }}'})">Start</button>
+                <button class="button-warning" onclick="apiCall('/api/container/stop', {'id': '{{ id }}'})">Stop</button>
+                <button class="button-error" onclick="apiCall('/api/container/kill', {'id': '{{ id }}'})">Kill</button>
+                <button class="button-secondary" onclick="apiCall('/api/container/restart', {'id': '{{ id }}'})">Restart</button>
+                <button class="button-warning" onclick="apiCall('/api/container/pause', {'id': '{{ id }}'})">Pause</button>
+                <button class="button-success" onclick="apiCall('/api/container/unpause', {'id': '{{ id }}'})">Unpause</button>
+                <button class="button-error" onclick="apiCall('/api/container/rm', {'id': '{{ id }}'})">Remove</button>
             </div>
             
             <div class="table">
