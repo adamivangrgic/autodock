@@ -44,11 +44,10 @@ async def git_pull(name: str):
 
 def get_remote_hash(repo_url, branch='main'):
     log(f"Getting {repo_url} {branch} hash")
-    result = subprocess.check_output(
-        ["git", "ls-remote", repo_url, f"refs/heads/{branch}"],
-        text=True,
-        timeout=30
-    )
+
+    cmd = f"git ls-remote {repo_url} refs/heads/{branch}"
+    result = check_output(cmd)
+
     return result.split()[0] if result else None
 
 
