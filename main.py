@@ -138,7 +138,7 @@ async def api_repo_pull(payload: dict):
     return output
 
 @app.post("/api/repo/check/")
-async def api_repo_check(force: bool = False, payload: dict):
+async def api_repo_check(payload: dict, force: bool = False):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
