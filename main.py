@@ -54,10 +54,9 @@ def load_config_file(file_path):
     return file
 
 def write_and_reload_config_file(file_path=globals.CONFIG_FILE_PATH, data=globals.config_data):
-    pass
-
     # globals.write_yaml_file(file_path, data)
     # configuration()
+    pass
 
 def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
@@ -138,8 +137,8 @@ async def api_repo_pull(payload: dict):
 
     return output
 
-@app.post("/api/repo/check/{force}/")
-async def api_repo_check(force, payload: dict):
+@app.post("/api/repo/check/")
+async def api_repo_check(force: bool = False, payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
@@ -147,7 +146,7 @@ async def api_repo_check(force, payload: dict):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
 
-    await git_check(name, url, branch, build_command, deploy_command, ignore_checks=force is 1)
+    await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=force)
 
 @app.post("/api/repo/build/")
 async def api_repo_build(payload: dict):
