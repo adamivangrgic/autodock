@@ -13,8 +13,10 @@ config_data = {}
 
 log_output = {}
 
-def log(message, keyword='default', print_message=True):
-    if print_message:
+def log(message, keyword='default', print_message=True, raise_error=False):
+    if raise_error:
+        raise Exception(message)
+    elif print_message:
         print(message)
 
     if keyword not in log_output:

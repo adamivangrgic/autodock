@@ -2,7 +2,7 @@ import os
 import json
 from typing import Dict, Any, Annotated
 
-from fastapi import FastAPI, Request, Form, status
+from fastapi import FastAPI, Request, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -109,15 +109,18 @@ async def startup_event():
 # repo
 
 @app.post("/api/repo/clone/")
-async def api_repo_clone(payload: dict):
+async def api_repo_clone(payload: dict, response: Response):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
 
-    await git_clone(name, url, branch)
-
-    return {'message': 'OK'}
+    try:
+        await git_clone(name, url, branch)
+        return {'message': 'OK'}
+    except Exception as e:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {'message': e}
 
 @app.post("/api/repo/pull/")
 async def api_repo_pull(payload: dict):
