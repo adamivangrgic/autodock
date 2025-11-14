@@ -211,7 +211,8 @@ async def dash_index(request: Request):
     content = globals.config_data['repos']
     
     for name, repo in globals.config_data['repos'].items():
-        raw_output, content[name]['inspect'] = docker_container_inspect(name)
+        raw_output, inspect_output = docker_container_inspect(name)
+        content[name]['inspect'] = inspect_output
 
     return templates.TemplateResponse(
         request=request, name="index.html", 
@@ -224,8 +225,9 @@ async def dash_index(request: Request):
 @app.get("/details/{name}/", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
     content = globals.config_data['repos'][name]
-
-    raw_output, content['inspect'] = docker_container_inspect(name)
+    
+    raw_output, inspect_output = docker_container_inspect(name)
+    content['inspect'] = inspect_output
 
     return templates.TemplateResponse(
         request=request, name="details.html", 
