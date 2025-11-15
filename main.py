@@ -10,7 +10,8 @@ from fastapi.templating import Jinja2Templates
 import globals
 from globals import log, filter_log
 
-from functions import git_check, git_clone, git_pull, docker_container_action, docker_container_inspect
+from functions import git_check, git_clone, git_pull
+from functions import docker_container_action, docker_container_inspect, docker_container_get_logs
 
 from subprocess_functions import poll_output
 
@@ -183,7 +184,6 @@ async def api_repo_get_logs(payload: dict):
 
 @app.post("/api/container/{action}/")
 async def api_container_action(action, payload: dict, response: Response):
-    # name = payload['name']
     container_id = payload['id']
 
     allowed_actions = [
@@ -205,6 +205,20 @@ async def api_container_action(action, payload: dict, response: Response):
     except Exception as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {'message': e}
+
+@app.post("/api/continer/get_logs/")
+async def api_container_get_logs(payload: dict):
+    container_id = payload['id']
+    num_of_lines = payload.get('line_num', 100)
+    
+    try:
+        output = await docker_container_get_logs(container_id, num_of_lines)
+        return {'message': 'OK'}
+    except Exception as e:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {'message': e}
+
+    return output
 
 ## dashboard
 

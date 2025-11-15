@@ -108,8 +108,16 @@
                     </div>
                 </div>
             </div>
+
+            <h2>Log output</h2>
             
-            <div class="black-box">{{ raw_inspect }}</div>
+            <div class="black-box" id="{{ id }}-log-output"></div>
+            <script>
+                setInterval(function() {
+                    fill_log_output('/api/container/get_logs', {'id': '{{ id }}', 'line_num': 100}, '#{{ id }}-log-output')
+                }, 5000);
+            </script>
+
         </div>
         {% endif %}
         
@@ -117,8 +125,8 @@
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
     <script>
-        const interval = setInterval(function() {
-            fill_log_output('/api/repo/get_logs', {'name': '{{ name }}'})
+        setInterval(function() {
+            fill_log_output('/api/repo/get_logs', {'name': '{{ name }}'}, '#log-output')
         }, 2000);
     </script>
 </body>

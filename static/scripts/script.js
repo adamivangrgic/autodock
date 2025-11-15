@@ -42,8 +42,8 @@ function humanizeDate(dateString) {
     }
 }
 
-async function fill_log_output(url, context){
-    const element = document.querySelector('#log-output');
+async function fill_log_output(url, context, box_selector){
+    const element = document.querySelector(box_selector);
     try {
         const result = await apiCall(url, context);
         element.textContent = result;

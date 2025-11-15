@@ -48,7 +48,6 @@ async def get_remote_hash(url, branch='main'):
     log(f"Getting {url} {branch} hash")
 
     cmd = f"git ls-remote {url} refs/heads/{branch}"
-    # result = check_output(cmd)
     result = await asyncio.to_thread(check_output, cmd)
 
     return result.split()[0] if result else None
@@ -124,15 +123,12 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
 
 async def docker_container_action(action, container_id):
     cmd = f"docker {action} {container_id}"
-    # run_command(cmd)
     await asyncio.to_thread(run_command, cmd)
         
-
 async def docker_container_inspect(name):
     cmd = f"docker inspect --type=container {name}"
 
     try:
-        # raw_output = check_output(cmd)
         raw_output = await asyncio.to_thread(check_output, cmd)
         inspect_output = json.loads(raw_output)
     except:
@@ -140,3 +136,13 @@ async def docker_container_inspect(name):
         inspect_output = None
 
     return raw_output, inspect_output
+    
+async def docker_container_get_logs(container_id, num_of_lines=100):
+    cmd = f"docker logs -n {num_of_lines} {container_id}"
+
+    try:
+        output = await asyncio.to_thread(check_output, cmd)
+    except:
+        output = None
+
+    return output
