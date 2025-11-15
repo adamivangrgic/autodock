@@ -148,6 +148,11 @@ h2 {
     color: #991b1b;
 }
 
+.status-paused {
+    background: #fffbeb;
+    color: #b45309;
+}
+
 .status-not-available {
     background: #f3f4f6;
     color: #6b7280;
