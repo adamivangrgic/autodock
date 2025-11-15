@@ -5,8 +5,7 @@ def run_command(cmd, cwd='/'):
     print(f"SUBPROCESS: Running: {cmd}")
     result = subprocess.run(cmd, shell=True, cwd=cwd, check=True, text=True)
     if result.returncode != 0:
-        print(f"SUBPROCESS: Error: {result.stderr}")
-        raise Exception(f"SUBPROCESS: Command failed: {cmd}")
+        raise Exception(f"SUBPROCESS: {cmd} failed: {result.stderr}")
 
 def check_output(cmd, cwd='/'):
     print(f"SUBPROCESS: Checking output from: {cmd}")

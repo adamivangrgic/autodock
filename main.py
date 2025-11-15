@@ -182,7 +182,7 @@ async def api_repo_get_logs(payload: dict):
 # container
 
 @app.post("/api/container/{action}/")
-async def api_container_action(action, payload: dict):
+async def api_container_action(action, payload: dict, response: Response):
     # name = payload['name']
     container_id = payload['id']
 
@@ -198,10 +198,13 @@ async def api_container_action(action, payload: dict):
 
     if action not in allowed_actions:
         return None
-
-    docker_container_action(action, container_id)
-
-    return {'message': 'OK'}
+    
+    try:
+        await docker_container_action(action, container_id)
+        return {'message': 'OK'}
+    except Exception as e:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {'message': e}
 
 ## dashboard
 
