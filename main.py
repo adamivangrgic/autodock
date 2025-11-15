@@ -276,7 +276,7 @@ async def dash_config_save(
         name: Annotated[str, Form()],
         repourl: Annotated[str, Form()],
         branch: Annotated[str, Form()],
-        interval: Annotated[str, Form()],
+        interval: Annotated[int, Form()],
         buildcmd: Annotated[str, Form()],
         deploycmd: Annotated[str, Form()],
     ):
