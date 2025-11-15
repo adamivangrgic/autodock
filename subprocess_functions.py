@@ -1,13 +1,13 @@
 import os, subprocess
 import asyncio
 
-async def run_command(cmd, cwd='/'):
+def run_command(cmd, cwd='/'):
     print(f"SUBPROCESS: Running: {cmd}")
     result = subprocess.run(cmd, shell=True, cwd=cwd, check=True, text=True)
     if result.returncode != 0:
         raise Exception(f"SUBPROCESS: {cmd} failed: {result.stderr}")
 
-async def check_output(cmd, cwd='/'):
+def check_output(cmd, cwd='/'):
     print(f"SUBPROCESS: Checking output from: {cmd}")
     result = subprocess.check_output(cmd, shell=True, cwd=cwd, text=True, timeout=60)
     
