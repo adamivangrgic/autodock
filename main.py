@@ -20,6 +20,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
+scheduler = AsyncIOScheduler()
+
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -75,8 +77,8 @@ def configuration():
         globals.repo_data = {}
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
-    scheduler = AsyncIOScheduler()
-
+    scheduler.remove_all_jobs()
+    
     for name, repo in globals.config_data['repos'].items():
         if repo['interval'] > 0:
             scheduler.add_job(
