@@ -182,7 +182,7 @@ async def api_repo_get_logs(payload: dict):
 
 # container
 
-@app.post("/api/container/{action}/")
+@app.post("/api/container/action/{action}/")
 async def api_container_action(action, payload: dict, response: Response):
     container_id = payload['id']
 

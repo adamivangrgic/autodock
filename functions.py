@@ -140,11 +140,6 @@ async def docker_container_inspect(name):
     
 async def docker_container_get_logs(container_id, num_of_lines=100):
     cmd = f"docker logs -n {num_of_lines} {container_id}"
-
-    print(2)
-
     output = await asyncio.to_thread(check_output, cmd)
-
-    print(3, output)
 
     return output
