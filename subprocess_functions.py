@@ -1,6 +1,6 @@
 import os, subprocess
 import asyncio
-import shelx
+import shlex
 
 def run_command(cmd, cwd='/'):
     print(f"SUBPROCESS: Running: {cmd}")
