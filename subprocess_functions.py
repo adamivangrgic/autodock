@@ -9,7 +9,7 @@ def run_command(cmd, cwd='/'):
 
 def check_output(cmd, cwd='/'):
     print(f"SUBPROCESS: Checking output from: {cmd}")
-    result = subprocess.check_output(cmd, shell=True, cwd=cwd, text=True, timeout=60)
+    result = subprocess.check_output(cmd, shell=True, cwd=cwd, text=True, timeout=60, stderr=subprocess.STDOUT)
     
     return result if result else None
 
