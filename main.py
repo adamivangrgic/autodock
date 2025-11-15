@@ -22,7 +22,6 @@ from datetime import datetime
 
 
 app = FastAPI()
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -105,9 +104,8 @@ def configuration():
 async def startup_event():
     configuration()
 
-## api endpoints
-
-# repo
+##  api endpoints
+#   repo
 
 @app.post("/api/repo/clone/")
 async def api_repo_clone(payload: dict, response: Response):
@@ -180,7 +178,7 @@ async def api_repo_get_logs(payload: dict):
 
     return output
 
-# container
+#   container
 
 @app.post("/api/container/action/{action}/")
 async def api_container_action(action, payload: dict, response: Response):
@@ -294,7 +292,7 @@ async def dash_config_save(
     globals.config_data['repos'][name] = content
     write_and_reload_config_file()
 
-    return RedirectResponse(url=f"/config/edit/{name}/", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url=f"/details/{name}/", status_code=status.HTTP_302_FOUND)
 
 @app.get("/config/delete/{name}/", response_class=RedirectResponse)
 async def dash_config_delete(name):
