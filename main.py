@@ -54,7 +54,6 @@ def load_config_file(file_path):
 
 def write_config_file():
     globals.write_yaml_file(globals.CONFIG_FILE_PATH, globals.config_data)
-    # configuration()
 
 def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
@@ -219,7 +218,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def dash_index(request: Request):
-    content = globals.config_data['repos']
+    content = globals.config_data['repos'].copy()
     
     for name, repo in globals.config_data['repos'].items():
         raw_output, inspect_output = await docker_container_inspect(name)
@@ -235,7 +234,7 @@ async def dash_index(request: Request):
 
 @app.get("/details/{name}/", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
-    content = globals.config_data['repos'][name]
+    content = globals.config_data['repos'][name].copy()
     
     raw_output, inspect_output = await docker_container_inspect(name)
     content['inspect'] = inspect_output
