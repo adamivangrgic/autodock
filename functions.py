@@ -43,7 +43,7 @@ async def git_pull(name: str):
     log("Repo successfully pulled.")
 
 
-def get_remote_hash(url, branch='main'):
+async def get_remote_hash(url, branch='main'):
     log(f"Getting {url} {branch} hash")
 
     cmd = f"git ls-remote {url} refs/heads/{branch}"
