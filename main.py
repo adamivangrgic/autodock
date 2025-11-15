@@ -18,6 +18,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
+import asyncio
+
 
 app = FastAPI()
 
@@ -116,7 +118,13 @@ async def api_repo_clone(payload: dict, response: Response):
     branch = repo['branch']
 
     try:
-        await git_clone(name, url, branch)
+        # await git_clone(name, url, branch)
+        asyncio.to_thread(
+            git_clone,
+            name,
+            url,
+            branch
+        )
         return {'message': 'OK'}
     except Exception as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -125,7 +133,11 @@ async def api_repo_clone(payload: dict, response: Response):
 @app.post("/api/repo/pull/")
 async def api_repo_pull(payload: dict):
     name = payload['name']
-    await git_pull(name)
+    # await git_pull(name)
+    await asyncio.to_thread(
+        git_pull,
+        name
+    )
 
     return {'message': 'OK'}
 
@@ -138,7 +150,16 @@ async def api_repo_check(payload: dict, force: bool = False):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
 
-    await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=force)
+    # await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=force)
+    await asyncio.to_thread(
+        git_check,
+        name,
+        url,
+        branch,
+        build_command,
+        deploy_command,
+        ignore_hash_checks=force
+    )
 
     return {'message': 'OK'}
 
@@ -153,7 +174,13 @@ async def api_repo_build(payload: dict):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
-    await poll_output(build_command, repo_dir, callback=log_callback)
+    # await poll_output(build_command, repo_dir, callback=log_callback)
+    await asyncio.to_thread(
+        poll_output,
+        build_command,
+        repo_dir,
+        callback=log_callback
+    )
 
     return {'message': 'OK'}
 
@@ -168,7 +195,13 @@ async def api_repo_deploy(payload: dict):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
-    await poll_output(deploy_command, repo_dir, callback=log_callback)
+    # await poll_output(deploy_command, repo_dir, callback=log_callback)
+    await asyncio.to_thread(
+        poll_output,
+        deploy_command,
+        repo_dir,
+        callback=log_callback
+    )
 
     return {'message': 'OK'}
 

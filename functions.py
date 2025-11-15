@@ -24,7 +24,8 @@ async def git_clone(name: str, url: str, branch: str):
 
         log("Repo successfully cloned.", keyword=name)
     else:
-        log("Repository already exists.", keyword=name, raise_error=True)
+        log("Repository already exists.", keyword=name)
+        raise Exception("Repository already exists.")
 
 
 async def git_pull(name: str):
@@ -123,7 +124,6 @@ async def docker_container_action(action, container_id):
     cmd = f"docker {action} {container_id}"
     run_command(cmd)
         
-
 
 def docker_container_inspect(name):
     cmd = f"docker inspect --type=container {name}"
