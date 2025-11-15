@@ -233,7 +233,12 @@ async def api_container_action(action, payload: dict, response: Response):
         return None
     
     try:
-        await docker_container_action(action, container_id)
+        # await docker_container_action(action, container_id)
+        await asyncio.to_thread(
+            docker_container_action,
+            action,
+            container_id
+        )
         return {'message': 'OK'}
     except Exception as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
