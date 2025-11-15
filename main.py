@@ -106,6 +106,18 @@ async def startup_event():
     configuration()
     scheduler.start()
 
+##  event webhook
+
+@app.post("/webhook/{name}/")
+async def api_repo_pull(name, payload: dict):
+    repo = globals.config_data['repos'][name]
+    url = repo['repo_url']
+    branch = repo['branch']
+    build_command = repo['build_command']
+    deploy_command = repo['deploy_command']
+
+    await git_check(name, url, branch, build_command, deploy_command)
+
 ##  api endpoints
 #   repo
 
