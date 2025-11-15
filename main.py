@@ -16,7 +16,7 @@ from functions import docker_container_action, docker_container_inspect, docker_
 
 from subprocess_functions import poll_output
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
@@ -75,7 +75,7 @@ def configuration():
         globals.repo_data = {}
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
-    scheduler = BackgroundScheduler()
+    scheduler = AsyncIOScheduler()
 
     for name, repo in globals.config_data['repos'].items():
         if repo['interval'] > 0:
