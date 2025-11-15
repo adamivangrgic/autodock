@@ -258,8 +258,8 @@ async def dash_config_save(name, request: Request):
     else:
         content = {
             'repo_url': '',
-            'branch': '',
-            'interval': '',
+            'branch': 'main',
+            'interval': 0,
             'build_command': '',
             'deploy_command': '',
         }
