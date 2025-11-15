@@ -53,8 +53,9 @@ def load_config_file(file_path):
 
     return file
 
-def write_config_file():
+def write_and_reload_config_file():
     globals.write_yaml_file(globals.CONFIG_FILE_PATH, globals.config_data)
+    configuration()
 
 def configuration():
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
@@ -291,14 +292,14 @@ async def dash_config_save(
     }
 
     globals.config_data['repos'][name] = content
-    write_config_file()
+    write_and_reload_config_file()
 
     return RedirectResponse(url=f"/config/edit/{name}/", status_code=status.HTTP_302_FOUND)
 
 @app.get("/config/delete/{name}/", response_class=RedirectResponse)
 async def dash_config_delete(name):
     globals.config_data['repos'].pop(name, None)
-    write_config_file()
+    write_and_reload_config_file()
 
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
 
