@@ -143,6 +143,7 @@ async def docker_container_get_logs(container_id, num_of_lines=100):
 
     try:
         output = await asyncio.to_thread(check_output, cmd)
+        print('aaaaaaaaa' + output[:100])
     except Exception as e:
         output = None
         print(e)
