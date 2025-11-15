@@ -299,6 +299,9 @@ button, .button {
 
 .table-value {
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Wide screen - labels on left, values on right */

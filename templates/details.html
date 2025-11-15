@@ -109,12 +109,18 @@
                 </div>
             </div>
 
-            <h2>Log output</h2>
+
+            <div class="element-row">
+                <h2>Log output</h2>
+                <p class="right-align">Number of lines: </p>
+                <input type="number" id="line_num" value="100"> 
+            </div>
             
             <div class="black-box" id="log-output-{{ id }}"></div>
             <script>
                 setInterval(function() {
-                    fill_log_output('/api/container/get_logs', {'id': '{{ id }}', 'line_num': 100}, '#log-output-{{ id }}')
+                    var line_num = document.querySelector('#line_num').value;
+                    fill_log_output('/api/container/get_logs', {'id': '{{ id }}', 'line_num': line_num}, '#log-output-{{ id }}')
                 }, 5000);
             </script>
 
