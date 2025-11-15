@@ -131,9 +131,10 @@ async def docker_container_inspect(name):
     try:
         raw_output = await asyncio.to_thread(check_output, cmd)
         inspect_output = json.loads(raw_output)
-    except:
+    except Exception as e:
         raw_output = None
         inspect_output = None
+        print(e)
 
     return raw_output, inspect_output
     
@@ -142,7 +143,8 @@ async def docker_container_get_logs(container_id, num_of_lines=100):
 
     try:
         output = await asyncio.to_thread(check_output, cmd)
-    except:
+    except Exception as e:
         output = None
+        print(e)
 
     return output
