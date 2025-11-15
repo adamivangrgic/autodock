@@ -15,7 +15,7 @@ async def git_clone(name: str, url: str, branch: str):
     log(f"Cloning into repo {url} {branch}", keyword=name)
 
     if not os.path.exists(os.path.join(repo_dir, ".git")):
-        cmd = f"git clone --branch {branch} --single-branch {repo_url} {repo_dir}"
+        cmd = f"git clone --branch {branch} --single-branch {url} {repo_dir}"
 
         def log_callback(line):
             log(line, keyword=name, print_message=False)
@@ -43,10 +43,10 @@ async def git_pull(name: str):
     log("Repo successfully pulled.")
 
 
-def get_remote_hash(repo_url, branch='main'):
-    log(f"Getting {repo_url} {branch} hash")
+def get_remote_hash(url, branch='main'):
+    log(f"Getting {url} {branch} hash")
 
-    cmd = f"git ls-remote {repo_url} refs/heads/{branch}"
+    cmd = f"git ls-remote {url} refs/heads/{branch}"
     result = check_output(cmd)
 
     return result.split()[0] if result else None
