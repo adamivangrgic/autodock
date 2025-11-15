@@ -206,7 +206,7 @@ async def api_container_action(action, payload: dict, response: Response):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {'message': e}
 
-@app.post("/api/continer/get_logs/")
+@app.post("/api/container/get_logs/")
 async def api_container_get_logs(payload: dict):
     container_id = payload['id']
     num_of_lines = payload.get('line_num', 100)
