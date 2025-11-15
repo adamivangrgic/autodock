@@ -218,7 +218,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def dash_index(request: Request):
-    content = globals.config_data['repos'].copy()
+    content = dict(globals.config_data['repos'])
     
     for name, repo in globals.config_data['repos'].items():
         raw_output, inspect_output = await docker_container_inspect(name)
@@ -234,7 +234,7 @@ async def dash_index(request: Request):
 
 @app.get("/details/{name}/", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
-    content = globals.config_data['repos'][name].copy()
+    content = dict(globals.config_data['repos'][name])
     
     raw_output, inspect_output = await docker_container_inspect(name)
     content['inspect'] = inspect_output
