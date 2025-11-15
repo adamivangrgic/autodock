@@ -104,6 +104,7 @@ def configuration():
 @app.on_event("startup")
 async def startup_event():
     configuration()
+    scheduler.start()
 
 ##  api endpoints
 #   repo
@@ -309,4 +310,3 @@ async def dash_config_delete(name):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8080)
-    scheduler.start()
