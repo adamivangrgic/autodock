@@ -111,7 +111,7 @@
 
             <h2>Log output</h2>
             
-            <div class="black-box" id="log-output-"></div>
+            <div class="black-box" id="log-output-{{ id }}"></div>
             <script>
                 setInterval(function() {
                     fill_log_output('/api/container/get_logs', {'id': '{{ id }}', 'line_num': 100}, '#log-output-{{ id }}')
