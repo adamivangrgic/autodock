@@ -78,10 +78,10 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     else:
         if globals.repo_data[name]['stages']['update'] == None:
             # never cloned, clone entire repo
-            git_clone(name, url, branch)
+            await git_clone(name, url, branch)
         else:
             # otherwise pull changes
-            git_pull(name)
+            await git_pull(name)
         
         globals.repo_data[name]['stages']['update'] = new_hash
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)

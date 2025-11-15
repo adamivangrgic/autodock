@@ -16,15 +16,6 @@ def check_output(cmd, cwd='/'):
 async def poll_output(cmd, cwd='/', callback=None):
     print(f"SUBPROCESS: Polling output from: {cmd}")
     
-    async def read_output(proc, cb):
-        while True:
-            line = await proc.stdout.readline()
-            if not line:
-                break
-            line = line.decode().strip()
-            if cb:
-                cb(line)
-        
     process = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -32,9 +23,25 @@ async def poll_output(cmd, cwd='/', callback=None):
         cwd=cwd
     )
     
-    read_task = asyncio.create_task(read_output(process, callback))
-    
     try:
-        await process.wait()
+        lines_processed = 0
+        while True:
+            line = await process.stdout.readline()
+            if not line:  # EOF
+                break
+                
+            line = line.decode().strip()
+            if callback:
+                callback(line)
+            else:
+                print(line)
+            
+            lines_processed += 1
+            # Yield control every 5 lines to prevent blocking
+            if lines_processed % 5 == 0:
+                await asyncio.sleep(0)
+                
+    except Exception as e:
+        print(f"Error reading output: {e}")
     finally:
-        await read_task
+        await process.wait()
