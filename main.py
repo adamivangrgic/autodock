@@ -211,12 +211,7 @@ async def api_container_get_logs(payload: dict):
     container_id = payload['id']
     num_of_lines = payload.get('line_num', 100)
     
-    try:
-        output = await docker_container_get_logs(container_id, num_of_lines)
-        return {'message': 'OK'}
-    except Exception as e:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {'message': e}
+    output = await docker_container_get_logs(container_id, num_of_lines)
 
     return output
 
