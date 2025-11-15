@@ -47,7 +47,7 @@ async def get_remote_hash(url, branch='main'):
     log(f"Getting {url} {branch} hash")
 
     cmd = f"git ls-remote {url} refs/heads/{branch}"
-    result = check_output(cmd)
+    result = await check_output(cmd)
 
     return result.split()[0] if result else None
 
@@ -122,14 +122,14 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
 
 async def docker_container_action(action, container_id):
     cmd = f"docker {action} {container_id}"
-    run_command(cmd)
+    await run_command(cmd)
         
 
 async def docker_container_inspect(name):
     cmd = f"docker inspect --type=container {name}"
 
     try:
-        raw_output = check_output(cmd)
+        raw_output = await check_output(cmd)
         inspect_output = json.loads(raw_output)
     except:
         raw_output = None
