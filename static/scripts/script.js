@@ -44,17 +44,39 @@ function humanizeDate(dateString) {
 
 async function fill_log_output(url, context, box_selector){
     const element = document.querySelector(box_selector);
-    const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+
+    const scrollTopBefore = element.scrollTop;
+    const clientHeight = element.clientHeight;
 
     try {
         const result = await apiCall(url, context);
+        
+        const topChild = getChildAtScrollPosition(element, scrollTopBefore);
+        
         element.textContent = result;
+        
+        if (topChild && element.contains(topChild)) {
+            topChild.scrollIntoView({ block: 'start' });
+        } else {
+            element.scrollTop = scrollTopBefore;
+        }
     } catch (error) {
         element.textContent = 'Error: ' + error.message;
+        element.scrollTop = scrollTopBefore;
     }
 
-    if (isNearBottom) {
-        element.scrollTop = element.scrollHeight;
+    function getChildAtScrollPosition(container, scrollTop) {
+        const children = container.children;
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            const offsetTop = child.offsetTop;
+            const height = child.offsetHeight;
+            
+            if (scrollTop >= offsetTop && scrollTop < offsetTop + height) {
+                return child;
+            }
+        }
+        return children[0] || null;
     }
 }
 
