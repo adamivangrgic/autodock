@@ -281,6 +281,8 @@ async def dash_config_save(
         deploycmd: Annotated[str, Form()],
     ):
 
+    name = name.strip()
+
     content = {
         'repo_url': repourl,
         'branch': branch,
