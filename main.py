@@ -20,9 +20,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
-
 scheduler = AsyncIOScheduler()
-scheduler.start()
 
 
 app = FastAPI()
@@ -101,7 +99,7 @@ def configuration():
 
             print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
-    print("CONFIGURATION: scheduler jobs added")
+    print("CONFIGURATION: done.")
 
 @app.on_event("startup")
 async def startup_event():
@@ -311,3 +309,4 @@ async def dash_config_delete(name):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8080)
+    scheduler.start()
