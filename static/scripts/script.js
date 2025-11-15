@@ -44,14 +44,18 @@ function humanizeDate(dateString) {
 
 async function fill_log_output(url, context, box_selector){
     const element = document.querySelector(box_selector);
+    const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+
     try {
         const result = await apiCall(url, context);
         element.textContent = result;
     } catch (error) {
         element.textContent = 'Error: ' + error.message;
     }
-    
-    element.scrollTop = element.scrollHeight;
+
+    if (isNearBottom) {
+        element.scrollTop = element.scrollHeight;
+    }
 }
 
 // 
