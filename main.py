@@ -210,6 +210,8 @@ async def api_container_action(action, payload: dict, response: Response):
 async def api_container_get_logs(payload: dict):
     container_id = payload['id']
     num_of_lines = payload.get('line_num', 100)
+
+    print(1)
     
     output = await docker_container_get_logs(container_id, num_of_lines)
 
