@@ -20,7 +20,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
+
 scheduler = AsyncIOScheduler()
+scheduler.start()
 
 
 app = FastAPI()
@@ -99,8 +101,7 @@ def configuration():
 
             print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
     
-    scheduler.start()
-    print("CONFIGURATION: scheduler started")
+    print("CONFIGURATION: scheduler jobs added")
 
 @app.on_event("startup")
 async def startup_event():
