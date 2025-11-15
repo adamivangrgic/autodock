@@ -24,22 +24,20 @@ async def poll_output(cmd, cwd='/', callback=None):
     )
     
     try:
-        lines_processed = 0
         while True:
-            line = await process.stdout.readline()
-            if not line:  # EOF
+            try:
+                line = await asyncio.wait_for(process.stdout.readline(), timeout=0.1)
+            except asyncio.TimeoutError:
+                if process.returncode is not None:
+                    break
+                continue
+                
+            if not line:
                 break
                 
             line = line.decode().strip()
             if callback:
                 callback(line)
-            else:
-                print(line)
-            
-            lines_processed += 1
-            # Yield control every 5 lines to prevent blocking
-            if lines_processed % 5 == 0:
-                await asyncio.sleep(0)
                 
     except Exception as e:
         print(f"Error reading output: {e}")

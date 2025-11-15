@@ -64,7 +64,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
             }
         }
     
-    new_hash = get_remote_hash(url, branch)
+    new_hash = await get_remote_hash(url, branch)
     
     log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
 
@@ -125,7 +125,7 @@ async def docker_container_action(action, container_id):
     run_command(cmd)
         
 
-def docker_container_inspect(name):
+async def docker_container_inspect(name):
     cmd = f"docker inspect --type=container {name}"
 
     try:
