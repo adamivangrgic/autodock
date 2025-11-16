@@ -119,7 +119,7 @@ async def startup_event():
 ##  event webhook
 
 @app.post("/webhook/{name}/")
-async def api_repo_pull(name, payload: dict):
+async def api_repo_pull(name):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
@@ -127,6 +127,8 @@ async def api_repo_pull(name, payload: dict):
     deploy_command = repo['deploy_command']
 
     await git_check(name, url, branch, build_command, deploy_command)
+
+    return {'message': 'OK'}
 
 ##  api endpoints
 #   repo
