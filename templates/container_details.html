@@ -19,6 +19,7 @@
         
         <div class="card">
             {% set id = container[0]['Id'] %}
+            {% set image = container[0]['Image'] %}
             {% set created = container[0]['Created'] %}
             {% set started = container[0]['State']['StartedAt'] %}
             {% set status = container[0]['State']['Status'] %}
