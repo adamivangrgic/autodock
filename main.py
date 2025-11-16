@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 import globals
 from globals import log, filter_log
@@ -328,4 +328,10 @@ async def dash_config_delete(name):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8080)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8080,
+        proxy_headers=True,
+        forwarded_allow_ips="*"
+        )
