@@ -266,7 +266,7 @@ async def dash_repo_details(name, request: Request):
         context={
             "name": name,
             "repo": repo,
-            "container": container;
+            "container": container,
             "HOST_ADDRESS": globals.config_data['host_address']
             }
     )
