@@ -27,6 +27,16 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+environment = os.getenv("ENVIRONMENT", "development").lower()
+
+if environment == "production":
+    from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+    app.add_middleware(HTTPSRedirectMiddleware)
+    print("HTTPS redirect middleware enabled (production)")
+else:
+    print(f"Running in {environment} mode - no HTTPS redirect")
+
+
 def load_config_file(file_path):
     file = globals.read_yaml_file(file_path)
 
