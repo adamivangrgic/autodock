@@ -194,7 +194,7 @@ async def api_repo_deploy(payload: dict):
 @app.post("/api/repo/get_logs")
 async def api_repo_get_logs(payload: dict):
     name = payload['name']
-    num_of_lines = payload.get('line_num', 100)
+    num_of_lines = int(payload.get('line_num', 100))
     output = filter_log(name, num_of_lines)
 
     return output
