@@ -277,8 +277,8 @@ async def dash_repo_details(name, request: Request):
             }
     )
 
-@app.get("/config/edit/{name}", response_class=HTMLResponse)
-async def dash_config_save(name, request: Request):
+@app.get("/repo/edit/{name}", response_class=HTMLResponse)
+async def dash_repo_save(name, request: Request):
     if name != 'new_repo_config':
         content = globals.config_data['repos'][name]
     else:
@@ -298,8 +298,8 @@ async def dash_config_save(name, request: Request):
             }
     )
 
-@app.post("/config/save", response_class=RedirectResponse)
-async def dash_config_save(
+@app.post("/repo/save", response_class=RedirectResponse)
+async def dash_repo_save(
         name: Annotated[str, Form()],
         repourl: Annotated[str, Form()],
         branch: Annotated[str, Form()],
@@ -323,8 +323,8 @@ async def dash_config_save(
 
     return RedirectResponse(url=f"/repo/{name}", status_code=status.HTTP_302_FOUND)
 
-@app.get("/config/delete/{name}", response_class=RedirectResponse)
-async def dash_config_delete(name):
+@app.get("/repo/delete/{name}", response_class=RedirectResponse)
+async def dash_repo_delete(name):
     globals.config_data['repos'].pop(name, None)
     write_and_reload_config_file()
 

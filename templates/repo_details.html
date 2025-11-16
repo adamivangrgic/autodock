@@ -28,8 +28,8 @@
                 <button class="button-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
                 <button class="button-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
 
-                <a class="button button-primary right-align"  href="/config/edit/{{ name }}" type="button">Edit configuration</a>
-                <a class="button button-error"  href="/config/delete/{{ name }}" type="button">Delete</a>
+                <a class="button button-primary right-align"  href="/repo/edit/{{ name }}" type="button">Edit configuration</a>
+                <a class="button button-error"  href="/repo/delete/{{ name }}" type="button">Delete</a>
             </div>
 
             <div class="table">
