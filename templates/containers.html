@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <title>Containers - autodock</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <p class="element-row">
+                <a href="/">Repositories</a>
+                <a href="/containers">Containers</a>
+                <a href="/images">Images</a>
+            </p>
+            <h1>Containers</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="list-header">
+                <div>Name</div>
+                <div>Status</div>
+                <div>Created</div>
+                <div>Ports</div>
+            </div>
+            
+            {% for container in content %}
+            <div class="repo">
+                {% set name = container['Names'] %}
+                {% set created = container['RunningFor'] %}
+                {% set status = container['Status'] %}
+                <div class="list-row">
+                    <a href="/details/{{ name }}" class="repo-name" data-label="Name">{{ name }}</a>
+                    <div class="status-container" data-label="Status">
+                        <div class="status status-{{ status }}">{{ status }}</div>
+                    </div>
+                    <div data-date="{{ created }}" data-label="Created"></div>
+                    <div class="ports" data-label="Ports">
+                    {% for port in container['Ports'] %}
+                        <a target="_blank" rel="noopener noreferrer" href="" class="port-link">{{ port }}</a>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>

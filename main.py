@@ -14,7 +14,7 @@ import globals
 from globals import log, filter_log
 
 from functions import git_check, git_clone, git_pull
-from functions import docker_container_action, docker_container_inspect, docker_container_get_logs
+from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list
 
 from subprocess_functions import poll_output
 
@@ -250,6 +250,18 @@ async def dash_index(request: Request):
 
     return templates.TemplateResponse(
         request=request, name="index.html", 
+        context={
+            "content": content, 
+            "HOST_ADDRESS": globals.config_data['host_address']
+            }
+    )
+
+@app.get("/containers", response_class=HTMLResponse)
+async def dash_containers(request: Request):
+    content = docker_container_list()
+
+    return templates.TemplateResponse(
+        request=request, name="containers.html", 
         context={
             "content": content, 
             "HOST_ADDRESS": globals.config_data['host_address']

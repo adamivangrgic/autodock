@@ -143,3 +143,12 @@ async def docker_container_get_logs(container_id, num_of_lines=100):
     output = await asyncio.to_thread(check_output, cmd)
 
     return output
+
+async def docker_container_list():
+    cmd = "docker ps --format json"
+    raw_otput = await asyncio.to_thread(check_output, cmd)
+
+    json_string = "[{}]".format(raw_otput.replace('\n', ','))
+    output = json.loads(raw_output)
+
+    return output
