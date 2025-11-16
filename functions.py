@@ -151,6 +151,8 @@ async def docker_container_list():
     string_list = raw_otput.split('\n')
     output = []
 
+    print(string_list)
+
     for string in string_list:
         values = string.split(';')
         
