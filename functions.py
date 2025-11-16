@@ -148,7 +148,11 @@ async def docker_container_list():
     cmd = "docker ps --format json"
     raw_otput = await asyncio.to_thread(check_output, cmd)
 
-    json_string = "[{}]".format(raw_otput.replace('\n', ','))
-    output = json.loads(json_string)
+    string_list = raw_otput.split('\n')
+    output = []
+
+    for string in string_list:
+        container = json.loads(string)
+        output.append(container)
 
     return output
