@@ -151,16 +151,15 @@ async def docker_container_list():
     string_list = raw_otput.split('\n')
     output = []
 
-    print(string_list)
-
     for string in string_list:
-        values = string.split(';')
-        
-        output.append({
-            'name': values[0],
-            'status': values[1],
-            'created': values[2],
-            'ports': values[3].split(', '),
-        })
+        if string:
+            values = string.split(';')
+            
+            output.append({
+                'name': values[0],
+                'status': values[1],
+                'created': values[2],
+                'ports': values[3].split(', '),
+            })
 
     return output
