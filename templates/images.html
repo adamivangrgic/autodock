@@ -33,7 +33,9 @@
                 {% set created = image['CreatedAt'] %}
                 {% set size = image['Size'] %}
                 <div class="list-row column-spacing-images">
-                    <div data-label="Id">{{ id }}</div>
+                    <div data-label="Id">
+                        <a href="/image/{{ id }}" class="list-item-name">{{ id }}</a>
+                    </div>
                     <div class="link-list" data-label="Tag">
                         <a href="" class="link">{{ repo }}:{{ tag }}</a>
                     </div>

@@ -33,7 +33,9 @@
                 {% set status = container['State'] %}
                 {% set created = container['CreatedAt'] %}
                 <div class="list-row column-spacing-containers">
-                    <a href="/container/{{ id }}" class="list-item-name" data-label="Name">{{ name }}</a>
+                    <div data-label="Name">
+                        <a href="/container/{{ id }}" class="list-item-name">{{ name }}</a>
+                    </div>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
