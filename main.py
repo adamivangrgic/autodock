@@ -2,6 +2,7 @@ import os
 import json
 from typing import Dict, Any, Annotated
 from copy import deepcopy
+import asyncio
 
 from fastapi import FastAPI, Request, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -120,9 +121,11 @@ async def api_repo_pull(name):
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
 
-    await git_check(name, url, branch, build_command, deploy_command)
+    asyncio.create_task(
+        git_check(name, url, branch, build_command, deploy_command)
+    )
 
-    return {'message': 'OK'}
+    return {'message': 'Webhook recieved'}
 
 ##  api endpoints
 #   repo
