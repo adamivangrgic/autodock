@@ -27,7 +27,6 @@ scheduler = AsyncIOScheduler()
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
 trusted_host = os.getenv("TRUSTED_HOST", "*")
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=[trusted_host])
 
@@ -113,7 +112,7 @@ async def startup_event():
 
 ##  event webhook
 
-@app.post("/webhook/{name}/")
+@app.post("/webhook/{name}")
 async def api_repo_pull(name):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
@@ -128,7 +127,7 @@ async def api_repo_pull(name):
 ##  api endpoints
 #   repo
 
-@app.post("/api/repo/clone/")
+@app.post("/api/repo/clone")
 async def api_repo_clone(payload: dict, response: Response):
     name = payload['name']
     repo = globals.config_data['repos'][name]
@@ -142,14 +141,14 @@ async def api_repo_clone(payload: dict, response: Response):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {'message': e}
 
-@app.post("/api/repo/pull/")
+@app.post("/api/repo/pull")
 async def api_repo_pull(payload: dict):
     name = payload['name']
     await git_pull(name)
 
     return {'message': 'OK'}
 
-@app.post("/api/repo/check/")
+@app.post("/api/repo/check")
 async def api_repo_check(payload: dict, force: bool = False):
     name = payload['name']
     repo = globals.config_data['repos'][name]
@@ -162,7 +161,7 @@ async def api_repo_check(payload: dict, force: bool = False):
 
     return {'message': 'OK'}
 
-@app.post("/api/repo/build/")
+@app.post("/api/repo/build")
 async def api_repo_build(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
@@ -177,7 +176,7 @@ async def api_repo_build(payload: dict):
 
     return {'message': 'OK'}
 
-@app.post("/api/repo/deploy/")
+@app.post("/api/repo/deploy")
 async def api_repo_deploy(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
@@ -192,7 +191,7 @@ async def api_repo_deploy(payload: dict):
 
     return {'message': 'OK'}
 
-@app.post("/api/repo/get_logs/")
+@app.post("/api/repo/get_logs")
 async def api_repo_get_logs(payload: dict):
     name = payload['name']
     output = filter_log(name)
@@ -201,7 +200,7 @@ async def api_repo_get_logs(payload: dict):
 
 #   container
 
-@app.post("/api/container/action/{action}/")
+@app.post("/api/container/action/{action}")
 async def api_container_action(action, payload: dict, response: Response):
     container_id = payload['id']
 
@@ -225,7 +224,7 @@ async def api_container_action(action, payload: dict, response: Response):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {'message': e}
 
-@app.post("/api/container/get_logs/")
+@app.post("/api/container/get_logs")
 async def api_container_get_logs(payload: dict):
     container_id = payload['id']
     num_of_lines = payload.get('line_num', 100)
@@ -253,7 +252,7 @@ async def dash_index(request: Request):
             }
     )
 
-@app.get("/details/{name}/", response_class=HTMLResponse)
+@app.get("/details/{name}", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
     content = deepcopy(globals.config_data['repos'][name])
     
@@ -271,7 +270,7 @@ async def dash_details(name, request: Request):
             }
     )
 
-@app.get("/config/edit/{name}/", response_class=HTMLResponse)
+@app.get("/config/edit/{name}", response_class=HTMLResponse)
 async def dash_config_save(name, request: Request):
     if name != 'new_repo_config':
         content = globals.config_data['repos'][name]
@@ -292,7 +291,7 @@ async def dash_config_save(name, request: Request):
             }
     )
 
-@app.post("/config/save/", response_class=RedirectResponse)
+@app.post("/config/save", response_class=RedirectResponse)
 async def dash_config_save(
         name: Annotated[str, Form()],
         repourl: Annotated[str, Form()],
@@ -315,9 +314,9 @@ async def dash_config_save(
     globals.config_data['repos'][name] = content
     write_and_reload_config_file()
 
-    return RedirectResponse(url=f"/details/{name}/", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url=f"/details/{name}", status_code=status.HTTP_302_FOUND)
 
-@app.get("/config/delete/{name}/", response_class=RedirectResponse)
+@app.get("/config/delete/{name}", response_class=RedirectResponse)
 async def dash_config_delete(name):
     globals.config_data['repos'].pop(name, None)
     write_and_reload_config_file()
