@@ -22,9 +22,9 @@ def log(message, keyword='default', print_message=True):
 
     log_output[keyword].append(message)
 
-def filter_log(keyword):
+def filter_log(keyword, num_of_lines=100):
     if keyword in log_output:
-        return "\n".join(log_output[keyword])
+        return "\n".join(log_output[keyword][-num_of_lines:])
     else:
         return ''
 

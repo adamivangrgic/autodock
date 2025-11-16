@@ -61,8 +61,21 @@
 
         
         <div class="card">
-            <h2>Log output</h2>
-            <div class="black-box" id="log-output">{{ log_output }}</div>
+            <div class="element-row">
+                <h2>Log output</h2>
+                <span class="right-align">Number of lines: </span>
+                <input type="number" id="line-num" value="100"> 
+            </div>
+
+            <div class="black-box" id="log-output"></div>
+            
+            <script>
+                setInterval(function() {
+                    fill_log_output('/api/repo/get_logs', 
+                        {'name': '{{ name }}', 'line_num': document.querySelector('#line-num').value}, 
+                        '#log-output')
+                }, 2000);
+            </script>
         </div>
 
         {% if repo['inspect'] %}
@@ -113,18 +126,18 @@
                 </div>
             </div>
 
-
             <div class="element-row">
                 <h2>Log output</h2>
                 <span class="right-align">Number of lines: </span>
-                <input type="number" id="line_num" value="100"> 
+                <input type="number" id="line-num-{{ id }}" value="100"> 
             </div>
             
             <div class="black-box" id="log-output-{{ id }}"></div>
             <script>
                 setInterval(function() {
-                    var line_num = document.querySelector('#line_num').value;
-                    fill_log_output('/api/container/get_logs', {'id': '{{ id }}', 'line_num': line_num}, '#log-output-{{ id }}')
+                    fill_log_output('/api/container/get_logs', 
+                        {'id': '{{ id }}', 'line_num': document.querySelector('#line-num-{{ id }}').value}, 
+                        '#log-output-{{ id }}')
                 }, 5000);
             </script>
 
@@ -134,11 +147,6 @@
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-    <script>
-        setInterval(function() {
-            fill_log_output('/api/repo/get_logs', {'name': '{{ name }}'}, '#log-output')
-        }, 2000);
-    </script>
 </body>
 
 </html>
