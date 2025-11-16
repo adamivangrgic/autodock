@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request, Form, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 import globals
 from globals import log, filter_log
@@ -27,14 +28,8 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-environment = os.getenv("ENVIRONMENT", "development").lower()
-
-if environment == "production":
-    from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-    app.add_middleware(HTTPSRedirectMiddleware)
-    print("HTTPS redirect middleware enabled (production)")
-else:
-    print(f"Running in {environment} mode - no HTTPS redirect")
+trusted_host = os.getenv("TRUSTED_HOST", "*")
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=[trusted_host])
 
 
 def load_config_file(file_path):
