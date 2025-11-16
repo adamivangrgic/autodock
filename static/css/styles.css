@@ -84,7 +84,7 @@ h2 {
 /* Rest of your existing CSS remains the same */
 .list-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
     gap: 1rem;
     padding: 1.5rem 2rem;
     background: var(--primary);
@@ -102,6 +102,14 @@ h2 {
     transition: all 0.3s ease;
     position: relative;
     padding: 2rem;
+    display: grid;
+    gap: 1.5rem;
+}
+
+.list-item > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .list-item:last-child {
@@ -116,9 +124,8 @@ h2 {
 
 .list-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
     gap: 1rem;
-    padding-bottom: 1.5rem;
     align-items: center;
 }
 
