@@ -20,7 +20,6 @@
         <div class="main-content">
             <div class="list-header column-spacing-images">
                 <div>Id</div>
-                <div>Repository</div>
                 <div>Tag</div>
                 <div>Created</div>
                 <div>Size</div>
@@ -40,7 +39,7 @@
                     <div class="link-list" data-label="Tag">
                         <a href="" class="link">{{ repo }}:{{ tag }}</a>
                     </div>
-                    <div data-label="Created">{{ created }}</div>
+                    <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
                 </div>
             </div>

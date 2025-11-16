@@ -31,13 +31,13 @@
                 {% set name = container['Names'] %}
                 {% set image = container['Image'] %}
                 {% set status = container['State'] %}
-                {% set created = container['RunningFor'] %}
+                {% set created = container['CreatedAt'] %}
                 <div class="list-row column-spacing-auto">
                     <a href="/container/{{ id }}" class="list-item-name" data-label="Name">{{ name }}</a>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
-                    <div data-label="Created">{{ created }}</div>
+                    <div data-date="{{ created }}" data-label="Created"></div>
                     <div class="link-list" data-label="Image">
                         <a href="" class="link">{{ image }}</a>
                     </div>
