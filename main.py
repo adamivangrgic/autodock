@@ -258,7 +258,7 @@ async def dash_index(request: Request):
 
 @app.get("/containers", response_class=HTMLResponse)
 async def dash_containers(request: Request):
-    content = docker_container_list()
+    content = await docker_container_list()
 
     return templates.TemplateResponse(
         request=request, name="containers.html", 
