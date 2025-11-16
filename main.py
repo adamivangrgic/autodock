@@ -14,7 +14,7 @@ import globals
 from globals import log, filter_log
 
 from functions import git_check, git_clone, git_pull
-from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list
+from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
 
 from subprocess_functions import poll_output
 
