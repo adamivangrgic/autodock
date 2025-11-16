@@ -23,7 +23,6 @@
                 <div>Image</div>
                 <div>Status</div>
                 <div>Created</div>
-                <div>Ports</div>
             </div>
             
             {% for container in content %}
@@ -35,17 +34,12 @@
                 {% set created = container['RunningFor'] %}
                 <div class="list-row">
                     <a href="/container/{{ id }}" class="list-item-name" data-label="Name">{{ name }}</a>
-                    <a href="" class="link" data-label="Image">{{ image }}</a>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
                     <div data-label="Created">{{ created }}</div>
-                    <div class="link-list" data-label="Ports">
-                    {% for port in container['Ports'] %}
-                    {% if port %}
-                        <a target="_blank" rel="noopener noreferrer" href="" class="link">{{ port }}</a>
-                    {% endif %}
-                    {% endfor %}
+                    <div class="link-list" data-label="Image">
+                        <a href="" class="link">{{ image }}</a>
                     </div>
                 </div>
             </div>
