@@ -256,29 +256,15 @@ async def dash_index(request: Request):
             }
     )
 
-@app.get("/containers", response_class=HTMLResponse)
-async def dash_containers(request: Request):
-    content = await docker_container_list()
-
-    return templates.TemplateResponse(
-        request=request, name="containers.html", 
-        context={
-            "content": content, 
-            "HOST_ADDRESS": globals.config_data['host_address']
-            }
-    )
-
-@app.get("/details/{name}", response_class=HTMLResponse)
-async def dash_details(name, request: Request):
+@app.get("/repo/{name}", response_class=HTMLResponse)
+async def dash_repo_details(name, request: Request):
     repo = globals.config_data['repos'].get(name, None)
-    raw_container_output, container = await docker_container_inspect(name)
 
     return templates.TemplateResponse(
-        request=request, name="details.html", 
+        request=request, name="repo_details.html", 
         context={
             "name": name,
             "repo": repo,
-            "container": container,
             "HOST_ADDRESS": globals.config_data['host_address']
             }
     )
@@ -327,7 +313,7 @@ async def dash_config_save(
     globals.config_data['repos'][name] = content
     write_and_reload_config_file()
 
-    return RedirectResponse(url=f"/details/{name}", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url=f"/repo/{name}", status_code=status.HTTP_302_FOUND)
 
 @app.get("/config/delete/{name}", response_class=RedirectResponse)
 async def dash_config_delete(name):
@@ -335,6 +321,30 @@ async def dash_config_delete(name):
     write_and_reload_config_file()
 
     return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+
+@app.get("/containers", response_class=HTMLResponse)
+async def dash_containers(request: Request):
+    content = await docker_container_list()
+
+    return templates.TemplateResponse(
+        request=request, name="containers.html", 
+        context={
+            "content": content, 
+            "HOST_ADDRESS": globals.config_data['host_address']
+            }
+    )
+
+@app.get("/container/{container_id}", response_class=HTMLResponse)
+async def dash_container_details(container_id, request: Request):
+    raw_container_output, container = await docker_container_inspect(container_id)
+
+    return templates.TemplateResponse(
+        request=request, name="container_details.html", 
+        context={
+            "container": container,
+            "HOST_ADDRESS": globals.config_data['host_address']
+            }
+    )
 
 ##
 

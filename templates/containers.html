@@ -27,11 +27,12 @@
             
             {% for container in content %}
             <div class="repo">
+                {% set id = container['Id'] %}
                 {% set name = container['Names'] %}
                 {% set status = container['State'] %}
                 {% set created = container['RunningFor'] %}
                 <div class="list-row">
-                    <a href="/details/{{ name }}" class="repo-name" data-label="Name">{{ name }}</a>
+                    <a href="/container/{{ id }}" class="repo-name" data-label="Name">{{ name }}</a>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>

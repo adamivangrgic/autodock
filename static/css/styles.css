@@ -45,6 +45,7 @@ h1 {
     color: var(--header-text);
     font-size: 1.8rem;
     font-weight: 600;
+    margin-top: 1rem;
 }
 
 h2 {
@@ -95,7 +96,7 @@ h2 {
 }
 
 /* Repo Item Styles */
-.repo {
+.list-item {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     transition: all 0.3s ease;
@@ -103,11 +104,11 @@ h2 {
     padding: 2rem;
 }
 
-.repo:last-child {
+.list-item:last-child {
     border-bottom: none;
 }
 
-.repo:hover {
+.list-item:hover {
     background: #f8fafc;
     transform: translateY(-2px);
     box-shadow: var(--shadow);
@@ -121,7 +122,7 @@ h2 {
     align-items: center;
 }
 
-.repo-name {
+.list-item-name {
     font-weight: 600;
     color: var(--text-primary);
     font-size: 1.1rem;
@@ -399,7 +400,7 @@ button, .button {
     }
 }
 
-.repo {
+.list-item {
     animation: fadeIn 0.5s ease forwards;
 }
 

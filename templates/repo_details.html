@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <title>{{ name }} - autodock</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <p class="element-row">
+                <a href="/">Repositories</a><span>></span>
+                <a>{{ name }}</a>
+            </p>
+            <h1>{{ name }}</h1>
+        </div>
+
+        {% if repo %}
+        <div class="card">
+            <h2>Repository configuration</h2>
+
+            <div class="element-row">
+                <button class="button-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                <button class="button-primary" onclick="apiCall('/api/repo/check/?force=True', {'name': '{{ name }}'})">Check (force)</button>
+                <button class="button-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                <button class="button-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                <button class="button-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                <button class="button-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+
+                <a class="button button-primary right-align"  href="/config/edit/{{ name }}" type="button">Edit configuration</a>
+                <a class="button button-error"  href="/config/delete/{{ name }}" type="button">Delete</a>
+            </div>
+
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Name</div>
+                    <div class="table-value">{{ name }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Repository URL</div>
+                    <div class="table-value">{{ repo['repo_url'] }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Branch</div>
+                    <div class="table-value">{{ repo['branch'] }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Check interval</div>
+                    <div class="table-value">{{ repo['interval'] }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Build command</div>
+                    <div class="table-value">{{ repo['build_command'] }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Deploy command</div>
+                    <div class="table-value">{{ repo['deploy_command'] }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Webhook endpoint</div>
+                    <div class="table-value">/webhook/{{ name }}</div>
+                </div>
+            </div>
+            
+            <div class="element-row">
+                <h2>Log output</h2>
+                <span class="right-align">Number of lines: </span>
+                <input type="number" id="line-num" value="100"> 
+            </div>
+
+            <div class="black-box" id="log-output"></div>
+            
+            <script>
+                setInterval(function() {
+                    fill_log_output('/api/repo/get_logs', 
+                        {'name': '{{ name }}', 'line_num': document.querySelector('#line-num').value}, 
+                        '#log-output')
+                }, 2000);
+            </script>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>

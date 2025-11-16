@@ -145,7 +145,7 @@ async def docker_container_get_logs(container_id, num_of_lines=100):
     return output
 
 async def docker_container_list():
-    cmd = 'docker ps --format "{{.Names}};{{.State}};{{.RunningFor}};{{.Ports}}" -a'
+    cmd = 'docker ps -a --no-trunc --format "{{.Id}};{{.Names}};{{.State}};{{.RunningFor}};{{.Ports}}"'
     raw_otput = await asyncio.to_thread(check_output, cmd)
 
     string_list = raw_otput.split('\n')
@@ -156,10 +156,11 @@ async def docker_container_list():
             values = string.split(';')
             
             output.append({
-                'Names': values[0],
-                'State': values[1],
-                'RunningFor': values[2],
-                'Ports': values[3].split(', '),
+                'Id': values[0],
+                'Names': values[1],
+                'State': values[2],
+                'RunningFor': values[3],
+                'Ports': values[4].split(', '),
             })
 
     return output
