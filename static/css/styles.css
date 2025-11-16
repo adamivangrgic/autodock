@@ -181,13 +181,13 @@ h2 {
     background: var(--secondary);
 }
 
-.ports {
+.link-list {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-.port-link {
+.link {
     background: var(--primary);
     color: white;
     padding: 0.25rem 0.75rem;
@@ -198,7 +198,7 @@ h2 {
     transition: all 0.2s ease;
 }
 
-.port-link:hover {
+.link:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
 }

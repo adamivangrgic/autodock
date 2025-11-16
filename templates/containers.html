@@ -20,6 +20,7 @@
         <div class="main-content">
             <div class="list-header">
                 <div>Name</div>
+                <div>Image</div>
                 <div>Status</div>
                 <div>Created</div>
                 <div>Ports</div>
@@ -29,18 +30,20 @@
             <div class="list-item">
                 {% set id = container['Id'] %}
                 {% set name = container['Names'] %}
+                {% set image = container['Image'] %}
                 {% set status = container['State'] %}
                 {% set created = container['RunningFor'] %}
                 <div class="list-row">
                     <a href="/container/{{ id }}" class="list-item-name" data-label="Name">{{ name }}</a>
+                    <a href="" class="link" data-label="Image">{{ image }}</a>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
                     <div data-label="Created">{{ created }}</div>
-                    <div class="ports" data-label="Ports">
+                    <div class="link-list" data-label="Ports">
                     {% for port in container['Ports'] %}
                     {% if port %}
-                        <a target="_blank" rel="noopener noreferrer" href="" class="port-link">{{ port }}</a>
+                        <a target="_blank" rel="noopener noreferrer" href="" class="link">{{ port }}</a>
                     {% endif %}
                     {% endfor %}
                     </div>

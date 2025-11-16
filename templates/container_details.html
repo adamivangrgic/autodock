@@ -56,10 +56,10 @@
                 </div>
                 <div class="table-row">
                     <div class="table-label">Ports</div>
-                    <div class="table-value">
+                    <div class="table-value link-list">
                     {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
                     {% if outer %}
-                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endif %}
                     {% endfor %}
                     </div>
@@ -78,7 +78,7 @@
                     fill_log_output('/api/container/get_logs', 
                         {'id': '{{ id }}', 'line_num': document.querySelector('#line-num-{{ id }}').value}, 
                         '#log-output-{{ id }}')
-                }, 5000);
+                }, 2000);
             </script>
 
         </div>        
