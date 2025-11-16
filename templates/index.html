@@ -28,7 +28,7 @@
             {% for name, repo in content.items() %}
             <div class="list-item">
                 <div class="list-row">
-                    <a href="/details/{{ name }}" class="list-item-name" data-label="Name">{{ name }}</a>
+                    <a href="/repo/{{ name }}" class="list-item-name" data-label="Name">{{ name }}</a>
                     {% if repo['inspect'] %}
                         {% set status = repo['inspect'][0]['State']['Status'] %}
                         <div class="status-container" data-label="Status">
