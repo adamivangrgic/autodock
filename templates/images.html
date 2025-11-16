@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="image">
         <div class="header">
             <p class="element-row">
                 <a href="/">Repositories</a>
@@ -28,11 +28,11 @@
             
             {% for image in content %}
             <div class="list-item">
-                {% set id = container['Id'] %}
-                {% set repo = container['Repository'] %}
-                {% set tag = container['Tag'] %}
-                {% set created = container['CreatedAt'] %}
-                {% set size = container['Size'] %}
+                {% set id = image['Id'] %}
+                {% set repo = image['Repository'] %}
+                {% set tag = image['Tag'] %}
+                {% set created = image['CreatedAt'] %}
+                {% set size = image['Size'] %}
                 <div class="list-row">
                     <a href="/image/{{ id }}" class="list-item-name" data-label="Id">{{ id }}</a>
                     <div data-label="Repository">{{ repo }}</div>
