@@ -22,7 +22,7 @@
 
             <div class="element-row">
                 <button class="button-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                <button class="button-primary" onclick="apiCall('/api/repo/check/?force=True', {'name': '{{ name }}'})">Check (force)</button>
+                <button class="button-primary" onclick="apiCall('/api/repo/check?force=True', {'name': '{{ name }}'})">Check (force)</button>
                 <button class="button-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
                 <button class="button-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
                 <button class="button-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>

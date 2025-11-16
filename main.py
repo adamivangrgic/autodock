@@ -35,6 +35,12 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=[trusted_host])
 def load_config_file(file_path):
     file = globals.read_yaml_file(file_path)
 
+    if not file:
+        file = {
+            'repos': [],
+            'host_address': 'localhost'
+        }
+
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
             print(f"CONFIG LOAD: repo_url not found in {name}")
@@ -114,7 +120,7 @@ async def startup_event():
 ##  event webhook
 
 @app.post("/webhook/{name}")
-async def api_repo_pull(name):
+async def webhook_check(name):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']

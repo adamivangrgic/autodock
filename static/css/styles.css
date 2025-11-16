@@ -198,6 +198,10 @@ h2 {
     background: var(--error);
 }
 
+.status-paused::before {
+    background: var(--warning);
+}
+
 .status-not-available::before {
     background: var(--secondary);
 }
