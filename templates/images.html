@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <title>Images - autodock</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <p class="element-row">
+                <a href="/">Repositories</a>
+                <a href="/containers">Containers</a>
+                <a href="/images">Images</a>
+            </p>
+            <h1>Images</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="list-header">
+                <div>Id</div>
+                <div>Repository</div>
+                <div>Tag</div>
+                <div>Created</div>
+                <div>Size</div>
+            </div>
+            
+            {% for image in content %}
+            <div class="list-item">
+                {% set id = container['Id'] %}
+                {% set repo = container['Repository'] %}
+                {% set tag = container['Tag'] %}
+                {% set created = container['CreatedAt'] %}
+                {% set size = container['Size'] %}
+                <div class="list-row">
+                    <a href="/image/{{ id }}" class="list-item-name" data-label="Id">{{ id }}</a>
+                    <div data-label="Repository">{{ repo }}</div>
+                    <div data-label="Tag">{{ tag }}</div>
+                    <div data-label="Created">{{ created }}</div>
+                    <div data-label="Size">{{ size }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>

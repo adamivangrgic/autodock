@@ -165,3 +165,25 @@ async def docker_container_list():
             })
 
     return output
+
+async def docker_image_list(repo_filter=None):
+    cmd = 'docker image ls --no-trunc --format "{{.ID}};{{.Repository}};{{.Tag}};{{.CreatedAt}};{{.Size}}"'
+    raw_otput = await asyncio.to_thread(check_output, cmd)
+
+    string_list = raw_otput.split('\n')
+    output = []
+
+    for string in string_list:
+        if string:
+            values = string.split(';')
+
+            if repo_filter and repo_filter in values[1]:
+                output.append({
+                    'Id': values[0],
+                    'Repository': values[1],
+                    'Tag': values[2],
+                    'CreatedAt': values[3],
+                    'Size': values[4],
+                })
+
+    return output

@@ -348,6 +348,17 @@ async def dash_container_details(container_id, request: Request):
             }
     )
 
+@app.get("/images", response_class=HTMLResponse)
+async def dash_containers(request: Request):
+    content = await docker_image_list(repo_filter=None)
+
+    return templates.TemplateResponse(
+        request=request, name="images.html", 
+        context={
+            "content": content
+            }
+    )
+
 ##
 
 if __name__ == "__main__":

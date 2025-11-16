@@ -106,12 +106,6 @@ h2 {
     gap: 1.5rem;
 }
 
-.list-item > div {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .list-item:last-child {
     border-bottom: none;
 }
@@ -127,6 +121,12 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
     gap: 1rem;
     align-items: center;
+}
+
+.list-row > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .list-item-name {
@@ -203,6 +203,9 @@ h2 {
     font-size: 0.8rem;
     font-weight: 500;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .link:hover {
