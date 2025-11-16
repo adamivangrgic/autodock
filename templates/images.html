@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div class="image">
+    <div class="container">
         <div class="header">
             <p class="element-row">
                 <a href="/">Repositories</a>
@@ -18,7 +18,7 @@
         </div>
         
         <div class="main-content">
-            <div class="list-header">
+            <div class="list-header column-spacing-images">
                 <div>Id</div>
                 <div>Repository</div>
                 <div>Tag</div>
@@ -33,12 +33,13 @@
                 {% set tag = image['Tag'] %}
                 {% set created = image['CreatedAt'] %}
                 {% set size = image['Size'] %}
-                <div class="list-row">
+                <div class="list-row column-spacing-images">
                     <div data-label="Id">
                         <a href="/image/{{ id }}" class="list-item-name">{{ id }}</a>
                     </div>
-                    <div data-label="Repository">{{ repo }}</div>
-                    <div data-label="Tag">{{ tag }}</div>
+                    <div class="link-list" data-label="Tag">
+                        <a href="" class="link">{{ repo }}:{{ tag }}</a>
+                    </div>
                     <div data-label="Created">{{ created }}</div>
                     <div data-label="Size">{{ size }}</div>
                 </div>

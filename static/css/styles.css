@@ -84,7 +84,6 @@ h2 {
 /* Rest of your existing CSS remains the same */
 .list-header {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
     gap: 1rem;
     padding: 1.5rem 2rem;
     background: var(--primary);
@@ -118,9 +117,20 @@ h2 {
 
 .list-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
     gap: 1rem;
     align-items: center;
+}
+
+.column-spacing-auto {
+    grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+}
+
+.column-spacing-repos {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.column-spacing-images {
+    grid-template-columns: 2fr 2fr 2fr 1fr;
 }
 
 .list-row > div {

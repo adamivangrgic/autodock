@@ -18,7 +18,7 @@
         </div>
         
         <div class="main-content">
-            <div class="list-header">
+            <div class="list-header column-spacing-auto">
                 <div>Name</div>
                 <div>Status</div>
                 <div>Created</div>
@@ -32,7 +32,7 @@
                 {% set image = container['Image'] %}
                 {% set status = container['State'] %}
                 {% set created = container['RunningFor'] %}
-                <div class="list-row">
+                <div class="list-row column-spacing-auto">
                     <a href="/container/{{ id }}" class="list-item-name" data-label="Name">{{ name }}</a>
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
