@@ -96,6 +96,7 @@
                 <button class="button-warning" onclick="apiCall('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
                 <button class="button-success" onclick="apiCall('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
                 <button class="button-error" onclick="apiCall('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+                <a class="button button-primary right-align" href="/container/{{ id }}" type="button">More info</a>
             </div>
             
             <div class="table">
@@ -120,9 +121,6 @@
                     </div>
                 </div>
             </div>
-
-            <a class="button button-primary"  href="/container/{{ id }}" type="button">More info</a>
-
         </div>   
         {% endif %}     
     </div>
