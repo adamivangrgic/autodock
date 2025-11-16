@@ -270,19 +270,16 @@ async def dash_containers(request: Request):
 
 @app.get("/details/{name}", response_class=HTMLResponse)
 async def dash_details(name, request: Request):
-    content = deepcopy(globals.config_data['repos'][name])
-    
-    raw_output, inspect_output = await docker_container_inspect(name)
-    content['inspect'] = inspect_output
+    repo = globals.config_data['repos'].get(name, None)
+    raw_container_output, container = await docker_container_inspect(name)
 
     return templates.TemplateResponse(
         request=request, name="details.html", 
         context={
             "name": name,
-            "repo": content, 
-            "HOST_ADDRESS": globals.config_data['host_address'],
-            "raw_inspect": raw_output,
-            "log_output": filter_log(name)
+            "repo": repo,
+            "container": container
+            "HOST_ADDRESS": globals.config_data['host_address']
             }
     )
 

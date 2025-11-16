@@ -15,7 +15,8 @@
             </p>
             <h1>{{ name }}</h1>
         </div>
-        
+
+        {% if repo %}
         <div class="card">
             <h2>Repository configuration</h2>
 
@@ -78,13 +79,14 @@
                 }, 2000);
             </script>
         </div>
+        {% endif %}
 
-        {% if repo['inspect'] %}
+        {% if container %}
         <div class="card">
-            {% set id = repo['inspect'][0]['Id'] %}
-            {% set created = repo['inspect'][0]['Created'] %}
-            {% set started = repo['inspect'][0]['State']['StartedAt'] %}
-            {% set status = repo['inspect'][0]['State']['Status'] %}
+            {% set id = container[0]['Id'] %}
+            {% set created = container[0]['Created'] %}
+            {% set started = container[0]['State']['StartedAt'] %}
+            {% set status = container[0]['State']['Status'] %}
 
             <h2>Container</h2>
 
@@ -120,7 +122,7 @@
                 <div class="table-row">
                     <div class="table-label">Ports</div>
                     <div class="table-value">
-                    {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
+                    {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
                         <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endfor %}
                     </div>

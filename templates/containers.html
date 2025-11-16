@@ -35,7 +35,7 @@
                     <div class="status-container" data-label="Status">
                         <div class="status status-{{ status }}">{{ status }}</div>
                     </div>
-                    <div data-date="{{ created }}" data-label="Created"></div>
+                    <div data-label="Created">{{ created }}</div>
                     <div class="ports" data-label="Ports">
                     {% for port in container['Ports'] %}
                         <a target="_blank" rel="noopener noreferrer" href="" class="port-link">{{ port }}</a>
