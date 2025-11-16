@@ -39,7 +39,9 @@
                     <div data-label="Created">{{ created }}</div>
                     <div class="ports" data-label="Ports">
                     {% for port in container['Ports'] %}
+                    {% if port %}
                         <a target="_blank" rel="noopener noreferrer" href="" class="port-link">{{ port }}</a>
+                    {% endif %}
                     {% endfor %}
                     </div>
                 </div>

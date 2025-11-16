@@ -259,12 +259,14 @@ async def dash_index(request: Request):
 @app.get("/repo/{name}", response_class=HTMLResponse)
 async def dash_repo_details(name, request: Request):
     repo = globals.config_data['repos'].get(name, None)
+    raw_container_output, container = await docker_container_inspect(name)
 
     return templates.TemplateResponse(
         request=request, name="repo_details.html", 
         context={
             "name": name,
             "repo": repo,
+            "container": container;
             "HOST_ADDRESS": globals.config_data['host_address']
             }
     )

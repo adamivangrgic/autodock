@@ -80,6 +80,51 @@
             </script>
         </div>
         {% endif %}
+
+        {% if container %}
+        <div class="card">
+            {% set id = container[0]['Id'] %}
+            {% set status = container[0]['State']['Status'] %}
+
+            <h2>Container</h2>
+
+            <div class="element-row">
+                <button class="button-primary" onclick="apiCall('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+                <button class="button-warning" onclick="apiCall('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+                <button class="button-error" onclick="apiCall('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+                <button class="button-secondary" onclick="apiCall('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+                <button class="button-warning" onclick="apiCall('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
+                <button class="button-success" onclick="apiCall('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
+                <button class="button-error" onclick="apiCall('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+            </div>
+            
+            <div class="table">
+                <div class="table-row">
+                    <div class="table-label">Id</div>
+                    <div class="table-value">{{ id }}</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Status</div>
+                    <div class="table-value">
+                        <div class="status status-{{ status }}">{{ status }}</div>
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Ports</div>
+                    <div class="table-value">
+                    {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
+                    {% if outer %}
+                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <a class="button button-primary"  href="/container/{{ id }}" type="button">More info</a>
+
+        </div>   
+        {% endif %}     
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>

@@ -58,7 +58,9 @@
                     <div class="table-label">Ports</div>
                     <div class="table-value">
                     {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
+                    {% if outer %}
                         <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="port-link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                    {% endif %}
                     {% endfor %}
                     </div>
                 </div>
