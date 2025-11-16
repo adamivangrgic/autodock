@@ -156,10 +156,10 @@ async def docker_container_list():
             values = string.split(';')
             
             output.append({
-                'name': values[0],
-                'status': values[1],
-                'created': values[2],
-                'ports': values[3].split(', '),
+                'Names': values[0],
+                'State': values[1],
+                'RunningFor': values[2],
+                'Ports': values[3].split(', '),
             })
 
     return output

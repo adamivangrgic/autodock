@@ -28,7 +28,7 @@
             {% for container in content %}
             <div class="repo">
                 {% set name = container['Names'] %}
-                {% set status = container['Status'] %}
+                {% set status = container['State'] %}
                 {% set created = container['RunningFor'] %}
                 <div class="list-row">
                     <a href="/details/{{ name }}" class="repo-name" data-label="Name">{{ name }}</a>
