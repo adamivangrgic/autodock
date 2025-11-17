@@ -23,6 +23,7 @@
                 <div>Tag</div>
                 <div>Created</div>
                 <div>Size</div>
+                <div></div>
             </div>
             
             {% for image in content %}
@@ -41,6 +42,7 @@
                     </div>
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
+                    <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ id }}'})">Remove</button>
                 </div>
             </div>
             {% endfor %}

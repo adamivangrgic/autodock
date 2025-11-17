@@ -45,6 +45,14 @@
                     </div>
                 </div>
             </div>
+
+            <div class="element-row">
+                <button class="button-primary" onclick="apiCall('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+                <button class="button-warning" onclick="apiCall('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+                <button class="button-error" onclick="apiCall('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+                <button class="button-secondary" onclick="apiCall('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+                <button class="button-error" onclick="apiCall('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+            </div>
             {% endfor %}
         </div>
     </div>
