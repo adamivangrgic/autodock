@@ -52,8 +52,8 @@ def load_config_file(file_path):
         if 'interval' not in repo:
             file['repos'][name]['interval'] = 0
 
-        if 'version' not in repo:
-            file['repos'][name]['version'] = '0'
+        if 'version_tag_scheme' not in repo:
+            file['repos'][name]['version_tag_scheme'] = ''
 
         if 'build_command' not in repo:
             print(f"CONFIG LOAD: build_command not found in {name}")
@@ -129,7 +129,14 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
     branch = repo['branch']
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
-    version = repo['version']
+    version_tag_scheme = repo['version_tag_scheme']
+
+    version = version_tag_scheme.format(
+        name = name,
+        build_number = globals.repo_data[name]['build_number']
+        )
+    build_command = build_command.format(tag = version)
+    deploy_command = deploy_command.format(tag = version)
 
     await repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
 
@@ -175,10 +182,14 @@ async def api_repo_build(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     build_command = repo['build_command']
-    
-    build_command = build_command.format(
-        name = name
+    version_tag_scheme = repo['version_tag_scheme']
+
+    version = version_tag_scheme.format(
+        name = name,
+        build_number = globals.repo_data[name]['build_number']
         )
+    build_command = build_command.format(tag = version)
+
     await repo_build(name, build_command)
 
     return {'message': 'OK'}
@@ -188,10 +199,14 @@ async def api_repo_deploy(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
     deploy_command = repo['deploy_command']
-    
-    deploy_command = deploy_command.format(
-        name = name
+    version_tag_scheme = repo['version_tag_scheme']
+
+    version = version_tag_scheme.format(
+        name = name,
+        build_number = globals.repo_data[name]['build_number']
         )
+    deploy_command = deploy_command.format(tag = version)
+
     await repo_deploy(name, deploy_command)
 
     return {'message': 'OK'}
@@ -282,8 +297,8 @@ async def dash_repo_save(name, request: Request):
             'repo_url': '',
             'branch': 'main',
             'interval': 0,
-            'version': '0',
-            'build_command': '',
+            'version_tag_scheme': '{name}:alpha.{build_number}',
+            'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
             'deploy_command': '',
         }
 
@@ -301,7 +316,7 @@ async def dash_repo_save(
         repourl: Annotated[str, Form()],
         branch: Annotated[str, Form()],
         interval: Annotated[int, Form()],
-        version: Annotated[str, Form()],
+        version_tag_scheme: Annotated[str, Form()],
         buildcmd: Annotated[str, Form()],
         deploycmd: Annotated[str, Form()],
     ):
@@ -312,7 +327,7 @@ async def dash_repo_save(
         'repo_url': repourl,
         'branch': branch,
         'interval': interval,
-        'version': version,
+        'version_tag_scheme': version_tag_scheme,
         'build_command': buildcmd,
         'deploy_command': deploycmd,
     }

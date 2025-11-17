@@ -26,7 +26,7 @@ async def git_clone(name: str, url: str, branch: str):
         log("Repo successfully cloned.", keyword=name)
     else:
         log("Repository already exists.", keyword=name)
-        raise Exception("Repository already exists.")
+        # raise Exception("Repository already exists.")
 
 
 async def git_pull(name: str):
@@ -54,18 +54,29 @@ async def get_remote_hash(url, branch='main'):
 
 #   repo check, build, deploy
 
-async def repo_build(name, build_command):
+async def repo_build(name, version, build_command, new_hash=None):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(build_command, callback=log_callback)
 
+    if new_hash:
+        globals.repo_data[name]['stages']['build'] = new_hash
 
-async def repo_deploy(name, deploy_command):
+    globals.repo_data[name]['version_history'].append(version)
+    globals.repo_data[name]['build_number'] += 1
+    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+
+
+async def repo_deploy(name, deploy_command, new_hash=None):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(deploy_command, callback=log_callback)
+
+    if new_hash:
+        globals.repo_data[name]['stages']['deploy'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
 
 async def repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
@@ -78,7 +89,7 @@ async def repo_check(name, url, branch, build_command, deploy_command, version, 
                 'build': None,
                 'deploy': None
             },
-            'build_counter': 0,
+            'build_number': 0,
             'version_history': []
         }
     
@@ -105,44 +116,19 @@ async def repo_check(name, url, branch, build_command, deploy_command, version, 
 
     if not ignore_hash_checks and globals.repo_data[name]['stages']['build'] == new_hash:
         log(f"Skipping building.", keyword=name)
-    
     else:
         log(f"Executing build command.", keyword=name)
-
-        build_command = build_command.format(
-            name = name,
-            version = version,
-            build_counter = globals.repo_data[name]['build_counter']
-            )
-        await repo_build(name, build_command)
-
-        globals.repo_data[name]['stages']['build'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+        await repo_build(name, version, build_command, new_hash)
 
     ## deploy stage
 
     if not ignore_hash_checks and globals.repo_data[name]['stages']['deploy'] == new_hash:
         log(f"Skipping deployment.", keyword=name)
-    
     else:
         log(f"Executing deploy command.", keyword=name)
-
-        deploy_command = deploy_command.format(
-            name = name,
-            version = version,
-            build_counter = globals.repo_data[name]['build_counter']
-            )
-        await repo_deploy(name, deploy_command)
-
-        globals.repo_data[name]['stages']['deploy'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+        await repo_deploy(name, deploy_command, new_hash)
 
     ##
-
-    globals.repo_data[name]['version_history'].append(globals.repo_data[name]['build_counter'])
-    globals.repo_data[name]['build_counter'] += 1
-    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-        
     log(f"Task finished.", keyword=name)
 
 ## docker
