@@ -148,16 +148,19 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
     deploy_command = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
 
-    build_number = globals.repo_data[name]['build_number']
-    
-    print(globals.repo_data, globals.config_data)
-
     version = version_tag_scheme.format(
         name = name,
-        build_number = build_number
+        build_number = globals.repo_data[name]['build_number']
         )
-    build_command = build_command.format(version_tag_scheme = version)
-    deploy_command = deploy_command.format(version_tag_scheme = version)
+
+    build_command = build_command.format(
+        version_tag_scheme = version, 
+        name = name
+        )
+    deploy_command = deploy_command.format(
+        version_tag_scheme = version, 
+        name = name
+        )
 
     await repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
 
@@ -209,7 +212,10 @@ async def api_repo_build(payload: dict):
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    build_command = build_command.format(version_tag_scheme = version)
+    build_command = build_command.format(
+        version_tag_scheme = version, 
+        name = name
+        )
 
     await repo_build(name, build_command)
 
@@ -226,7 +232,10 @@ async def api_repo_deploy(payload: dict):
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    deploy_command = deploy_command.format(version_tag_scheme = version)
+    deploy_command = deploy_command.format(
+        version_tag_scheme = version,
+        name = name
+        )
 
     await repo_deploy(name, deploy_command)
 
