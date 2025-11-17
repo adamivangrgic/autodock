@@ -54,7 +54,7 @@ async def get_remote_hash(url, branch='main'):
 
 #   check, build, deploy
 
-async def repo_build(build_command, new_hash=None):
+async def repo_build(name, build_command, new_hash=None):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
@@ -65,7 +65,7 @@ async def repo_build(build_command, new_hash=None):
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
 
-async def repo_deploy(deploy_command, new_hash=None):
+async def repo_deploy(name, deploy_command, new_hash=None):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
@@ -114,7 +114,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing build command.", keyword=name)
-        await repo_build(build_command, new_hash)
+        await repo_build(name, build_command, new_hash)
 
     ## deploy stage
 
@@ -123,7 +123,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing deploy command.", keyword=name)
-        await repo_deploy(deploy_command, new_hash)
+        await repo_deploy(name, deploy_command, new_hash)
 
     ##
         
