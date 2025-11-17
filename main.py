@@ -13,7 +13,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import globals
 from globals import log, filter_log
 
-from functions import git_check, git_clone, git_pull
+from functions import git_check, repo_build, repo_deploy, git_clone, git_pull
 from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
 
 from subprocess_functions import poll_output
@@ -172,12 +172,7 @@ async def api_repo_build(payload: dict):
     repo = globals.config_data['repos'][name]
     build_command = repo['build_command']
     
-    repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
-
-    await poll_output(build_command, repo_dir, callback=log_callback)
+    await repo_build(build_command)
 
     return {'message': 'OK'}
 
@@ -187,12 +182,7 @@ async def api_repo_deploy(payload: dict):
     repo = globals.config_data['repos'][name]
     deploy_command = repo['deploy_command']
     
-    repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
-
-    await poll_output(deploy_command, repo_dir, callback=log_callback)
+    await repo_deploy(deploy_command)
 
     return {'message': 'OK'}
 

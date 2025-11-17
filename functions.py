@@ -52,6 +52,29 @@ async def get_remote_hash(url, branch='main'):
 
     return result.split()[0] if result else None
 
+#   check, build, deploy
+
+async def repo_build(build_command, new_hash=None):
+    def log_callback(line):
+        log(line, keyword=name, print_message=False)
+
+    await poll_output(build_command, callback=log_callback)
+
+    if new_hash:
+        globals.repo_data[name]['stages']['build'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+
+
+async def repo_deploy(deploy_command, new_hash=None):
+    def log_callback(line):
+        log(line, keyword=name, print_message=False)
+
+    await poll_output(deploy_command, callback=log_callback)
+
+    if new_hash:
+        globals.repo_data[name]['stages']['deploy'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+    
 
 async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str, ignore_hash_checks=False):
     log(f"Running git check task.", keyword=name)
@@ -66,10 +89,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
         }
     
     new_hash = await get_remote_hash(url, branch)
-    
     log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
-
-    repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
 
     ## update stage (clone or pull)
 
@@ -89,19 +109,12 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     ## build stage
 
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
-
-
     if not ignore_hash_checks and globals.repo_data[name]['stages']['build'] == new_hash:
         log(f"Skipping building.", keyword=name)
     
     else:
         log(f"Executing build command.", keyword=name)
-        await poll_output(build_command, repo_dir, callback=log_callback)
-
-        globals.repo_data[name]['stages']['build'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+        await repo_build(build_command, new_hash)
 
     ## deploy stage
 
@@ -110,10 +123,7 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing deploy command.", keyword=name)
-        await poll_output(deploy_command, repo_dir, callback=log_callback)
-
-        globals.repo_data[name]['stages']['deploy'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+        await repo_deploy(deploy_command, new_hash)
 
     ##
         
