@@ -13,7 +13,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import globals
 from globals import log, filter_log
 
-from functions import git_check, repo_build, repo_deploy, git_clone, git_pull
+from functions import repo_check, repo_build, repo_deploy, git_clone, git_pull
 from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
 
 from subprocess_functions import poll_output
@@ -96,7 +96,7 @@ def configuration():
     for name, repo in globals.config_data['repos'].items():
         if repo['interval'] > 0:
             scheduler.add_job(
-                git_check,
+                repo_check,
                 args=[
                     name,
                     repo['repo_url'],
@@ -105,7 +105,7 @@ def configuration():
                     repo['deploy_command'],
                 ],
                 trigger=IntervalTrigger(seconds=repo['interval']),
-                id=f"git_check_periodic_task_{name}",
+                id=f"repo_check_periodic_task_{name}",
                 replace_existing=True,
                 max_instances=1,
                 next_run_time=datetime.now()
@@ -123,7 +123,7 @@ async def startup_event():
 ##  api endpoints
 #   check
 
-async def git_check_trigger(name, ignore_hash_checks=False):
+async def repo_check_trigger(name, ignore_hash_checks=False):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
@@ -131,19 +131,19 @@ async def git_check_trigger(name, ignore_hash_checks=False):
     deploy_command = repo['deploy_command']
     version = repo['version']
 
-    await git_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
+    await repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
 
 @app.post("/api/repo/check")
 async def api_repo_check(payload: dict, force: bool = False):
     name = payload['name']
-    await git_check_trigger(name, force)
+    await repo_check_trigger(name, force)
 
     return {'message': 'OK'}
 
 @app.post("/webhook/{name}")
-async def webhook_check(name):
+async def webhook_repo_check(name):
     asyncio.create_task(
-        git_check_trigger(name)
+        repo_check_trigger(name)
     )
     return {'message': 'Webhook recieved'}
 

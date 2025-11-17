@@ -52,7 +52,7 @@ async def get_remote_hash(url, branch='main'):
 
     return result.split()[0] if result else None
 
-#   check, build, deploy
+#   repo check, build, deploy
 
 async def repo_build(name, build_command):
     def log_callback(line):
@@ -68,7 +68,7 @@ async def repo_deploy(name, deploy_command):
     await poll_output(deploy_command, callback=log_callback)
     
 
-async def git_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
+async def repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
