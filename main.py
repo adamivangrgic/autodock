@@ -127,7 +127,7 @@ def configuration():
             )
 
             print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
-            
+
     globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
     print("CONFIGURATION: done.")
@@ -148,9 +148,13 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
     deploy_command = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
 
+    build_number = globals.repo_data[name]['build_number']
+    
+    print(globals.repo_data, globals.config_data)
+
     version = version_tag_scheme.format(
         name = name,
-        build_number = globals.repo_data[name]['build_number']
+        build_number = 
         )
     build_command = build_command.format(version_tag_scheme = version)
     deploy_command = deploy_command.format(version_tag_scheme = version)
