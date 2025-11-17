@@ -117,23 +117,32 @@ async def startup_event():
     configuration()
     scheduler.start()
 
-##  event webhook
+##  api endpoints
+#   check
 
-@app.post("/webhook/{name}")
-async def webhook_check(name):
+async def git_check_trigger(name, ignore_hash_checks=False):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
 
-    asyncio.create_task(
-        git_check(name, url, branch, build_command, deploy_command)
-    )
+    await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks)
 
+@app.post("/api/repo/check")
+async def api_repo_check(payload: dict, force: bool = False):
+    name = payload['name']
+    await git_check_trigger(name, force)
+
+    return {'message': 'OK'}
+
+@app.post("/webhook/{name}")
+async def webhook_check(name):
+    asyncio.create_task(
+        git_check_trigger(name)
+    )
     return {'message': 'Webhook recieved'}
 
-##  api endpoints
 #   repo
 
 @app.post("/api/repo/clone")
@@ -154,19 +163,6 @@ async def api_repo_clone(payload: dict, response: Response):
 async def api_repo_pull(payload: dict):
     name = payload['name']
     await git_pull(name)
-
-    return {'message': 'OK'}
-
-@app.post("/api/repo/check")
-async def api_repo_check(payload: dict, force: bool = False):
-    name = payload['name']
-    repo = globals.config_data['repos'][name]
-    url = repo['repo_url']
-    branch = repo['branch']
-    build_command = repo['build_command']
-    deploy_command = repo['deploy_command']
-
-    await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=force)
 
     return {'message': 'OK'}
 
