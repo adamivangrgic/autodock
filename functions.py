@@ -139,7 +139,7 @@ async def git_check(name, url, branch, build_command, deploy_command, version, i
 
     ##
 
-    # globals.repo_data[name]['version_history'].append()
+    globals.repo_data[name]['version_history'].append(globals.repo_data[name]['build_counter'])
     globals.repo_data[name]['build_counter'] += 1
     globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
         
