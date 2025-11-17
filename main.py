@@ -154,7 +154,7 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
 
     version = version_tag_scheme.format(
         name = name,
-        build_number = 
+        build_number = build_number
         )
     build_command = build_command.format(version_tag_scheme = version)
     deploy_command = deploy_command.format(version_tag_scheme = version)
