@@ -126,7 +126,7 @@ h2 {
 }
 
 .column-spacing-repos {
-    grid-template-columns: 3fr 0.5fr 0.5fr 1fr;
+    grid-template-columns: 2fr 0.5fr 0.5fr 1fr;
 }
 
 .column-spacing-images {
