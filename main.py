@@ -47,10 +47,13 @@ def load_config_file(file_path):
             return {}
 
         if 'branch' not in repo:
-            file['repos']['branch'] = 'main'
+            file['repos'][name]['branch'] = 'main'
 
         if 'interval' not in repo:
-            file['repos']['interval'] = 0
+            file['repos'][name]['interval'] = 0
+
+        if 'version' not in repo:
+            file['repos'][name]['version'] = '0'
 
         if 'build_command' not in repo:
             print(f"CONFIG LOAD: build_command not found in {name}")
@@ -126,8 +129,9 @@ async def git_check_trigger(name, ignore_hash_checks=False):
     branch = repo['branch']
     build_command = repo['build_command']
     deploy_command = repo['deploy_command']
+    version = repo['version']
 
-    await git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks)
+    await git_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
 
 @app.post("/api/repo/check")
 async def api_repo_check(payload: dict, force: bool = False):
@@ -278,6 +282,7 @@ async def dash_repo_save(name, request: Request):
             'repo_url': '',
             'branch': 'main',
             'interval': 0,
+            'version': '0',
             'build_command': '',
             'deploy_command': '',
         }
@@ -296,6 +301,7 @@ async def dash_repo_save(
         repourl: Annotated[str, Form()],
         branch: Annotated[str, Form()],
         interval: Annotated[int, Form()],
+        version: Annotated[str, Form()],
         buildcmd: Annotated[str, Form()],
         deploycmd: Annotated[str, Form()],
     ):
@@ -306,6 +312,7 @@ async def dash_repo_save(
         'repo_url': repourl,
         'branch': branch,
         'interval': interval,
+        'version': version,
         'build_command': buildcmd,
         'deploy_command': deploycmd,
     }

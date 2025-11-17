@@ -54,29 +54,21 @@ async def get_remote_hash(url, branch='main'):
 
 #   check, build, deploy
 
-async def repo_build(name, build_command, new_hash=None):
+async def repo_build(name, build_command):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(build_command, callback=log_callback)
 
-    if new_hash:
-        globals.repo_data[name]['stages']['build'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
-
-async def repo_deploy(name, deploy_command, new_hash=None):
+async def repo_deploy(name, deploy_command):
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(deploy_command, callback=log_callback)
-
-    if new_hash:
-        globals.repo_data[name]['stages']['deploy'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
 
-async def git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=False):
+async def git_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
@@ -85,7 +77,9 @@ async def git_check(name, url, branch, build_command, deploy_command, ignore_has
                 'update': None,
                 'build': None,
                 'deploy': None
-            }
+            },
+            'build_counter': 0,
+            'version_history': []
         }
     
     new_hash = await get_remote_hash(url, branch)
@@ -114,10 +108,16 @@ async def git_check(name, url, branch, build_command, deploy_command, ignore_has
     
     else:
         log(f"Executing build command.", keyword=name)
+
         build_command = build_command.format(
-            name = name
+            name = name,
+            version = version,
+            build_counter = globals.repo_data[name]['build_counter']
             )
-        await repo_build(name, build_command, new_hash)
+        await repo_build(name, build_command)
+
+        globals.repo_data[name]['stages']['build'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
     ## deploy stage
 
@@ -126,12 +126,22 @@ async def git_check(name, url, branch, build_command, deploy_command, ignore_has
     
     else:
         log(f"Executing deploy command.", keyword=name)
+
         deploy_command = deploy_command.format(
-            name = name
+            name = name,
+            version = version,
+            build_counter = globals.repo_data[name]['build_counter']
             )
         await repo_deploy(name, deploy_command, new_hash)
 
+        globals.repo_data[name]['stages']['deploy'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+
     ##
+
+    # globals.repo_data[name]['version_history'].append()
+    globals.repo_data[name]['build_counter'] += 1
+    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
         
     log(f"Task finished.", keyword=name)
 
