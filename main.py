@@ -37,9 +37,13 @@ def load_config_file(file_path):
 
     if not file:
         file = {
-            'repos': [],
+            'repos': {},
             'host_address': 'localhost'
         }
+        return file
+
+    if 'repos' not in file:
+        file['repos'] = {}
 
     for name, repo in file['repos'].items():
         if 'repo_url' not in repo:
@@ -63,17 +67,6 @@ def load_config_file(file_path):
             print(f"CONFIG LOAD: deploy_command not found in {name}")
             return {}
 
-        if name not in globals.repo_data:
-            globals.repo_data[name] = {
-                'stages': {
-                    'update': None,
-                    'build': None,
-                    'deploy': None
-                },
-                'build_number': 0,
-                'version_history': []
-            }
-
     if 'host_address' not in file:
         file['host_address'] = 'localhost'
 
@@ -84,6 +77,13 @@ def write_and_reload_config_file():
     configuration()
 
 def configuration():
+    globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
+    
+    if not globals.repo_data:
+        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
+        globals.repo_data = {}
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
     if not globals.config_data:
         # stop startup if no config
@@ -95,7 +95,8 @@ def configuration():
         print(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
         return None
 
-    globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
+    scheduler.remove_all_jobs()
+    
     for name, repo in globals.config_data['repos'].items():
         if name not in globals.repo_data:
             globals.repo_data[name] = {
@@ -107,11 +108,7 @@ def configuration():
                 'build_number': 0,
                 'version_history': []
             }
-    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-
-    scheduler.remove_all_jobs()
-    
-    for name, repo in globals.config_data['repos'].items():
+        
         if repo['interval'] > 0:
             scheduler.add_job(
                 repo_check,
@@ -130,6 +127,8 @@ def configuration():
             )
 
             print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
+            
+    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
     print("CONFIGURATION: done.")
 
