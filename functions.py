@@ -76,7 +76,7 @@ async def repo_deploy(name, deploy_command, new_hash=None):
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
 
-async def git_check(name: str, url: str, branch: str, build_command: str, deploy_command: str, ignore_hash_checks=False):
+async def git_check(name, url, branch, build_command, deploy_command, ignore_hash_checks=False):
     log(f"Running git check task.", keyword=name)
 
     if name not in globals.repo_data:
@@ -114,6 +114,9 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing build command.", keyword=name)
+        build_command = build_command.format(
+            name = name
+            )
         await repo_build(name, build_command, new_hash)
 
     ## deploy stage
@@ -123,6 +126,9 @@ async def git_check(name: str, url: str, branch: str, build_command: str, deploy
     
     else:
         log(f"Executing deploy command.", keyword=name)
+        deploy_command = deploy_command.format(
+            name = name
+            )
         await repo_deploy(name, deploy_command, new_hash)
 
     ##

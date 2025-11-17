@@ -172,6 +172,9 @@ async def api_repo_build(payload: dict):
     repo = globals.config_data['repos'][name]
     build_command = repo['build_command']
     
+    build_command = build_command.format(
+        name = name
+        )
     await repo_build(name, build_command)
 
     return {'message': 'OK'}
@@ -182,6 +185,9 @@ async def api_repo_deploy(payload: dict):
     repo = globals.config_data['repos'][name]
     deploy_command = repo['deploy_command']
     
+    deploy_command = deploy_command.format(
+        name = name
+        )
     await repo_deploy(name, deploy_command)
 
     return {'message': 'OK'}
