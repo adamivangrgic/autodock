@@ -111,14 +111,8 @@ def configuration():
         
         if repo['interval'] > 0:
             scheduler.add_job(
-                repo_check,
-                args=[
-                    name,
-                    repo['repo_url'],
-                    repo['branch'],
-                    repo['build_command'],
-                    repo['deploy_command'],
-                ],
+                repo_check_trigger,
+                args=[name, False],
                 trigger=IntervalTrigger(seconds=repo['interval']),
                 id=f"repo_check_periodic_task_{name}",
                 replace_existing=True,
@@ -173,10 +167,13 @@ async def api_repo_check(payload: dict, force: bool = False):
 
 @app.post("/webhook/{name}")
 async def webhook_repo_check(name):
+    if name not in globals.config_data['repos']:
+        return {'message': 'Repository not found', 'status': 'error'}
+    
     asyncio.create_task(
         repo_check_trigger(name)
     )
-    return {'message': 'Webhook recieved'}
+    return {'message': 'Webhook received'}
 
 #   repo
 
