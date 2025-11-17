@@ -132,7 +132,7 @@ async def git_check(name, url, branch, build_command, deploy_command, version, i
             version = version,
             build_counter = globals.repo_data[name]['build_counter']
             )
-        await repo_deploy(name, deploy_command, new_hash)
+        await repo_deploy(name, deploy_command)
 
         globals.repo_data[name]['stages']['deploy'] = new_hash
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
