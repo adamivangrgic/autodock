@@ -131,6 +131,17 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
     deploy_command = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
 
+    if name not in globals.repo_data:
+        globals.repo_data[name] = {
+            'stages': {
+                'update': None,
+                'build': None,
+                'deploy': None
+            },
+            'build_number': 0,
+            'version_history': []
+        }
+
     version = version_tag_scheme.format(
         name = name,
         build_number = globals.repo_data[name]['build_number']

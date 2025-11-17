@@ -81,17 +81,6 @@ async def repo_deploy(name, deploy_command, new_hash=None):
 
 async def repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
     log(f"Running git check task.", keyword=name)
-
-    if name not in globals.repo_data:
-        globals.repo_data[name] = {
-            'stages': {
-                'update': None,
-                'build': None,
-                'deploy': None
-            },
-            'build_number': 0,
-            'version_history': []
-        }
     
     new_hash = await get_remote_hash(url, branch)
     log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
