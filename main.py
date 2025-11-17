@@ -63,6 +63,17 @@ def load_config_file(file_path):
             print(f"CONFIG LOAD: deploy_command not found in {name}")
             return {}
 
+        if name not in globals.repo_data:
+            globals.repo_data[name] = {
+                'stages': {
+                    'update': None,
+                    'build': None,
+                    'deploy': None
+                },
+                'build_number': 0,
+                'version_history': []
+            }
+
     if 'host_address' not in file:
         file['host_address'] = 'localhost'
 
@@ -85,11 +96,18 @@ def configuration():
         return None
 
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
-
-    if not globals.repo_data:
-        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
-        globals.repo_data = {}
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+    for name, repo in globals.config_data['repos'].items():
+        if name not in globals.repo_data:
+            globals.repo_data[name] = {
+                'stages': {
+                    'update': None,
+                    'build': None,
+                    'deploy': None
+                },
+                'build_number': 0,
+                'version_history': []
+            }
+    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
     scheduler.remove_all_jobs()
     
@@ -131,23 +149,12 @@ async def repo_check_trigger(name, ignore_hash_checks=False):
     deploy_command = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
 
-    if name not in globals.repo_data:
-        globals.repo_data[name] = {
-            'stages': {
-                'update': None,
-                'build': None,
-                'deploy': None
-            },
-            'build_number': 0,
-            'version_history': []
-        }
-
     version = version_tag_scheme.format(
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    build_command = build_command.format(tag = version)
-    deploy_command = deploy_command.format(tag = version)
+    build_command = build_command.format(version_tag_scheme = version)
+    deploy_command = deploy_command.format(version_tag_scheme = version)
 
     await repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
 
@@ -199,7 +206,7 @@ async def api_repo_build(payload: dict):
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    build_command = build_command.format(tag = version)
+    build_command = build_command.format(version_tag_scheme = version)
 
     await repo_build(name, build_command)
 
@@ -216,7 +223,7 @@ async def api_repo_deploy(payload: dict):
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    deploy_command = deploy_command.format(tag = version)
+    deploy_command = deploy_command.format(version_tag_scheme = version)
 
     await repo_deploy(name, deploy_command)
 
