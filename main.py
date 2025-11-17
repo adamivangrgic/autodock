@@ -327,7 +327,7 @@ async def dash_repo_save(name, request: Request):
             'interval': 0,
             'version_tag_scheme': '{name}:alpha.{build_number}',
             'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
-            'deploy_command': '',
+            'deploy_command': 'docker rm -f {name} || true && docker run --name {name} -d {version_tag_scheme}',
         }
 
     return templates.TemplateResponse(
