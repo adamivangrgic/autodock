@@ -166,9 +166,10 @@ async def api_repo_check(payload: dict, force: bool = False):
     return {'message': 'OK'}
 
 @app.post("/webhook/{name}")
-async def webhook_repo_check(name):
+async def webhook_repo_check(name, response: Response):
     if name not in globals.config_data['repos']:
-        return {'message': 'Repository not found', 'status': 'error'}
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {'message': 'Repository not found'}
     
     asyncio.create_task(
         repo_check_trigger(name)
