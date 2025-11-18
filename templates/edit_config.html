@@ -65,7 +65,7 @@
                 </div>
                 <div class="table-row">
                     <div class="table-label">Port</div>
-                    <textarea id="healthcheck_command" name="healthcheck_command">{{ repo['port'] }}</textarea>
+                    <input type="number" id="port" name="port" value="{{ repo['port'] }}" min="1" max="65535"> 
                 </div>
             </div>
         </form>
