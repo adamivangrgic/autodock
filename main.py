@@ -13,7 +13,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import globals
 from globals import log, filter_log
 
-from functions import repo_check, repo_build, repo_deploy, git_clone, git_pull
+from functions import repo_build, repo_deploy, repo_healthcheck, git_clone, git_pull, get_remote_hash
 from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
 
 from subprocess_functions import poll_output
@@ -31,44 +31,36 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 trusted_host = os.getenv("TRUSTED_HOST", "*")
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=[trusted_host])
 
+CONFIG_FILE_STRUCT = {
+        'repos': {},
+        'host_address': 'localhost'
+    }
+CONFIG_FILE_REPO_STRUCT = {
+        'repo_url': '',
+        'branch': 'main',
+        'interval': 0,
+        'version_tag_scheme': '{name}:alpha.{build_number}',
+        'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
+        'deploy_command': 'docker rm -f {name} || true && docker run --name {name} -p {port}:8080 -d {version_tag_scheme}',
+        'healthcheck': {
+                'command': 'curl -f {host_address}:{port} || exit 1',
+                'timeout': 30,
+                'retries': 3,
+                'retry_delay': 5
+            },
+        'port': 8080,
+    }
 
 def load_config_file(file_path):
     file = globals.read_yaml_file(file_path)
 
     if not file:
-        file = {
-            'repos': {},
-            'host_address': 'localhost'
-        }
-        return file
+        return deepcopy(CONFIG_FILE_STRUCT)
 
-    if 'repos' not in file:
-        file['repos'] = {}
+    file = CONFIG_FILE_STRUCT | file
 
     for name, repo in file['repos'].items():
-        if 'repo_url' not in repo:
-            print(f"CONFIG LOAD: repo_url not found in {name}")
-            return {}
-
-        if 'branch' not in repo:
-            file['repos'][name]['branch'] = 'main'
-
-        if 'interval' not in repo:
-            file['repos'][name]['interval'] = 0
-
-        if 'version_tag_scheme' not in repo:
-            file['repos'][name]['version_tag_scheme'] = ''
-
-        if 'build_command' not in repo:
-            print(f"CONFIG LOAD: build_command not found in {name}")
-            return {}
-
-        if 'deploy_command' not in repo:
-            print(f"CONFIG LOAD: deploy_command not found in {name}")
-            return {}
-
-    if 'host_address' not in file:
-        file['host_address'] = 'localhost'
+        file['repos'][name] = CONFIG_FILE_REPO_STRUCT | repo
 
     return file
 
@@ -78,22 +70,10 @@ def write_and_reload_config_file():
 
 def configuration():
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
-    
     if not globals.repo_data:
-        print(f"CONFIGURATION: writing empty repo data file to {globals.REPO_DATA_FILE_PATH}")
         globals.repo_data = {}
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
     globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
-    if not globals.config_data:
-        # stop startup if no config
-        print(f"CONFIGURATION: {globals.CONFIG_FILE_PATH} doesn't exist, aborting startup")
-        return None
-
-    if len(globals.config_data['repos']) == 0:
-        # stop startup if no repos in json
-        print(f"CONFIGURATION: no repositories found in {globals.CONFIG_FILE_PATH}, aborting startup")
-        return None
 
     scheduler.remove_all_jobs()
     
@@ -111,7 +91,7 @@ def configuration():
         
         if repo['interval'] > 0:
             scheduler.add_job(
-                repo_check_trigger,
+                repo_check,
                 args=[name, False],
                 trigger=IntervalTrigger(seconds=repo['interval']),
                 id=f"repo_check_periodic_task_{name}",
@@ -124,7 +104,7 @@ def configuration():
 
     globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
-    print("CONFIGURATION: done.")
+    print("CONFIGURATION: loaded")
 
 @app.on_event("startup")
 async def startup_event():
@@ -132,36 +112,116 @@ async def startup_event():
     scheduler.start()
 
 ##  api endpoints
-#   check
+#   repo check
 
-async def repo_check_trigger(name, ignore_hash_checks=False):
+async def repo_check(name, ignore_hash_checks=False):
     repo = globals.config_data['repos'][name]
     url = repo['repo_url']
     branch = repo['branch']
-    build_command = repo['build_command']
-    deploy_command = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
+    build_command_template = repo['build_command']
+    deploy_command_template = repo['deploy_command']
+    healthcheck_template = repo['healthcheck']['command']
+    port = repo['port']
 
     version = version_tag_scheme.format(
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-
-    build_command = build_command.format(
+    build_command = build_command_template.format(
         version_tag_scheme = version, 
         name = name
         )
-    deploy_command = deploy_command.format(
+    deploy_command = deploy_command_template.format(
         version_tag_scheme = version, 
-        name = name
+        name = name,
+        port = port,
+        host_address = globals.config_data['host_address']
+        )
+    healthcheck_command = healthcheck_template.format(
+        port = port,
+        host_address = globals.config_data['host_address']
         )
 
-    await repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks)
+    log(f"Running git check task.", keyword=name)
+    
+    new_hash = await get_remote_hash(url, branch)
+    log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
+
+    ## update stage (clone or pull)
+
+    if not ignore_hash_checks and globals.repo_data[name]['stages']['update'] == new_hash:
+        log(f"Skipping updating.", keyword=name)
+    
+    else:
+        if globals.repo_data[name]['stages']['update'] == None:
+            # never cloned, clone entire repo
+            await git_clone(name, url, branch)
+        else:
+            # otherwise pull changes
+            await git_pull(name)
+        
+        globals.repo_data[name]['stages']['update'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+    
+    ## build stage
+
+    if not ignore_hash_checks and globals.repo_data[name]['stages']['build'] == new_hash:
+        log(f"Skipping building.", keyword=name)
+    else:
+        log(f"Executing build command.", keyword=name)
+        await repo_build(name, version, build_command, new_hash)
+
+    ## deploy stage
+
+    if not ignore_hash_checks and globals.repo_data[name]['stages']['deploy'] == new_hash:
+        log(f"Skipping deployment.", keyword=name)
+    else:
+        log(f"Executing deploy command.", keyword=name)
+        await repo_deploy(name, deploy_command, new_hash)
+
+    ## healthcheck
+
+    if healthcheck_command:
+        healthy = await repo_healthcheck(
+            name, 
+            healthcheck_command,
+            timeout=repo['healthcheck']['timeout'],
+            retries=repo['healthcheck']['retries'],
+            retry_delay=repo['healthcheck']['retry_delay']
+        )
+
+        if not healthy:
+            log(f"Health check failed, rolling back", keyword=name)
+            
+            if len(globals.repo_data[name]['version_history']) > 1:
+                previous_version = globals.repo_data[name]['version_history'][-2]
+                
+                globals.repo_data[name]['build_number'] -= 1
+                globals.repo_data[name]['version_history'].pop()
+                
+                rollback_deploy_command = deploy_command_template.format(
+                    version_tag_scheme=previous_version,
+                    name=name,
+                    port=port,
+                    host_address=globals.config_data['host_address']
+                )
+                
+                log(f"Rolling back to version: {previous_version}", keyword=name)
+                await repo_deploy(name, rollback_deploy_command)
+                
+                globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+
+            else:
+                log(f"No previous version to rollback to", keyword=name)
+
+    ##
+    log(f"Task finished.", keyword=name)
 
 @app.post("/api/repo/check")
 async def api_repo_check(payload: dict, force: bool = False):
     name = payload['name']
-    await repo_check_trigger(name, force)
+    await repo_check(name, force)
 
     return {'message': 'OK'}
 
@@ -172,7 +232,7 @@ async def webhook_repo_check(name, response: Response):
         return {'message': 'Repository not found'}
     
     asyncio.create_task(
-        repo_check_trigger(name)
+        repo_check(name)
     )
     return {'message': 'Webhook received'}
 
@@ -203,19 +263,19 @@ async def api_repo_pull(payload: dict):
 async def api_repo_build(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
-    build_command = repo['build_command']
+    build_command_template = repo['build_command']
     version_tag_scheme = repo['version_tag_scheme']
 
     version = version_tag_scheme.format(
         name = name,
         build_number = globals.repo_data[name]['build_number']
         )
-    build_command = build_command.format(
+    build_command = build_command_template.format(
         version_tag_scheme = version, 
         name = name
         )
 
-    await repo_build(name, build_command)
+    await repo_build(name, version, build_command)
 
     return {'message': 'OK'}
 
@@ -223,17 +283,20 @@ async def api_repo_build(payload: dict):
 async def api_repo_deploy(payload: dict):
     name = payload['name']
     repo = globals.config_data['repos'][name]
-    deploy_command = repo['deploy_command']
+    deploy_command_template = repo['deploy_command']
     version_tag_scheme = repo['version_tag_scheme']
+    port = repo['port']
 
     version = version_tag_scheme.format(
-        name = name,
-        build_number = globals.repo_data[name]['build_number']
-        )
-    deploy_command = deploy_command.format(
-        version_tag_scheme = version,
-        name = name
-        )
+        name=name,
+        build_number=globals.repo_data[name]['build_number']
+    )
+    deploy_command = deploy_command_template.format(
+        version_tag_scheme=version,
+        name=name,
+        port=port,
+        host_address=globals.config_data['host_address']
+    )
 
     await repo_deploy(name, deploy_command)
 
@@ -321,14 +384,7 @@ async def dash_repo_save(name, request: Request):
     if name != 'new_repo_config':
         content = globals.config_data['repos'][name]
     else:
-        content = {
-            'repo_url': '',
-            'branch': 'main',
-            'interval': 0,
-            'version_tag_scheme': '{name}:alpha.{build_number}',
-            'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
-            'deploy_command': 'docker rm -f {name} || true && docker run --name {name} -d {version_tag_scheme}',
-        }
+        content = CONFIG_FILE_REPO_STRUCT
 
     return templates.TemplateResponse(
         request=request, name="edit_config.html", 
@@ -341,24 +397,27 @@ async def dash_repo_save(name, request: Request):
 @app.post("/repo/save", response_class=RedirectResponse)
 async def dash_repo_save(
         name: Annotated[str, Form()],
-        repourl: Annotated[str, Form()],
+        repo_url: Annotated[str, Form()],
         branch: Annotated[str, Form()],
         interval: Annotated[int, Form()],
         version_tag_scheme: Annotated[str, Form()],
-        buildcmd: Annotated[str, Form()],
-        deploycmd: Annotated[str, Form()],
+        build_command: Annotated[str, Form()],
+        deploy_command: Annotated[str, Form()],
+        healthcheck_command: Annotated[str, Form()],
+        port: Annotated[int, Form()],
     ):
 
     name = name.strip()
 
-    content = {
-        'repo_url': repourl,
-        'branch': branch,
-        'interval': interval,
-        'version_tag_scheme': version_tag_scheme,
-        'build_command': buildcmd,
-        'deploy_command': deploycmd,
-    }
+    content = CONFIG_FILE_REPO_STRUCT
+    content['repo_url'] = repo_url
+    content['branch'] = branch
+    content['interval'] = interval
+    content['version_tag_scheme'] = version_tag_scheme
+    content['build_command'] = build_command
+    content['deploy_command'] = deploy_command
+    content['healthcheck']['command'] = healthcheck_command
+    content['port'] = port
 
     globals.config_data['repos'][name] = content
     write_and_reload_config_file()

@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+import subprocess
 
 import globals
 from globals import log
@@ -52,7 +53,7 @@ async def get_remote_hash(url, branch='main'):
 
     return result.split()[0] if result else None
 
-#   repo check, build, deploy
+#   repo build, deploy, health
 
 async def repo_build(name, version, build_command, new_hash=None):
     def log_callback(line):
@@ -79,46 +80,22 @@ async def repo_deploy(name, deploy_command, new_hash=None):
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
 
-async def repo_check(name, url, branch, build_command, deploy_command, version, ignore_hash_checks=False):
-    log(f"Running git check task.", keyword=name)
-    
-    new_hash = await get_remote_hash(url, branch)
-    log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
+async def repo_healthcheck(name, command, timeout=30, retries=3, retry_delay=5):
+    for attempt in range(retries):
+        await asyncio.sleep(retry_delay)
 
-    ## update stage (clone or pull)
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['update'] == new_hash:
-        log(f"Skipping updating.", keyword=name)
-    
-    else:
-        if globals.repo_data[name]['stages']['update'] == None:
-            # never cloned, clone entire repo
-            await git_clone(name, url, branch)
-        else:
-            # otherwise pull changes
-            await git_pull(name)
-        
-        globals.repo_data[name]['stages']['update'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-    
-    ## build stage
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['build'] == new_hash:
-        log(f"Skipping building.", keyword=name)
-    else:
-        log(f"Executing build command.", keyword=name)
-        await repo_build(name, version, build_command, new_hash)
-
-    ## deploy stage
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['deploy'] == new_hash:
-        log(f"Skipping deployment.", keyword=name)
-    else:
-        log(f"Executing deploy command.", keyword=name)
-        await repo_deploy(name, deploy_command, new_hash)
-
-    ##
-    log(f"Task finished.", keyword=name)
+        try:
+            process = await asyncio.create_subprocess_shell(
+                command,
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.DEVNULL
+            )
+            await asyncio.wait_for(process.wait(), timeout=timeout)
+            
+            return process.returncode == 0
+            
+        except (asyncio.TimeoutError, subprocess.CalledProcessError) as e:
+            log(f"Health check attempt {attempt + 1} failed: {e}", keyword=name)
 
 ## docker
 

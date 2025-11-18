@@ -37,7 +37,7 @@
                 </div>
                 <div class="table-row">
                     <div class="table-label">Repository URL</div>
-                    <input type="text" id="repourl" name="repourl" value="{{ repo['repo_url'] }}"> 
+                    <input type="text" id="repo_url" name="repo_url" value="{{ repo['repo_url'] }}"> 
                 </div>
                 <div class="table-row">
                     <div class="table-label">Branch</div>
@@ -53,11 +53,19 @@
                 </div>
                 <div class="table-row">
                     <div class="table-label">Build command</div>
-                    <textarea id="buildcmd" name="buildcmd">{{ repo['build_command'] }}</textarea>
+                    <textarea id="build_command" name="build_command">{{ repo['build_command'] }}</textarea>
                 </div>
                 <div class="table-row">
                     <div class="table-label">Deploy command</div>
-                    <textarea id="deploycmd" name="deploycmd">{{ repo['deploy_command'] }}</textarea>
+                    <textarea id="deploy_command" name="deploy_command">{{ repo['deploy_command'] }}</textarea>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Healthcheck command</div>
+                    <textarea id="healthcheck_command" name="healthcheck_command">{{ repo['healthcheck']['command'] }}</textarea>
+                </div>
+                <div class="table-row">
+                    <div class="table-label">Port</div>
+                    <textarea id="healthcheck_command" name="healthcheck_command">{{ repo['port'] }}</textarea>
                 </div>
             </div>
         </form>
