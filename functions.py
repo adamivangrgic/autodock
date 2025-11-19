@@ -156,14 +156,14 @@ async def repo_check(name, ignore_hash_checks=False):
     if not ignore_hash_checks and repo_data['stages']['build'] == new_hash:
         log(f"Skipping building.", keyword=name)
     else:
-        await repo_build(name)
+        await repo_build(name, new_hash)
 
     ## deploy stage
 
     if not ignore_hash_checks and repo_data['stages']['deploy'] == new_hash:
         log(f"Skipping deployment.", keyword=name)
     else:
-        await repo_deploy(name)
+        await repo_deploy(name, new_hash)
 
     ## healthcheck
 
