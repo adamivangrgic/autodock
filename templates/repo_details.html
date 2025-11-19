@@ -135,7 +135,32 @@
                 </div>
             </div>
         </div>   
-        {% endif %}     
+        {% endif %}
+
+        {% if images %}
+        <div class="card">
+            {% for image in content %}
+            <div class="list-item">
+                {% set image_id = image['Id'] %}
+                {% set repo = image['Repository'] %}
+                {% set tag = image['Tag'] %}
+                {% set created = image['CreatedAt'] %}
+                {% set size = image['Size'] %}
+                <div class="list-row column-spacing-images">
+                    <div class="link-list" data-label="Tag">
+                        <a href="/image/{{ image_id }}" class="link">{{ repo }}:{{ tag }}</a>
+                    </div>
+                    <div data-date="{{ created }}" data-label="Created"></div>
+                    <div data-label="Size">{{ size }}</div>
+                    <div class="element-row">
+                        <button class="button-primary" onclick="apiCall('/', {'id': '{{ image_id }}'})">Deploy</button>
+                        <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 
     <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>

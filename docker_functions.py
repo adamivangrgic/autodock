@@ -63,7 +63,7 @@ async def docker_image_list(repo_filter=None):
         if string:
             values = string.split(';')
 
-            if not repo_filter or repo_filter == values[1]:
+            if not repo_filter or repo_filter in values[1]:
                 output.append({
                     'Id': values[0],
                     'Repository': values[1],

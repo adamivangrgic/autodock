@@ -150,6 +150,7 @@ async def dash_index(request: Request):
 async def dash_repo_details(name, request: Request):
     repo = globals.config_data['repos'].get(name, None)
     raw_container_output, container = await docker_container_inspect(name)
+    images = await docker_image_list(name)
 
     return templates.TemplateResponse(
         request=request, name="repo_details.html", 
@@ -157,6 +158,7 @@ async def dash_repo_details(name, request: Request):
             "name": name,
             "repo": repo,
             "container": container,
+            "images": images,
             "HOST_ADDRESS": globals.config_data['host_address']
             }
     )
