@@ -7,6 +7,8 @@
 </head>
 
 <body>
+    <div class="loader"></div>
+    
     <div class="container">
         <div class="header">
             <p class="element-row">
@@ -21,12 +23,12 @@
             <h2>Repository configuration</h2>
 
             <div class="element-row">
-                <button class="button-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                <button class="button-primary" onclick="apiCall('/api/repo/check?force=True', {'name': '{{ name }}'})">Check (force)</button>
-                <button class="button-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                <button class="button-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                <button class="button-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                <button class="button-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+                <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                <button class="button-primary" onclick="apiAction('/api/repo/check?force=True', {'name': '{{ name }}'})">Check (force)</button>
+                <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
 
                 <a class="button button-primary right-align"  href="/repo/edit/{{ name }}" type="button">Edit configuration</a>
                 <a class="button button-error"  href="/repo/delete/{{ name }}" type="button">Delete</a>
@@ -102,13 +104,13 @@
             <h2>Container</h2>
 
             <div class="element-row">
-                <button class="button-primary" onclick="apiCall('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
-                <button class="button-warning" onclick="apiCall('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
-                <button class="button-error" onclick="apiCall('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
-                <button class="button-secondary" onclick="apiCall('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
-                <button class="button-warning" onclick="apiCall('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
-                <button class="button-success" onclick="apiCall('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
-                <button class="button-error" onclick="apiCall('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+                <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+                <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+                <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+                <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+                <button class="button-warning" onclick="apiAction('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
+                <button class="button-success" onclick="apiAction('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
+                <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
                 <a class="button button-primary right-align" href="/container/{{ id }}" type="button">More info</a>
             </div>
             
@@ -163,8 +165,8 @@
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
                     <div class="element-row">
-                        <button class="button-primary" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}', 'tag': '{{ repo }}:{{ tag }}'})">Deploy</button>
-                        <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
+                        <button class="button-primary" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}', 'tag': '{{ repo }}:{{ tag }}'})">Deploy</button>
+                        <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
                     </div>
                 </div>
             </div>

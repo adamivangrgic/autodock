@@ -7,6 +7,8 @@
 </head>
 
 <body>
+    <div class="loader"></div>
+    
     <div class="container">
         <div class="header">
             <p class="element-row">
@@ -49,11 +51,11 @@
                     {% endif %}
                 </div>
                 <div class="element-row">
-                    <button class="button-primary" onclick="apiCall('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                    <button class="button-secondary" onclick="apiCall('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                    <button class="button-success" onclick="apiCall('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                    <button class="button-warning" onclick="apiCall('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                    <button class="button-error" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+                    <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+                    <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+                    <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+                    <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+                    <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
                 </div>
             </div>
             {% endfor %}

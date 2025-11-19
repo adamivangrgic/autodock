@@ -21,6 +21,12 @@ async function apiCall(url, context) {
     }
 }
 
+async function apiAction(url, context){
+    document.querySelector('.loader').style.display = "initial"; 
+    await apiCall(url, context);
+    window.location.reload();
+}
+
 //
 
 function humanizeDate(dateString) {

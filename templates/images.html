@@ -7,6 +7,8 @@
 </head>
 
 <body>
+    <div class="loader"></div>
+    
     <div class="container">
         <div class="header">
             <p class="element-row">
@@ -43,7 +45,7 @@
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
                     <div class="element-row">
-                        <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
+                        <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
                     </div>
                 </div>
             </div>
