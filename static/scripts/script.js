@@ -13,7 +13,7 @@ async function apiCall(url, context) {
         }
         
         const data = await response.json();
-        // return data;
+        return data;
 
     } catch (err) {
         console.error('API call failed:', err);
@@ -23,17 +23,9 @@ async function apiCall(url, context) {
 }
 
 async function apiAction(url, context){
-    const loader = document.querySelector('.loader'); 
+    document.querySelector('.loader').style.opacity = 1; 
     const msg = await apiCall(url, context);
-
-    loader.style.opacity = 1; 
-
-    if (msg){
-        loader.style.opacity = 0; 
-        Notify.failure(msg);
-    } else {
-        window.location.reload();
-    }
+    window.location.reload();
 }
 
 //
