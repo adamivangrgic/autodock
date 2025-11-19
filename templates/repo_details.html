@@ -163,7 +163,7 @@
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
                     <div class="element-row">
-                        <button class="button-primary" onclick="apiCall('/', {'id': '{{ image_id }}'})">Deploy</button>
+                        <button class="button-primary" onclick="apiCall('/api/repo/deploy', {'name': '{{ name }}', 'tag': '{{ repo }}:{{ tag }}'})">Deploy</button>
                         <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
                     </div>
                 </div>

@@ -52,6 +52,11 @@ async def docker_container_list():
     return output
 
 
+async def docker_image_action(action, image_id):
+    cmd = f"docker image {action} {image_id}"
+    await asyncio.to_thread(run_command, cmd)
+
+
 async def docker_image_list(repo_filter=None):
     cmd = 'docker image ls --no-trunc --format "{{.ID}};{{.Repository}};{{.Tag}};{{.CreatedAt}};{{.Size}}"'
     raw_otput = await asyncio.to_thread(check_output, cmd)

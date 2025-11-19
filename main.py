@@ -14,7 +14,7 @@ from globals import log, filter_log
 
 from functions import repo_build, repo_deploy, repo_healthcheck, repo_check
 from git_functions import git_clone, git_pull, get_remote_hash
-from docker_functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
+from docker_functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_action, docker_image_list
 from config_functions import CONFIG_FILE_REPO_STRUCT, scheduler, write_and_reload_config_file, configuration
 
 
@@ -80,7 +80,8 @@ async def api_repo_build(payload: dict):
 @app.post("/api/repo/deploy")
 async def api_repo_deploy(payload: dict):
     name = payload['name']
-    await repo_deploy(name)
+    tag = payload.get('tag', None)
+    await repo_deploy(name, deploy_version=tag)
 
     return {'message': 'OK'}
 
@@ -125,6 +126,26 @@ async def api_container_get_logs(payload: dict):
     
     output = await docker_container_get_logs(container_id, num_of_lines)
     return output
+
+#   images
+
+@app.post("/api/image/action/{action}")
+async def api_image_action(action, payload: dict, response: Response):
+    image_id = payload['id']
+
+    allowed_actions = [
+        'rm'
+    ]
+
+    if action not in allowed_actions:
+        return None
+    
+    try:
+        await docker_image_action(action, image_id)
+        return {'message': 'OK'}
+    except Exception as e:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {'message': e}
 
 ## dashboard
 
