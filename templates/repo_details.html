@@ -138,7 +138,9 @@
         {% endif %}
 
         {% if images %}
-        <div class="card">
+        <div class="list-card">
+            <h2>Images</h2>
+
             {% for image in images %}
             <div class="list-item">
                 {% set image_id = image['Id'] %}
@@ -152,7 +154,7 @@
                     </div>
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
-                    <div class="element-row">
+                    <div>
                         <button class="button-primary" onclick="apiCall('/', {'id': '{{ image_id }}'})">Deploy</button>
                         <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
                     </div>

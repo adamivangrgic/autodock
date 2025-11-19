@@ -17,7 +17,7 @@
             <h1>Images</h1>
         </div>
         
-        <div class="main-content">
+        <div class="list-card">
             <div class="list-header column-spacing-images">
                 <div>Id</div>
                 <div>Tag</div>
@@ -42,7 +42,7 @@
                     </div>
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>
-                    <div class="element-row">
+                    <div>
                         <button class="button-error" onclick="apiCall('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
                     </div>
                 </div>
