@@ -40,7 +40,7 @@ async def repo_build(name, new_hash=None):
     globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
 
-async def repo_deploy(name, new_hash=None):
+async def repo_deploy(name, deploy_version=None, new_hash=None):
     repo = globals.config_data['repos'][name]
     repo_data = globals.repo_data[name]
 
@@ -48,7 +48,7 @@ async def repo_deploy(name, new_hash=None):
     version_tag_scheme = repo['version_tag_scheme']
     port = repo['port']
 
-    version = version_tag_scheme.format(
+    version = deploy_version if deploy_version else version_tag_scheme.format(
         name=name,
         build_number=repo_data['build_number']
     )
@@ -106,7 +106,7 @@ async def repo_rollback(name):
         repo_data['version_history'].pop()
         
         log(f"Rolling back to version: {previous_version}", keyword=name)
-        await repo_deploy(name)
+        await repo_deploy(name, previous_version)
         
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
