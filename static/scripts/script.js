@@ -17,13 +17,14 @@ async function apiCall(url, context) {
 
     } catch (err) {
         console.error('API call failed:', err);
-        throw err;
+        // throw err;
+        return err;
     }
 }
 
 async function apiAction(url, context){
-    document.querySelector('.loader').style.display = "initial"; 
-    await apiCall(url, context);
+    document.querySelector('.loader').style.opacity = 1; 
+    const msg = await apiCall(url, context);
     window.location.reload();
 }
 
