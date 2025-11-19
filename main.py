@@ -1,6 +1,5 @@
 import os
-import json
-from typing import Dict, Any, Annotated
+from typing import Annotated
 from copy import deepcopy
 import asyncio
 
@@ -13,16 +12,10 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import globals
 from globals import log, filter_log
 
-from functions import repo_build, repo_deploy, repo_healthcheck, git_clone, git_pull, get_remote_hash
-from functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
-
-from subprocess_functions import poll_output
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from datetime import datetime
-
-scheduler = AsyncIOScheduler()
+from functions import repo_build, repo_deploy, repo_healthcheck, repo_check
+from git_functions import git_clone, git_pull, get_remote_hash
+from docker_functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_list
+from config_functions import CONFIG_FILE_REPO_STRUCT, scheduler, write_and_reload_config_file, configuration
 
 
 app = FastAPI()
@@ -31,192 +24,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 trusted_host = os.getenv("TRUSTED_HOST", "*")
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=[trusted_host])
 
-CONFIG_FILE_STRUCT = {
-        'repos': {},
-        'host_address': 'localhost'
-    }
-CONFIG_FILE_REPO_STRUCT = {
-        'repo_url': '',
-        'branch': 'main',
-        'interval': 0,
-        'version_tag_scheme': '{name}:alpha.{build_number}',
-        'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
-        'deploy_command': 'docker rm -f {name} || true && docker run --name {name} -p {port}:8080 -d {version_tag_scheme}',
-        'healthcheck': {
-                'command': 'curl -f {host_address}:{port} || exit 1',
-                'timeout': 30,
-                'retries': 3,
-                'retry_delay': 5
-            },
-        'port': 8080,
-    }
-
-def load_config_file(file_path):
-    file = globals.read_yaml_file(file_path)
-
-    if not file:
-        return deepcopy(CONFIG_FILE_STRUCT)
-
-    file = CONFIG_FILE_STRUCT | file
-
-    for name, repo in file['repos'].items():
-        file['repos'][name] = CONFIG_FILE_REPO_STRUCT | repo
-
-    return file
-
-def write_and_reload_config_file():
-    globals.write_yaml_file(globals.CONFIG_FILE_PATH, globals.config_data)
-    configuration()
-
-def configuration():
-    globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)
-    if not globals.repo_data:
-        globals.repo_data = {}
-
-    globals.config_data = load_config_file(globals.CONFIG_FILE_PATH)
-
-    scheduler.remove_all_jobs()
-    
-    for name, repo in globals.config_data['repos'].items():
-        if name not in globals.repo_data:
-            globals.repo_data[name] = {
-                'stages': {
-                    'update': None,
-                    'build': None,
-                    'deploy': None
-                },
-                'build_number': 0,
-                'version_history': []
-            }
-        
-        if repo['interval'] > 0:
-            scheduler.add_job(
-                repo_check,
-                args=[name, False],
-                trigger=IntervalTrigger(seconds=repo['interval']),
-                id=f"repo_check_periodic_task_{name}",
-                replace_existing=True,
-                max_instances=1,
-                next_run_time=datetime.now()
-            )
-
-            print(f"CONFIGURATION: scheduler task configured for {name}, interval {repo['interval']} seconds")
-
-    globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-    
-    print("CONFIGURATION: loaded")
-
 @app.on_event("startup")
 async def startup_event():
     configuration()
     scheduler.start()
 
+
 ##  api endpoints
-#   repo check
-
-async def repo_check(name, ignore_hash_checks=False):
-    repo = globals.config_data['repos'][name]
-    url = repo['repo_url']
-    branch = repo['branch']
-    version_tag_scheme = repo['version_tag_scheme']
-    build_command_template = repo['build_command']
-    deploy_command_template = repo['deploy_command']
-    healthcheck_template = repo['healthcheck']['command']
-    port = repo['port']
-
-    version = version_tag_scheme.format(
-        name = name,
-        build_number = globals.repo_data[name]['build_number']
-        )
-    build_command = build_command_template.format(
-        version_tag_scheme = version, 
-        name = name
-        )
-    deploy_command = deploy_command_template.format(
-        version_tag_scheme = version, 
-        name = name,
-        port = port,
-        host_address = globals.config_data['host_address']
-        )
-    healthcheck_command = healthcheck_template.format(
-        port = port,
-        host_address = globals.config_data['host_address']
-        )
-
-    log(f"Running git check task.", keyword=name)
-    
-    new_hash = await get_remote_hash(url, branch)
-    log(f"Hash comparison: \n  old: '{globals.repo_data[name]['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
-
-    ## update stage (clone or pull)
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['update'] == new_hash:
-        log(f"Skipping updating.", keyword=name)
-    
-    else:
-        if globals.repo_data[name]['stages']['update'] == None:
-            # never cloned, clone entire repo
-            await git_clone(name, url, branch)
-        else:
-            # otherwise pull changes
-            await git_pull(name)
-        
-        globals.repo_data[name]['stages']['update'] = new_hash
-        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-    
-    ## build stage
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['build'] == new_hash:
-        log(f"Skipping building.", keyword=name)
-    else:
-        log(f"Executing build command.", keyword=name)
-        await repo_build(name, version, build_command, new_hash)
-
-    ## deploy stage
-
-    if not ignore_hash_checks and globals.repo_data[name]['stages']['deploy'] == new_hash:
-        log(f"Skipping deployment.", keyword=name)
-    else:
-        log(f"Executing deploy command.", keyword=name)
-        await repo_deploy(name, deploy_command, new_hash)
-
-    ## healthcheck
-
-    if healthcheck_command:
-        healthy = await repo_healthcheck(
-            name, 
-            healthcheck_command,
-            timeout=repo['healthcheck']['timeout'],
-            retries=repo['healthcheck']['retries'],
-            retry_delay=repo['healthcheck']['retry_delay']
-        )
-
-        if not healthy:
-            log(f"Health check failed, rolling back", keyword=name)
-            
-            if len(globals.repo_data[name]['version_history']) > 1:
-                previous_version = globals.repo_data[name]['version_history'][-2]
-                
-                globals.repo_data[name]['build_number'] -= 1
-                globals.repo_data[name]['version_history'].pop()
-                
-                rollback_deploy_command = deploy_command_template.format(
-                    version_tag_scheme=previous_version,
-                    name=name,
-                    port=port,
-                    host_address=globals.config_data['host_address']
-                )
-                
-                log(f"Rolling back to version: {previous_version}", keyword=name)
-                await repo_deploy(name, rollback_deploy_command)
-                
-                globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
-
-            else:
-                log(f"No previous version to rollback to", keyword=name)
-
-    ##
-    log(f"Task finished.", keyword=name)
 
 @app.post("/api/repo/check")
 async def api_repo_check(payload: dict, force: bool = False):
@@ -241,12 +55,9 @@ async def webhook_repo_check(name, response: Response):
 @app.post("/api/repo/clone")
 async def api_repo_clone(payload: dict, response: Response):
     name = payload['name']
-    repo = globals.config_data['repos'][name]
-    url = repo['repo_url']
-    branch = repo['branch']
 
     try:
-        await git_clone(name, url, branch)
+        await git_clone(name)
         return {'message': 'OK'}
     except Exception as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -262,43 +73,14 @@ async def api_repo_pull(payload: dict):
 @app.post("/api/repo/build")
 async def api_repo_build(payload: dict):
     name = payload['name']
-    repo = globals.config_data['repos'][name]
-    build_command_template = repo['build_command']
-    version_tag_scheme = repo['version_tag_scheme']
-
-    version = version_tag_scheme.format(
-        name = name,
-        build_number = globals.repo_data[name]['build_number']
-        )
-    build_command = build_command_template.format(
-        version_tag_scheme = version, 
-        name = name
-        )
-
-    await repo_build(name, version, build_command)
+    await repo_build(name)
 
     return {'message': 'OK'}
 
 @app.post("/api/repo/deploy")
 async def api_repo_deploy(payload: dict):
     name = payload['name']
-    repo = globals.config_data['repos'][name]
-    deploy_command_template = repo['deploy_command']
-    version_tag_scheme = repo['version_tag_scheme']
-    port = repo['port']
-
-    version = version_tag_scheme.format(
-        name=name,
-        build_number=globals.repo_data[name]['build_number']
-    )
-    deploy_command = deploy_command_template.format(
-        version_tag_scheme=version,
-        name=name,
-        port=port,
-        host_address=globals.config_data['host_address']
-    )
-
-    await repo_deploy(name, deploy_command)
+    await repo_deploy(name)
 
     return {'message': 'OK'}
 

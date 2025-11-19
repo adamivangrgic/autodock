@@ -1,5 +1,3 @@
-import os
-import json
 import asyncio
 import subprocess
 
@@ -7,80 +5,81 @@ import globals
 from globals import log
 
 from subprocess_functions import run_command, check_output, poll_output
-
-
-## git
-
-async def git_clone(name: str, url: str, branch: str):
-    repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-
-    log(f"Cloning into repo {url} {branch}", keyword=name)
-
-    if not os.path.exists(os.path.join(repo_dir, ".git")):
-        cmd = f"git clone --branch {branch} --single-branch {url} {repo_dir}"
-
-        def log_callback(line):
-            log(line, keyword=name, print_message=False)
-
-        await poll_output(cmd, callback=log_callback)
-
-        log("Repo successfully cloned.", keyword=name)
-    else:
-        log("Repository already exists.", keyword=name)
-        # raise Exception("Repository already exists.")
-
-
-async def git_pull(name: str):
-    repo_dir = os.path.join(globals.REPO_DATA_PATH, name)
-
-    log(f"Pulling repo {repo_dir}", keyword=name)
-
-    cmd = "git pull --rebase"
-
-    def log_callback(line):
-        log(line, keyword=name, print_message=False)
-        
-    await poll_output(cmd, repo_dir, callback=log_callback)
-
-    log("Repo successfully pulled.")
-
-
-async def get_remote_hash(url, branch='main'):
-    log(f"Getting {url} {branch} hash")
-
-    cmd = f"git ls-remote {url} refs/heads/{branch}"
-    result = await asyncio.to_thread(check_output, cmd)
-
-    return result.split()[0] if result else None
+from git_functions import get_remote_hash, git_clone, git_pull
 
 #   repo build, deploy, health
 
-async def repo_build(name, version, build_command, new_hash=None):
+async def repo_build(name, new_hash=None):
+    repo = globals.config_data['repos'][name]
+    repo_data = globals.repo_data[name]
+
+    build_command_template = repo['build_command']
+    version_tag_scheme = repo['version_tag_scheme']
+
+    version = version_tag_scheme.format(
+        name = name,
+        build_number = repo_data['build_number']
+        )
+    build_command = build_command_template.format(
+        version_tag_scheme = version, 
+        name = name
+        )
+    
+    log(f"Executing build command: {build_command}", keyword=name)
+
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(build_command, callback=log_callback)
 
     if new_hash:
-        globals.repo_data[name]['stages']['build'] = new_hash
+        repo_data['stages']['build'] = new_hash
 
-    globals.repo_data[name]['version_history'].append(version)
-    globals.repo_data[name]['build_number'] += 1
+    repo_data['version_history'].append(version)
+    repo_data['build_number'] += 1
     globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
 
-async def repo_deploy(name, deploy_command, new_hash=None):
+async def repo_deploy(name, new_hash=None):
+    repo = globals.config_data['repos'][name]
+    repo_data = globals.repo_data[name]
+
+    deploy_command_template = repo['deploy_command']
+    version_tag_scheme = repo['version_tag_scheme']
+    port = repo['port']
+
+    version = version_tag_scheme.format(
+        name=name,
+        build_number=repo_data['build_number']
+    )
+    deploy_command = deploy_command_template.format(
+        version_tag_scheme=version,
+        name=name,
+        port=port,
+        host_address=globals.config_data['host_address']
+    )
+
+    log(f"Executing deploy command: {deploy_command}", keyword=name)
+
     def log_callback(line):
         log(line, keyword=name, print_message=False)
 
     await poll_output(deploy_command, callback=log_callback)
 
     if new_hash:
-        globals.repo_data[name]['stages']['deploy'] = new_hash
+        repo_data['stages']['deploy'] = new_hash
         globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
     
 
-async def repo_healthcheck(name, command, timeout=30, retries=3, retry_delay=5):
+async def repo_healthcheck(name):
+    repo = globals.config_data['repos'][name]
+    command = repo['healthcheck']['command']
+    timeout = repo['healthcheck']['timeout']
+    retries = repo['healthcheck']['retries']
+    retry_delay = repo['healthcheck']['retry_delay']
+
+    log(f"Executing healthcheck: {command}", keyword=name)
+
     for attempt in range(retries):
         await asyncio.sleep(retry_delay)
 
@@ -97,71 +96,75 @@ async def repo_healthcheck(name, command, timeout=30, retries=3, retry_delay=5):
         except (asyncio.TimeoutError, subprocess.CalledProcessError) as e:
             log(f"Health check attempt {attempt + 1} failed: {e}", keyword=name)
 
-## docker
+async def repo_rollback(name):
+    repo_data = globals.repo_data[name]
 
-async def docker_container_action(action, container_id):
-    cmd = f"docker {action} {container_id}"
-    await asyncio.to_thread(run_command, cmd)
+    if len(repo_data['version_history']) > 1:
+        previous_version = repo_data['version_history'][-2]
         
-async def docker_container_inspect(name):
-    cmd = f"docker inspect --type=container {name}"
+        repo_data['build_number'] -= 1
+        repo_data['version_history'].pop()
+        
+        log(f"Rolling back to version: {previous_version}", keyword=name)
+        await repo_deploy(name)
+        
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
 
-    try:
-        raw_output = await asyncio.to_thread(check_output, cmd)
-        inspect_output = json.loads(raw_output)
-    except Exception as e:
-        raw_output = None
-        inspect_output = None
-        print(e)
+    else:
+        log(f"No previous version to rollback to", keyword=name)
 
-    return raw_output, inspect_output
+## check
+
+async def repo_check(name, ignore_hash_checks=False):
+    repo = globals.config_data['repos'][name]
+    repo_data = globals.repo_data[name]
+
+    url = repo['repo_url']
+    branch = repo['branch']
+    healthcheck_template = repo['healthcheck']['command']
+
+    log(f"Running git check task.", keyword=name)
     
-async def docker_container_get_logs(container_id, num_of_lines=100):
-    cmd = f"docker logs -n {num_of_lines} {container_id}"
-    output = await asyncio.to_thread(check_output, cmd)
+    new_hash = await get_remote_hash(url, branch)
+    log(f"Hash comparison: \n  old: '{repo_data['stages']['update']}'\n  new: '{new_hash}'", keyword=name)
 
-    return output
+    ## update stage (clone or pull)
 
-async def docker_container_list():
-    cmd = 'docker ps -a --no-trunc --format "{{.ID}};{{.Names}};{{.State}};{{.CreatedAt}};{{.Ports}};{{.Image}}"'
-    raw_otput = await asyncio.to_thread(check_output, cmd)
+    if not ignore_hash_checks and repo_data['stages']['update'] == new_hash:
+        log(f"Skipping updating.", keyword=name)
+    
+    else:
+        if repo_data['stages']['update'] == None:
+            # never cloned, clone entire repo
+            await git_clone(name)
+        else:
+            # otherwise pull changes
+            await git_pull(name)
+        
+        repo_data['stages']['update'] = new_hash
+        globals.write_json_file(globals.REPO_DATA_FILE_PATH, globals.repo_data)
+    
+    ## build stage
 
-    string_list = raw_otput.split('\n')
-    output = []
+    if not ignore_hash_checks and repo_data['stages']['build'] == new_hash:
+        log(f"Skipping building.", keyword=name)
+    else:
+        await repo_build(name)
 
-    for string in string_list:
-        if string:
-            values = string.split(';')
-            
-            output.append({
-                'Id': values[0],
-                'Names': values[1],
-                'State': values[2],
-                'CreatedAt': values[3],
-                'Ports': values[4].split(', '),
-                'Image': values[5],
-            })
+    ## deploy stage
 
-    return output
+    if not ignore_hash_checks and repo_data['stages']['deploy'] == new_hash:
+        log(f"Skipping deployment.", keyword=name)
+    else:
+        await repo_deploy(name)
 
-async def docker_image_list(repo_filter=None):
-    cmd = 'docker image ls --no-trunc --format "{{.ID}};{{.Repository}};{{.Tag}};{{.CreatedAt}};{{.Size}}"'
-    raw_otput = await asyncio.to_thread(check_output, cmd)
+    ## healthcheck
 
-    string_list = raw_otput.split('\n')
-    output = []
+    if healthcheck_template:
+        healthy = await repo_healthcheck(name)
 
-    for string in string_list:
-        if string:
-            values = string.split(';')
-
-            if not repo_filter or repo_filter == values[1]:
-                output.append({
-                    'Id': values[0],
-                    'Repository': values[1],
-                    'Tag': values[2],
-                    'CreatedAt': values[3],
-                    'Size': values[4],
-                })
-
-    return output
+        if not healthy:
+            log(f"Health check failed", keyword=name)
+            await repo_rollback(name)
+    ##
+    log(f"Task finished.", keyword=name)
