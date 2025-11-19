@@ -73,10 +73,17 @@ async def repo_deploy(name, deploy_version=None, new_hash=None):
 
 async def repo_healthcheck(name):
     repo = globals.config_data['repos'][name]
-    command = repo['healthcheck']['command']
+    
+    port = repo['port']
+    command_template = repo['healthcheck']['command']
     timeout = repo['healthcheck']['timeout']
     retries = repo['healthcheck']['retries']
     retry_delay = repo['healthcheck']['retry_delay']
+    
+    command = command_template.format(
+        port=port,
+        host_address=globals.config_data['host_address']
+    )
 
     log(f"Executing healthcheck: {command}", keyword=name)
 
