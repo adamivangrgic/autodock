@@ -246,7 +246,7 @@ h2 {
 }
 
 .link:hover {
-    background: var(--primary-dark);
+    /* background: var(--primary-dark); */
     transform: translateY(-1px);
 }
 

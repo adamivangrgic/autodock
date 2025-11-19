@@ -156,7 +156,7 @@
                     </div>
                     <div class="link-list" data-label="Tag">
                         <a href="" class="link link-secondary">{{ repo }}:{{ tag }}</a>
-                        {% if container['Image'] == image_id %}
+                        {% if container[0]['Image'] == image_id %}
                         <a href="" class="link link-success">Running</a>
                         {% endif %}
                     </div>
