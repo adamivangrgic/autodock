@@ -110,7 +110,6 @@ async def repo_rollback(name):
     if len(repo_data['version_history']) > 1:
         previous_version = repo_data['version_history'][-2]
         
-        repo_data['build_number'] -= 1
         repo_data['version_history'].pop()
         
         log(f"Rolling back to version: {previous_version}", keyword=name)
