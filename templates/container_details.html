@@ -44,7 +44,7 @@
                 <div class="table-row">
                     <div class="table-label">Image</div>
                     <div class="table-value link-list">
-                        <a href="" class="link">{{ image }}</a>
+                        <a href="" class="link link-secondary">{{ image }}</a>
                     </div>
                 </div>
                 <div class="table-row">
@@ -66,7 +66,7 @@
                     <div class="table-value link-list">
                     {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
                     {% if outer %}
-                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endif %}
                     {% endfor %}
                     </div>

@@ -39,7 +39,7 @@
                         <div data-date="{{ repo['inspect'][0]['Created'] }}" data-label="Created"></div>
                         <div class="link-list" data-label="Ports">
                         {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
-                            <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                         {% endfor %}
                         </div>
                     {% else %}

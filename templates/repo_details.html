@@ -128,7 +128,7 @@
                     <div class="table-value link-list">
                     {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
                     {% if outer %}
-                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
                     {% endif %}
                     {% endfor %}
                     </div>
@@ -155,7 +155,10 @@
                         <a href="/image/{{ image_id }}" class="list-item-name">{{ image_id }}</a>
                     </div>
                     <div class="link-list" data-label="Tag">
-                        <a href="" class="link">{{ repo }}:{{ tag }}</a>
+                        <a href="" class="link link-secondary">{{ repo }}:{{ tag }}</a>
+                        {% if container['Image'] == image_id %}
+                        <a href="" class="link link-success">Running</a>
+                        {% endif %}
                     </div>
                     <div data-date="{{ created }}" data-label="Created"></div>
                     <div data-label="Size">{{ size }}</div>

@@ -213,7 +213,6 @@ h2 {
 }
 
 .link {
-    background: var(--primary);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 0.375rem;
@@ -224,6 +223,26 @@ h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.link-primary {
+    background: var(--primary);
+}
+
+.link-secondary {
+    background: var(--secondary);
+}
+
+.link-success {
+    background: var(--success);
+}
+
+.link-warning {
+    background: var(--warning);
+}
+
+.link-error {
+    background: var(--error);
 }
 
 .link:hover {
