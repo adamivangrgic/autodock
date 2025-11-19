@@ -246,7 +246,7 @@ h2 {
 }
 
 .link:hover {
-    /* background: var(--primary-dark); */
+    filter: brightness(80%);
     transform: translateY(-1px);
 }
 
