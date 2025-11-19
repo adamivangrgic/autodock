@@ -96,6 +96,7 @@ async def repo_healthcheck(name):
         except (asyncio.TimeoutError, subprocess.CalledProcessError) as e:
             log(f"Health check attempt {attempt + 1} failed: {e}", keyword=name)
 
+
 async def repo_rollback(name):
     repo_data = globals.repo_data[name]
 

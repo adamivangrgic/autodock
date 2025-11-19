@@ -19,7 +19,7 @@ CONFIG_FILE_REPO_STRUCT = {
         'repo_url': '',
         'branch': 'main',
         'interval': 0,
-        'version_tag_scheme': '{name}:alpha.{build_number}',
+        'version_tag_scheme': '{name}:v{build_number}',
         'build_command': 'docker build -t {version_tag_scheme} -t {name}:latest /repo_data/{name}',
         'deploy_command': 'docker rm -f {name} || true && docker run --name {name} -p {port}:8080 -d {version_tag_scheme}',
         'healthcheck': {
@@ -44,9 +44,11 @@ def load_config_file(file_path):
 
     return file
 
+
 def write_and_reload_config_file():
     globals.write_yaml_file(globals.CONFIG_FILE_PATH, globals.config_data)
     configuration()
+
 
 def configuration():
     globals.repo_data = globals.read_json_file(globals.REPO_DATA_FILE_PATH)

@@ -8,6 +8,7 @@ async def docker_container_action(action, container_id):
     cmd = f"docker {action} {container_id}"
     await asyncio.to_thread(run_command, cmd)
         
+
 async def docker_container_inspect(name):
     cmd = f"docker inspect --type=container {name}"
 
@@ -20,11 +21,13 @@ async def docker_container_inspect(name):
 
     return raw_output, inspect_output
     
+
 async def docker_container_get_logs(container_id, num_of_lines=100):
     cmd = f"docker logs -n {num_of_lines} {container_id}"
     output = await asyncio.to_thread(check_output, cmd)
 
     return output
+
 
 async def docker_container_list():
     cmd = 'docker ps -a --no-trunc --format "{{.ID}};{{.Names}};{{.State}};{{.CreatedAt}};{{.Ports}};{{.Image}}"'
@@ -47,6 +50,7 @@ async def docker_container_list():
             })
 
     return output
+
 
 async def docker_image_list(repo_filter=None):
     cmd = 'docker image ls --no-trunc --format "{{.ID}};{{.Repository}};{{.Tag}};{{.CreatedAt}};{{.Size}}"'
