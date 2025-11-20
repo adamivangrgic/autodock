@@ -1,59 +1,38 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Images - autodock</title>
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head>
+{% block title %}Images{% endblock %}
 
-<body>
-    <div class="loader"></div>
+{% block content %}
+<div class="list-card">
+    <div class="list-header column-spacing-images">
+        <div>Id</div>
+        <div>Tag</div>
+        <div>Created</div>
+        <div>Size</div>
+        <div></div>
+    </div>
     
-    <div class="container">
-        <div class="header">
-            <p class="element-row">
-                <a href="/">Repositories</a>
-                <a href="/containers">Containers</a>
-                <a href="/images">Images</a>
-            </p>
-            <h1>Images</h1>
-        </div>
-        
-        <div class="list-card">
-            <div class="list-header column-spacing-images">
-                <div>Id</div>
-                <div>Tag</div>
-                <div>Created</div>
-                <div>Size</div>
-                <div></div>
+    {% for image in content %}
+    <div class="list-item">
+        {% set id = image['Id'] %}
+        {% set repo = image['Repository'] %}
+        {% set tag = image['Tag'] %}
+        {% set created = image['CreatedAt'] %}
+        {% set size = image['Size'] %}
+        <div class="list-row column-spacing-images">
+            <div data-label="Id">
+                <a href="/image/{{ id }}" class="list-item-name">{{ id }}</a>
             </div>
-            
-            {% for image in content %}
-            <div class="list-item">
-                {% set id = image['Id'] %}
-                {% set repo = image['Repository'] %}
-                {% set tag = image['Tag'] %}
-                {% set created = image['CreatedAt'] %}
-                {% set size = image['Size'] %}
-                <div class="list-row column-spacing-images">
-                    <div data-label="Id">
-                        <a href="/image/{{ id }}" class="list-item-name">{{ id }}</a>
-                    </div>
-                    <div class="link-list" data-label="Tag">
-                        <a href="" class="link link-warning">{{ repo }}:{{ tag }}</a>
-                    </div>
-                    <div data-date="{{ created }}" data-label="Created"></div>
-                    <div data-label="Size">{{ size }}</div>
-                    <div class="element-row">
-                        <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
-                    </div>
-                </div>
+            <div class="link-list" data-label="Tag">
+                <a href="" class="link link-warning">{{ repo }}:{{ tag }}</a>
             </div>
-            {% endfor %}
+            <div data-date="{{ created }}" data-label="Created"></div>
+            <div data-label="Size">{{ size }}</div>
+            <div class="element-row">
+                <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
+            </div>
         </div>
     </div>
-
-    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-</body>
-
-</html>
+    {% endfor %}
+</div>
+{% endblock %}

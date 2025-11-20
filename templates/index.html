@@ -1,73 +1,50 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Dashboard - autodock</title>
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head>
+{% block content %}
+<div class="list-card">
+<div class="list-header column-spacing-repos">
+    <div>Name</div>
+    <div>Status</div>
+    <div>Created</div>
+    <div>Ports</div>
+</div>
 
-<body>
-    <div class="loader"></div>
-    
-    <div class="container">
-        <div class="header">
-            <p class="element-row">
-                <a href="/">Repositories</a>
-                <a href="/containers">Containers</a>
-                <a href="/images">Images</a>
-            </p>
-            <h1>autodock</h1>
+{% for name, repo in content.items() %}
+<div class="list-item">
+    <div class="list-row column-spacing-repos">
+        <div data-label="Name">
+            <a href="/repo/{{ name }}" class="list-item-name">{{ name }}</a>
         </div>
-        
-        <div class="list-card">
-            <div class="list-header column-spacing-repos">
-                <div>Name</div>
-                <div>Status</div>
-                <div>Created</div>
-                <div>Ports</div>
+        {% if repo['inspect'] %}
+            {% set status = repo['inspect'][0]['State']['Status'] %}
+            <div class="status-container" data-label="Status">
+                <div class="status status-{{ status }}">{{ status }}</div>
             </div>
-            
-            {% for name, repo in content.items() %}
-            <div class="list-item">
-                <div class="list-row column-spacing-repos">
-                    <div data-label="Name">
-                        <a href="/repo/{{ name }}" class="list-item-name">{{ name }}</a>
-                    </div>
-                    {% if repo['inspect'] %}
-                        {% set status = repo['inspect'][0]['State']['Status'] %}
-                        <div class="status-container" data-label="Status">
-                            <div class="status status-{{ status }}">{{ status }}</div>
-                        </div>
-                        <div data-date="{{ repo['inspect'][0]['Created'] }}" data-label="Created"></div>
-                        <div class="link-list" data-label="Ports">
-                        {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
-                            <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
-                        {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="status-container" data-label="Status">
-                            <div class="status status-not-available">Not available</div>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="element-row">
-                    <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                    <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                    <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                    <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                    <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
-                </div>
-            </div>
+            <div data-date="{{ repo['inspect'][0]['Created'] }}" data-label="Created"></div>
+            <div class="link-list" data-label="Ports">
+            {% for inner, outer in repo['inspect'][0]['NetworkSettings']['Ports'].items() %}
+                <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
             {% endfor %}
-        </div>
-
-        <div class="element-row" style="margin-top: 2rem;">
-            <a class="button button-primary right-align"  href="/repo/edit/new_repo_config" type="button">+ New</a>
-            <a class="button button-primary"  href="/settings" type="button">Settings</a>
-        </div>
+            </div>
+        {% else %}
+            <div class="status-container" data-label="Status">
+                <div class="status status-not-available">Not available</div>
+            </div>
+        {% endif %}
     </div>
+    <div class="element-row">
+        <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+        <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+        <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+        <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+        <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+    </div>
+</div>
+{% endfor %}
+</div>
 
-    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-</body>
-
-</html>
+<div class="element-row" style="margin-top: 2rem;">
+<a class="button button-primary right-align"  href="/repo/edit/new_repo_config" type="button">+ New</a>
+<a class="button button-primary"  href="/settings" type="button">Settings</a>
+</div>
+{% endblock %}

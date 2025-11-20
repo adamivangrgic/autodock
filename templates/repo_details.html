@@ -1,181 +1,168 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>{{ name }} - autodock</title>
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head>
+{% block title %}{{ name }}{% endblock %}
 
-<body>
-    <div class="loader"></div>
-    
-    <div class="container">
-        <div class="header">
-            <p class="element-row">
-                <a href="/">Repositories</a><span>></span>
-                <a>{{ name }}</a>
-            </p>
-            <h1>{{ name }}</h1>
-        </div>
+{% block navigation %}
+<p class="element-row">
+    <a href="/">Repositories</a><span>></span>
+    <a>{{ name }}</a>
+</p>
+{% endblock %}
 
-        {% if repo %}
-        <div class="card">
-            <h2>Repository configuration</h2>
+{% block content %}
+{% if repo %}
+<div class="card">
+    <h2>Repository configuration</h2>
 
-            <div class="element-row">
-                <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
-                <button class="button-primary" onclick="apiAction('/api/repo/check?force=True', {'name': '{{ name }}'})">Check (force)</button>
-                <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
-                <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
-                <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
-                <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
+    <div class="element-row">
+        <button class="button-primary" onclick="apiAction('/api/repo/check', {'name': '{{ name }}'})">Check</button>
+        <button class="button-primary" onclick="apiAction('/api/repo/check?force=True', {'name': '{{ name }}'})">Check (force)</button>
+        <button class="button-secondary" onclick="apiAction('/api/repo/clone', {'name': '{{ name }}'})">Clone</button>
+        <button class="button-success" onclick="apiAction('/api/repo/pull', {'name': '{{ name }}'})">Pull</button>
+        <button class="button-warning" onclick="apiAction('/api/repo/build', {'name': '{{ name }}'})">Build</button>
+        <button class="button-error" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}'})">Deploy</button>
 
-                <a class="button button-primary right-align"  href="/repo/edit/{{ name }}" type="button">Edit configuration</a>
-                <a class="button button-error"  href="/repo/delete/{{ name }}" type="button">Delete</a>
-            </div>
-
-            <div class="table">
-                <div class="table-row">
-                    <div class="table-label">Name</div>
-                    <div class="table-value">{{ name }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Repository URL</div>
-                    <div class="table-value">{{ repo['repo_url'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Branch</div>
-                    <div class="table-value">{{ repo['branch'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Check interval</div>
-                    <div class="table-value">{{ repo['interval'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Version tag scheme</div>
-                    <div class="table-value">{{ repo['version_tag_scheme'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Build command</div>
-                    <div class="table-value">{{ repo['build_command'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Deploy command</div>
-                    <div class="table-value">{{ repo['deploy_command'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Healthcheck command</div>
-                    <div class="table-value">{{ repo['healthcheck']['command'] }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Port</div>
-                    <div class="table-value">{{ repo['port'] }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-label">Webhook endpoint</div>
-                    <div class="table-value">/webhook/{{ name }}</div>
-                </div>
-            </div>
-            
-            <div class="element-row">
-                <h2>Log output</h2>
-                <span class="right-align">Number of lines: </span>
-                <input type="number" id="line-num" value="100"> 
-            </div>
-
-            <div class="black-box" id="log-output"></div>
-            
-            <script>
-                setInterval(function() {
-                    fill_log_output('/api/repo/get_logs', 
-                        {'name': '{{ name }}', 'line_num': document.querySelector('#line-num').value}, 
-                        '#log-output')
-                }, 2000);
-            </script>
-        </div>
-        {% endif %}
-
-        {% if container %}
-        <div class="card">
-            {% set id = container[0]['Id'] %}
-            {% set status = container[0]['State']['Status'] %}
-
-            <h2>Container</h2>
-
-            <div class="element-row">
-                <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
-                <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
-                <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
-                <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
-                <button class="button-warning" onclick="apiAction('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
-                <button class="button-success" onclick="apiAction('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
-                <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
-                <a class="button button-primary right-align" href="/container/{{ id }}" type="button">More info</a>
-            </div>
-            
-            <div class="table">
-                <div class="table-row">
-                    <div class="table-label">Id</div>
-                    <div class="table-value">{{ id }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Status</div>
-                    <div class="table-value">
-                        <div class="status status-{{ status }}">{{ status }}</div>
-                    </div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Ports</div>
-                    <div class="table-value link-list">
-                    {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
-                    {% if outer %}
-                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
-                    {% endif %}
-                    {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>   
-        {% endif %}
-
-        {% if images %}
-        <div class="list-card">
-            <div class="list-item">
-                <h2>Images</h2>
-            </div>
-
-            {% for image in images %}
-            <div class="list-item">
-                {% set image_id = image['Id'] %}
-                {% set repo = image['Repository'] %}
-                {% set tag = image['Tag'] %}
-                {% set created = image['CreatedAt'] %}
-                {% set size = image['Size'] %}
-                <div class="list-row column-spacing-images">
-                    <div data-label="Id">
-                        <a href="/image/{{ image_id }}" class="list-item-name">{{ image_id }}</a>
-                    </div>
-                    <div class="link-list" data-label="Tag">
-                        <a href="" class="link link-warning">{{ repo }}:{{ tag }}</a>
-                        {% if container[0]['Image'] == image_id %}
-                        <a href="" class="link link-success">Used</a>
-                        {% endif %}
-                    </div>
-                    <div data-date="{{ created }}" data-label="Created"></div>
-                    <div data-label="Size">{{ size }}</div>
-                    <div class="element-row">
-                        <button class="button-primary" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}', 'tag': '{{ repo }}:{{ tag }}'})">Deploy</button>
-                        <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        <a class="button button-primary right-align"  href="/repo/edit/{{ name }}" type="button">Edit configuration</a>
+        <a class="button button-error"  href="/repo/delete/{{ name }}" type="button">Delete</a>
     </div>
 
-    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-</body>
+    <div class="table">
+        <div class="table-row">
+            <div class="table-label">Name</div>
+            <div class="table-value">{{ name }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Repository URL</div>
+            <div class="table-value">{{ repo['repo_url'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Branch</div>
+            <div class="table-value">{{ repo['branch'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Check interval</div>
+            <div class="table-value">{{ repo['interval'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Version tag scheme</div>
+            <div class="table-value">{{ repo['version_tag_scheme'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Build command</div>
+            <div class="table-value">{{ repo['build_command'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Deploy command</div>
+            <div class="table-value">{{ repo['deploy_command'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Healthcheck command</div>
+            <div class="table-value">{{ repo['healthcheck']['command'] }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Port</div>
+            <div class="table-value">{{ repo['port'] }}</div>
+        </div>
 
-</html>
+        <div class="table-row">
+            <div class="table-label">Webhook endpoint</div>
+            <div class="table-value">/webhook/{{ name }}</div>
+        </div>
+    </div>
+    
+    <div class="element-row">
+        <h2>Log output</h2>
+        <span class="right-align">Number of lines: </span>
+        <input type="number" id="line-num" value="100"> 
+    </div>
+
+    <div class="black-box" id="log-output"></div>
+    
+    <script>
+        setInterval(function() {
+            fill_log_output('/api/repo/get_logs', 
+                {'name': '{{ name }}', 'line_num': document.querySelector('#line-num').value}, 
+                '#log-output')
+        }, 2000);
+    </script>
+</div>
+{% endif %}
+
+{% if container %}
+<div class="card">
+    {% set id = container[0]['Id'] %}
+    {% set status = container[0]['State']['Status'] %}
+
+    <h2>Container</h2>
+
+    <div class="element-row">
+        <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+        <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+        <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+        <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+        <button class="button-warning" onclick="apiAction('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
+        <button class="button-success" onclick="apiAction('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
+        <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+        <a class="button button-primary right-align" href="/container/{{ id }}" type="button">More info</a>
+    </div>
+    
+    <div class="table">
+        <div class="table-row">
+            <div class="table-label">Id</div>
+            <div class="table-value">{{ id }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Status</div>
+            <div class="table-value">
+                <div class="status status-{{ status }}">{{ status }}</div>
+            </div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Ports</div>
+            <div class="table-value link-list">
+            {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
+            {% if outer %}
+                <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+            {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>   
+{% endif %}
+
+{% if images %}
+<div class="list-card">
+    <div class="list-item">
+        <h2>Images</h2>
+    </div>
+
+    {% for image in images %}
+    <div class="list-item">
+        {% set image_id = image['Id'] %}
+        {% set repo = image['Repository'] %}
+        {% set tag = image['Tag'] %}
+        {% set created = image['CreatedAt'] %}
+        {% set size = image['Size'] %}
+        <div class="list-row column-spacing-images">
+            <div data-label="Id">
+                <a href="/image/{{ image_id }}" class="list-item-name">{{ image_id }}</a>
+            </div>
+            <div class="link-list" data-label="Tag">
+                <a href="" class="link link-warning">{{ repo }}:{{ tag }}</a>
+                {% if container[0]['Image'] == image_id %}
+                <a href="" class="link link-success">Used</a>
+                {% endif %}
+            </div>
+            <div data-date="{{ created }}" data-label="Created"></div>
+            <div data-label="Size">{{ size }}</div>
+            <div class="element-row">
+                <button class="button-primary" onclick="apiAction('/api/repo/deploy', {'name': '{{ name }}', 'tag': '{{ repo }}:{{ tag }}'})">Deploy</button>
+                <button class="button-error" onclick="apiAction('/api/image/action/rm', {'id': '{{ image_id }}'})">Remove</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

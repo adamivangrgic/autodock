@@ -1,65 +1,44 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Containers - autodock</title>
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head>
+{% block title %}Containers{% endblock %}
 
-<body>
-    <div class="loader"></div>
+{% block content %}
+<div class="list-card">
+    <div class="list-header column-spacing-containers">
+        <div>Name</div>
+        <div>Status</div>
+        <div>Created</div>
+        <div>Image</div>
+    </div>
     
-    <div class="container">
-        <div class="header">
-            <p class="element-row">
-                <a href="/">Repositories</a>
-                <a href="/containers">Containers</a>
-                <a href="/images">Images</a>
-            </p>
-            <h1>Containers</h1>
+    {% for container in content %}
+    <div class="list-item">
+        {% set id = container['Id'] %}
+        {% set name = container['Names'] %}
+        {% set image = container['Image'] %}
+        {% set status = container['State'] %}
+        {% set created = container['CreatedAt'] %}
+        <div class="list-row column-spacing-containers">
+            <div data-label="Name">
+                <a href="/container/{{ id }}" class="list-item-name">{{ name }}</a>
+            </div>
+            <div class="status-container" data-label="Status">
+                <div class="status status-{{ status }}">{{ status }}</div>
+            </div>
+            <div data-date="{{ created }}" data-label="Created"></div>
+            <div class="link-list" data-label="Image">
+                <a href="" class="link link-warning">{{ image }}</a>
+            </div>
         </div>
-        
-        <div class="list-card">
-            <div class="list-header column-spacing-containers">
-                <div>Name</div>
-                <div>Status</div>
-                <div>Created</div>
-                <div>Image</div>
-            </div>
-            
-            {% for container in content %}
-            <div class="list-item">
-                {% set id = container['Id'] %}
-                {% set name = container['Names'] %}
-                {% set image = container['Image'] %}
-                {% set status = container['State'] %}
-                {% set created = container['CreatedAt'] %}
-                <div class="list-row column-spacing-containers">
-                    <div data-label="Name">
-                        <a href="/container/{{ id }}" class="list-item-name">{{ name }}</a>
-                    </div>
-                    <div class="status-container" data-label="Status">
-                        <div class="status status-{{ status }}">{{ status }}</div>
-                    </div>
-                    <div data-date="{{ created }}" data-label="Created"></div>
-                    <div class="link-list" data-label="Image">
-                        <a href="" class="link link-warning">{{ image }}</a>
-                    </div>
-                </div>
 
-                <div class="element-row">
-                    <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
-                    <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
-                    <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
-                    <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
-                    <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
-                </div>
-            </div>
-            {% endfor %}
+        <div class="element-row">
+            <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+            <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+            <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+            <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+            <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
         </div>
     </div>
-
-    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-</body>
-
-</html>
+    {% endfor %}
+</div>
+{% endblock %}
