@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{% set name = container[0]['Name'][1:] %}
-{{ name }}
+{{ container[0]['Name'][1:] }}
 {% endblock %}
 
 {% block navigation %}
 <p class="element-row">
     <a href="/containers">Containers</a><span>></span>
-    <a>{{ name }}</a>
+    <a>{{ container[0]['Name'][1:] }}</a>
 </p>
 {% endblock %}
 
