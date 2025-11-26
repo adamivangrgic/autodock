@@ -1,0 +1,32 @@
+<html>
+
+<head>
+    <title>{% block title %}autodock{% endblock %}</title>
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+
+<body>
+    <div class="loader"></div>
+    
+    <div class="container">
+        <div class="header">
+            {% block navigation %}
+            <p class="element-row">
+                <a href="/">Repositories</a>
+                <a href="/containers">Containers</a>
+                <a href="/images">Images</a>
+            </p>
+            {% endblock %}
+            
+            <h1>{{ self.title() }}</h1>
+        </div>
+        
+        {% block content %}{% endblock %}
+        
+    </div>
+
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+</body>
+
+</html>

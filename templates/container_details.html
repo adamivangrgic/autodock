@@ -1,99 +1,86 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    {% set name = container[0]['Name'][1:] %}
-    <title>{{ name }} - autodock</title>
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-</head>
+{% block title %}
+{{ container[0]['Name'][1:] }}
+{% endblock %}
 
-<body>
-    <div class="loader"></div>
+{% block navigation %}
+<p class="element-row">
+    <a href="/containers">Containers</a><span>></span>
+    <a>{{ container[0]['Name'][1:] }}</a>
+</p>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    {% set id = container[0]['Id'] %}
+    {% set image = container[0]['Image'] %}
+    {% set created = container[0]['Created'] %}
+    {% set started = container[0]['State']['StartedAt'] %}
+    {% set status = container[0]['State']['Status'] %}
+
+    <h2>Container</h2>
+
+    <div class="element-row">
+        <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
+        <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
+        <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
+        <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
+        <button class="button-warning" onclick="apiAction('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
+        <button class="button-success" onclick="apiAction('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
+        <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+    </div>
     
-    <div class="container">
-        <div class="header">
-            <p class="element-row">
-                <a href="/containers">Containers</a><span>></span>
-                <a>{{ name }}</a>
-            </p>
-            <h1>{{ name }}</h1>
+    <div class="table">
+        <div class="table-row">
+            <div class="table-label">Id</div>
+            <div class="table-value">{{ id }}</div>
         </div>
-        
-        <div class="card">
-            {% set id = container[0]['Id'] %}
-            {% set image = container[0]['Image'] %}
-            {% set created = container[0]['Created'] %}
-            {% set started = container[0]['State']['StartedAt'] %}
-            {% set status = container[0]['State']['Status'] %}
-
-            <h2>Container</h2>
-
-            <div class="element-row">
-                <button class="button-primary" onclick="apiAction('/api/container/action/start', {'id': '{{ id }}'})">Start</button>
-                <button class="button-warning" onclick="apiAction('/api/container/action/stop', {'id': '{{ id }}'})">Stop</button>
-                <button class="button-error" onclick="apiAction('/api/container/action/kill', {'id': '{{ id }}'})">Kill</button>
-                <button class="button-secondary" onclick="apiAction('/api/container/action/restart', {'id': '{{ id }}'})">Restart</button>
-                <button class="button-warning" onclick="apiAction('/api/container/action/pause', {'id': '{{ id }}'})">Pause</button>
-                <button class="button-success" onclick="apiAction('/api/container/action/unpause', {'id': '{{ id }}'})">Unpause</button>
-                <button class="button-error" onclick="apiAction('/api/container/action/rm', {'id': '{{ id }}'})">Remove</button>
+        <div class="table-row">
+            <div class="table-label">Image</div>
+            <div class="table-value link-list">
+                <a href="" class="link link-warning">{{ image }}</a>
             </div>
-            
-            <div class="table">
-                <div class="table-row">
-                    <div class="table-label">Id</div>
-                    <div class="table-value">{{ id }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Image</div>
-                    <div class="table-value link-list">
-                        <a href="" class="link link-warning">{{ image }}</a>
-                    </div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Created</div>
-                    <div class="table-value">{{ created }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Started At</div>
-                    <div class="table-value">{{ started }}</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Status</div>
-                    <div class="table-value">
-                        <div class="status status-{{ status }}">{{ status }}</div>
-                    </div>
-                </div>
-                <div class="table-row">
-                    <div class="table-label">Ports</div>
-                    <div class="table-value link-list">
-                    {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
-                    {% if outer %}
-                        <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
-                    {% endif %}
-                    {% endfor %}
-                    </div>
-                </div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Created</div>
+            <div class="table-value">{{ created }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Started At</div>
+            <div class="table-value">{{ started }}</div>
+        </div>
+        <div class="table-row">
+            <div class="table-label">Status</div>
+            <div class="table-value">
+                <div class="status status-{{ status }}">{{ status }}</div>
             </div>
-
-            <div class="element-row">
-                <h2>Log output</h2>
-                <span class="right-align">Number of lines: </span>
-                <input type="number" id="line-num-{{ id }}" value="100"> 
+        </div>
+        <div class="table-row">
+            <div class="table-label">Ports</div>
+            <div class="table-value link-list">
+            {% for inner, outer in container[0]['NetworkSettings']['Ports'].items() %}
+            {% if outer %}
+                <a target="_blank" rel="noopener noreferrer" href="{{ HOST_ADDRESS }}:{{ outer[0]['HostPort'] }}" class="link link-primary">{{ outer[0]['HostPort'] }}:{{ inner }}</a>
+            {% endif %}
+            {% endfor %}
             </div>
-            
-            <div class="black-box" id="log-output-{{ id }}"></div>
-            <script>
-                setInterval(function() {
-                    fill_log_output('/api/container/get_logs', 
-                        {'id': '{{ id }}', 'line_num': document.querySelector('#line-num-{{ id }}').value}, 
-                        '#log-output-{{ id }}')
-                }, 2000);
-            </script>
-
-        </div>        
+        </div>
     </div>
 
-    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
-</body>
-
-</html>
+    <div class="element-row">
+        <h2>Log output</h2>
+        <span class="right-align">Number of lines: </span>
+        <input type="number" id="line-num-{{ id }}" value="100"> 
+    </div>
+    
+    <div class="black-box" id="log-output-{{ id }}"></div>
+    <script>
+        setInterval(function() {
+            fill_log_output('/api/container/get_logs', 
+                {'id': '{{ id }}', 'line_num': document.querySelector('#line-num-{{ id }}').value}, 
+                '#log-output-{{ id }}')
+        }, 2000);
+    </script>
+</div>
+{% endblock %}
