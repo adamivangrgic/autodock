@@ -15,7 +15,7 @@ from globals import log, filter_log
 from functions import repo_build, repo_deploy, repo_healthcheck, repo_check
 from git_functions import git_clone, git_pull, get_remote_hash
 from docker_functions import docker_container_action, docker_container_inspect, docker_container_get_logs, docker_container_list, docker_image_action, docker_image_list
-from config_functions import CONFIG_FILE_REPO_STRUCT, scheduler, write_and_reload_config_file, configuration
+from config import CONFIG_FILE_REPO_STRUCT, scheduler, write_and_reload_config_file, configuration
 
 
 app = FastAPI()
